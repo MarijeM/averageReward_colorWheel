@@ -1,0 +1,491 @@
+% % %%just a look at first ppts response. Ignore completely.
+
+load ColorFun_s5_pilot1.mat
+% 
+% for n=1:20
+%     a=strfind(n, filename(1:11));
+%     
+% end
+
+IgnoreAcc=[];
+IgnoreRT=[];
+UpdateAcc=[];
+UpdateRT=[];
+UpdateLongAcc=[];
+UpdateLongRT=[];
+Usz1=[];
+Usz1t1=[];
+Usz1t2=[];
+Usz1t3=[];
+Usz1t4=[];
+Usz1t5=[];
+Ut1=[];
+Ut2=[];
+Ut3=[];
+Ut4=[];
+Ut5=[];
+Usz2=[];
+Usz2t1=[];
+Usz2t2=[];
+Usz2t3=[];
+Usz2t4=[];
+Usz2t5=[];
+Usz3=[];
+Usz3t1=[];
+Usz3t2=[];
+Usz3t3=[];
+Usz3t4=[];
+Usz3t5=[];
+Usz4=[];
+Usz4t1=[];
+Usz4t2=[];
+Usz4t3=[];
+Usz4t4=[];
+Usz4t5=[];
+
+Isz1=[];
+Isz1t1=[];
+Isz1t2=[];
+Isz1t3=[];
+Isz1t4=[];
+Isz1t5=[];
+It1=[];
+It2=[];
+It3=[];
+It4=[];
+It5=[];
+Isz2=[];
+Isz2t1=[];
+Isz2t2=[];
+Isz2t3=[];
+Isz2t4=[];
+Isz2t5=[];
+Isz3=[];
+Isz3t1=[];
+Isz3t2=[];
+Isz3t3=[];
+Isz3t4=[];
+Isz3t5=[];
+Isz4=[];
+Isz4t1=[];
+Isz4t2=[];
+Isz4t3=[];
+Isz4t4=[];
+Isz4t5=[];
+
+ULsz1=[];
+ULsz1t1=[];
+ULsz1t2=[];
+ULsz1t3=[];
+ULsz1t4=[];
+ULsz1t5=[];
+ULt1=[];
+ULt2=[];
+ULt3=[];
+ULt4=[];
+ULt5=[];
+ULsz2=[];
+ULsz2t1=[];
+ULsz2t2=[];
+ULsz2t3=[];
+ULsz2t4=[];
+ULsz2t5=[];
+ULsz3=[];
+ULsz3t1=[];
+ULsz3t2=[];
+ULsz3t3=[];
+ULsz3t4=[];
+ULsz3t5=[];
+ULsz4=[];
+ULsz4t1=[];
+ULsz4t2=[];
+ULsz4t3=[];
+ULsz4t4=[];
+ULsz4t5=[];
+
+for x=1:length(data)
+    for y=1:4
+        if ~isnan(data(x,y).respDif)
+            if data(x,y).respDif>180
+                data(x,y).respDif=mod(360,data(x,y).respDif);
+            end
+           data(x,y).interTime=trial(x,y).interTime;
+      if data(x,y).trialtype==0
+          IgnoreAcc=[IgnoreAcc abs(data(x,y).respDif)];
+          IgnoreRT=[IgnoreRT data(x,y).rt];
+          
+      switch data(x,y).interTime
+          case 1.25
+              It1=[It1 abs(data(x,y).respDif)];
+          case 1.5
+              It2=[It2 abs(data(x,y).respDif)];
+          case 1.75
+               It3=[It3 abs(data(x,y).respDif)];
+          case 2
+               It4=[It4 abs(data(x,y).respDif)];
+          case 2.25
+               It5=[It5 abs(data(x,y).respDif)];
+      end
+          
+          switch data(x,y).setsize
+              case 1
+                    Isz1=[Isz1 abs(data(x,y).respDif)];
+%                     if exist('trial(x,y).interTime','var')
+                    switch data(x,y).interTime
+                        case 1.25
+                          Isz1t1=[Isz1t1 abs(data(x,y).respDif)];
+                        case 1.5
+                          Isz1t2=[Isz1t2 abs(data(x,y).respDif)];
+                        case 1.75
+                          Isz1t3=[Isz1t3 abs(data(x,y).respDif)];
+                        case 2
+                          Isz1t4=[Isz1t4 abs(data(x,y).respDif)];
+                        case 2.25
+                    end
+%                     end
+              case 2
+                    Isz2=[Isz2 abs(data(x,y).respDif)];
+%                     if exist('trial(x,y).interTime','var')
+                    switch data(x,y).interTime %data(x,y).interTime
+                        case 1.25
+                          Isz2t1=[Isz2t1 abs(data(x,y).respDif)];
+                        case 1.5
+                          Isz2t2=[Isz2t2 abs(data(x,y).respDif)];
+                        case 1.75
+                          Isz2t3=[Isz2t3 abs(data(x,y).respDif)];
+                        case 2
+                          Isz2t4=[Isz2t4 abs(data(x,y).respDif)];
+                        case 2.25
+                          Isz2t5=[Isz2t5 abs(data(x,y).respDif)];
+                    end
+%                     end
+              case 3
+                    Isz3=[Isz3 abs(data(x,y).respDif)];
+%                     if exist('trial(x,y).interTime','var')
+                    switch data(x,y).interTime %data(x,y).interTime
+                        case 1.25
+                          Isz3t1=[Isz3t1 abs(data(x,y).respDif)];
+                        case 1.5
+                          Isz3t2=[Isz3t2 abs(data(x,y).respDif)];
+                        case 1.75
+                          Isz3t3=[Isz3t3 abs(data(x,y).respDif)];
+                        case 2
+                          Isz3t4=[Isz3t4 abs(data(x,y).respDif)];
+                        case 2.25
+                          Isz3t5=[Isz3t5 abs(data(x,y).respDif)];
+                    end
+%                     end
+                    
+              case 4
+                    Isz4=[Isz4 abs(data(x,y).respDif)];
+%                     if exist('trial(x,y).interTime','var')
+                    switch data(x,y).interTime %data(x,y).interTime
+                        case 1.25
+                          Isz4t1=[Isz4t1 abs(data(x,y).respDif)];
+                        case 1.5
+                          Isz4t2=[Isz4t2 abs(data(x,y).respDif)];
+                        case 1.75
+                          Isz4t3=[Isz4t3 abs(data(x,y).respDif)];
+                        case 2
+                          Isz4t4=[Isz4t4 abs(data(x,y).respDif)];
+                        case 2.25
+                          Isz4t5=[Isz4t5 abs(data(x,y).respDif)];
+                    end
+%                     end
+          end
+          
+      elseif data(x,y).trialtype==2 || data(x,y).trialtype==22
+          UpdateAcc=[UpdateAcc abs(data(x,y).respDif)];
+          UpdateRT=[UpdateRT data(x,y).rt];
+          
+     switch data(x,y).interTime
+          case 1.25
+              Ut1=[It1 abs(data(x,y).respDif)];
+          case 1.5
+              Ut2=[Ut2 abs(data(x,y).respDif)];
+          case 1.75
+               Ut3=[Ut3 abs(data(x,y).respDif)];
+          case 2
+               Ut4=[Ut4 abs(data(x,y).respDif)];
+         case 2.25
+              Ut5=[Ut5 abs(data(x,y).respDif)];
+     end
+      
+          switch data(x,y).setsize
+              case 1
+                    Usz1=[Usz1 abs(data(x,y).respDif)];
+%                     if exist('trial(x,y).interTime','var')
+                    switch data(x,y).interTime %data(x,y).interTime
+                        case 1.25
+                          Usz1t1=[Usz1t1 abs(data(x,y).respDif)];
+                        case 1.5
+                          Usz1t2=[Usz1t2 abs(data(x,y).respDif)];
+                        case 1.75
+                          Usz1t3=[Usz1t3 abs(data(x,y).respDif)];
+                        case 2
+                          Usz1t4=[Usz1t4 abs(data(x,y).respDif)];
+                        case 2.25
+                          Usz1t5=[Usz1t5 abs(data(x,y).respDif)];
+                    end
+%                     end
+              case 2
+                    Usz2=[Usz2 abs(data(x,y).respDif)];
+%                     if exist('trial(x,y).interTime','var')
+                    switch data(x,y).interTime
+                        case 1.25
+                          Usz2t1=[Usz2t1 abs(data(x,y).respDif)];
+                        case 1.5
+                          Usz2t2=[Usz2t2 abs(data(x,y).respDif)];
+                        case 1.75
+                          Usz2t3=[Usz2t3 abs(data(x,y).respDif)];
+                        case 2
+                          Usz2t4=[Usz2t4 abs(data(x,y).respDif)];
+                        case 2.25
+                          Usz2t5=[Usz2t5 abs(data(x,y).respDif)];
+                    end
+%                     end
+              case 3
+                    Usz3=[Usz3 abs(data(x,y).respDif)];
+%                     if exist('trial(x,y).interTime','var')
+                    switch data(x,y).interTime
+                        case 1.25
+                          Usz3t1=[Usz3t1 abs(data(x,y).respDif)];
+                        case 1.5
+                          Usz3t2=[Usz3t2 abs(data(x,y).respDif)];
+                        case 1.75
+                          Usz3t3=[Usz3t3 abs(data(x,y).respDif)];
+                        case 2
+                          Usz3t4=[Usz3t4 abs(data(x,y).respDif)];
+                        case 2.25
+                          Usz3t5=[Usz3t5 abs(data(x,y).respDif)];
+                    end
+%                     end
+              case 4
+                    Usz4=[Usz4 abs(data(x,y).respDif)];
+%                     if exist('trial(x,y).interTime','var')
+                    switch data(x,y).interTime
+                        case 1.25
+                          Usz4t1=[Usz4t1 abs(data(x,y).respDif)];
+                        case 1.5
+                          Usz4t2=[Usz4t2 abs(data(x,y).respDif)];
+                        case 1.75
+                          Usz4t3=[Usz4t3 abs(data(x,y).respDif)];
+                        case 2
+                          Usz4t4=[Usz4t4 abs(data(x,y).respDif)];
+                        case 2.25
+                          Usz4t5=[Usz4t5 abs(data(x,y).respDif)];
+                    end
+%                     end
+          end
+%       elseif data(x,y).trialtype==22
+%           UpdateLongAcc=[UpdateLongAcc abs(data(x,y).respDif)];
+%           UpdateLongRT=[UpdateLongRT data(x,y).rt];
+%         switch data(x,y).setsize
+%               case 1
+%                     ULsz1=[ULsz1 abs(data(x,y).respDif)];
+% %                     if exist('trial(x,y).interTime','var')
+%                     switch data(x,y).interTime
+%                         case 1.25
+%                           ULsz1t1=[ULsz1t1 abs(data(x,y).respDif)];
+%                         case 1.5
+%                           ULsz1t2=[ULsz1t2 abs(data(x,y).respDif)];
+%                         case 1.75
+%                           ULsz1t3=[ULsz1t3 abs(data(x,y).respDif)];
+%                         case 2
+%                           ULsz1t4=[ULsz1t4 abs(data(x,y).respDif)];
+%                         case 2.25
+%                           ULsz1t5=[ULsz1t5 abs(data(x,y).respDif)];
+%                     end
+% %                     end
+%               case 2
+%                     ULsz2=[ULsz2 abs(data(x,y).respDif)];
+% %                     if exist('trial(x,y).interTime','var')
+%                     switch data(x,y).interTime
+%                         case 1.25
+%                           ULsz2t1=[ULsz2t1 abs(data(x,y).respDif)];
+%                         case 1.5
+%                           ULsz2t2=[ULsz2t2 abs(data(x,y).respDif)];
+%                         case 1.75
+%                           ULsz2t3=[ULsz2t3 abs(data(x,y).respDif)];
+%                         case 2
+%                           ULsz2t4=[ULsz2t4 abs(data(x,y).respDif)];
+%                         case 2.25
+%                           ULsz2t5=[ULsz2t5 abs(data(x,y).respDif)];
+%                     end
+% %                     end
+%               case 3
+%                     ULsz3=[ULsz3 abs(data(x,y).respDif)];
+% %                     if exist('trial(x,y).interTime','var')
+%                     switch data(x,y).interTime
+%                         case 1.25
+%                           ULsz3t1=[ULsz3t1 abs(data(x,y).respDif)];
+%                         case 1.5
+%                           ULsz3t2=[ULsz3t2 abs(data(x,y).respDif)];
+%                         case 1.75
+%                           ULsz3t3=[ULsz3t3 abs(data(x,y).respDif)];
+%                         case 2
+%                           ULsz3t4=[ULsz3t4 abs(data(x,y).respDif)];
+%                         case 2.25
+%                           ULsz3t5=[ULsz3t5 abs(data(x,y).respDif)];
+%                     end
+% %                     end
+%               case 4
+%                     ULsz4=[ULsz4 abs(data(x,y).respDif)];
+% %                     if exist('trial(x,y).interTime','var')
+%                     switch data(x,y).interTime
+%                         case 1.25
+%                           ULsz4t1=[ULsz4t1 abs(data(x,y).respDif)];
+%                         case 1.5
+%                           ULsz4t2=[ULsz4t2 abs(data(x,y).respDif)];
+%                         case 1.75
+%                           ULsz4t3=[ULsz4t3 abs(data(x,y).respDif)];
+%                         case 2
+%                           ULsz4t4=[ULsz4t4 abs(data(x,y).respDif)];
+%                         case 2.25
+%                           ULsz4t5=[ULsz4t5 abs(data(x,y).respDif)];
+%                     end
+%                     end
+      end
+        end
+    end
+end
+
+cd('M:\.matlab\GitHub\QuantifyingCC\WMAG_data');
+names=dir('M:\.matlab\GitHub\tyrosine_tutorials\WMAG_data');
+% names=ls('*.mat');
+names=names(3:length(names)); %removes some data to fix length
+sub=(struct);
+
+correct_all_subs=[];
+rt_all_subs=[];
+ignore=[];
+no_inter=[];
+update=[];
+
+for j = 1:length(names)
+temp = load(names(j).name);
+
+sub(j).correct=temp.correct;   %struct of variables i want to use
+sub(j).rt=temp.rt;
+sub(j).trialmem=temp.trialmem ;
+
+correct_all_subs=[correct_all_subs;sub(j).correct];
+
+rt_all_subs=[rt_all_subs;sub(j).rt];
+
+
+    meanIAcc=mean(IgnoreAcc);
+    meanIRT=mean(IgnoreRT);
+    meanUAcc=mean(UpdateAcc);
+    meanURT=mean(UpdateRT);
+    meanULAcc=mean(UpdateLongAcc);
+    meanULRT=mean(UpdateLongRT);
+    
+    meanUsz1=mean(Usz1);
+    meanUsz2=mean(Usz2);
+    meanUsz3=mean(Usz3);
+    meanUsz4=mean(Usz4);
+    
+    meanULsz1=mean(ULsz1);
+    meanULsz2=mean(ULsz2);
+    meanULsz3=mean(ULsz3);
+    meanULsz4=mean(ULsz4);
+    
+    meanIsz1=mean(Isz1);
+    meanIsz2=mean(Isz2);
+    meanIsz3=mean(Isz3);
+    meanIsz4=mean(Isz4);
+    
+    meanUsz1t1=mean(Usz1t1);
+    meanUsz1t2=mean(Usz1t2);
+    meanUsz1t3=mean(Usz1t3);
+    meanUsz1t4=mean(Usz1t4);
+    meanUsz1t5=mean(Usz1t5);
+    
+    meanUsz2t1=mean(Usz2t1);
+    meanUsz2t2=mean(Usz2t2);
+    meanUsz2t3=mean(Usz2t3);
+    meanUsz2t4=mean(Usz2t4);
+    meanUsz2t5=mean(Usz2t5);
+    
+    meanUsz3t1=mean(Usz3t1);
+    meanUsz3t2=mean(Usz3t2);
+    meanUsz3t3=mean(Usz3t3);
+    meanUsz3t4=mean(Usz3t4);
+    meanUsz3t5=mean(Usz3t5);
+    
+    meanUsz4t1=mean(Usz4t1);
+    meanUsz4t2=mean(Usz4t2);
+    meanUsz4t3=mean(Usz4t3);
+    meanUsz4t4=mean(Usz4t4);
+    meanUsz4t5=mean(Usz4t5);
+    
+    meanIsz1t1=mean(Isz1t1);
+    meanIsz1t2=mean(Isz1t2);
+    meanIsz1t3=mean(Isz1t3);
+    meanIsz1t4=mean(Isz1t4);
+    meanIsz1t5=mean(Isz1t5);
+    
+    meanIsz2t1=mean(Isz2t1);
+    meanIsz2t2=mean(Isz2t2);
+    meanIsz2t3=mean(Isz2t3);
+    meanIsz2t4=mean(Isz2t4);
+    meanIsz2t5=mean(Isz2t5);
+    
+    meanIsz3t1=mean(Isz3t1);
+    meanIsz3t2=mean(Isz3t2);
+    meanIsz3t3=mean(Isz3t3);
+    meanIsz3t4=mean(Isz3t4);
+    meanIsz3t5=mean(Isz3t5);
+    
+    meanIsz4t1=mean(Isz4t1);
+    meanIsz4t2=mean(Isz4t2);
+    meanIsz4t3=mean(Isz4t3);
+    meanIsz4t4=mean(Isz4t4);
+    meanIsz4t5=mean(Isz4t5);
+    
+    meanUt1=mean(Ut1);
+    meanUt2=mean(Ut2);
+    meanUt3=mean(Ut3);
+    meanUt4=mean(Ut4);
+    meanUt5=mean(Ut5);
+    
+    meanIt1=mean(It1);
+    meanIt2=mean(It2);
+    meanIt3=mean(It3);
+    meanIt4=mean(It4);
+    meanIt5=mean(It5);
+    
+    dataAcc=[meanIAcc meanUAcc meanULAcc];
+    dataRT=[meanIRT meanURT meanULRT];
+    dataTypeTime=[meanUt1 meanUt2 meanUt3 meanUt4 meanUt5;meanIt1 meanIt2 meanIt3 meanIt4 meanIt5];
+    dataTypesetsize=[meanUsz1 meanUsz2 meanUsz3 meanUsz4; meanIsz1 meanIsz2 meanIsz3 meanIsz4];
+    dataTypesetsize2=[meanUsz1 meanUsz2 meanUsz3 meanUsz4; meanULsz1 meanULsz2 meanULsz3 meanULsz4; meanIsz1 meanIsz2 meanIsz3 meanIsz4];
+    datasetsizeTimeU=[meanUsz1t1 meanUsz1t2 meanUsz1t3 meanUsz1t4 meanUsz1t5;meanUsz2t1 meanUsz2t2 meanUsz2t3 meanUsz2t4 meanUsz2t5;meanUsz3t1 meanUsz3t2 meanUsz3t3 meanUsz3t4 meanUsz3t5;meanUsz4t1 meanUsz4t2  meanUsz4t3 meanUsz4t4 meanUsz4t5];
+    datasetsizeTimeI=[meanIsz1t1 meanIsz1t2 meanIsz1t3 meanIsz1t4 meanIsz1t5;meanIsz2t1 meanIsz2t2 meanIsz2t3 meanIsz2t4 meanIsz2t5;meanIsz3t1 meanIsz3t2 meanIsz3t3 meanIsz3t4 meanIsz3t5;meanIsz4t1 meanIsz4t2  meanIsz4t3 meanIsz4t4 meanIsz4t5];
+%     trace1=struct('x',{{'Update','Ignore'}},'y',dataTypeTime,'name','1.25','1.5','1.75','2','type','bar');
+    
+  figure;
+  bar(dataAcc)
+  set(gca, 'XTickLabel', {'Ignore','Update','Update Long'})
+  ylabel('Response deviation');
+  title(sprintf('subject %d responses',dataHeader.subjectID));
+  
+    
+  figure;
+  bar(dataRT)
+  set(gca, 'XTickLabel', {'Ignore','Update', 'Update Long'})
+  ylabel('RT');
+  title(sprintf('subject %d RTs',dataHeader.subjectID));
+  
+  figure;
+  bar(dataTypeTime)
+  set(gca, 'XTickLabel', {'Update','Ignore'})
+  ylabel('Response deviation');
+  title(sprintf('subject %d responses per interference time',dataHeader.subjectID));
+  
+  figure;
+  bar(dataTypesetsize2)
+  set(gca, 'XTickLabel', {'Update', 'Update Long','Ignore'})
+  ylabel('Response deviation');
+  title(sprintf('subject %d responses per set size',dataHeader.subjectID));
