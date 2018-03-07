@@ -121,13 +121,9 @@ for i=1:100
   
     if level==1 && counter==length(Instruction)
         GetClicks();
-        Screen('flip',wPtr);
-        WaitSecs(2)
         break
-    elseif level==2 && counter==length(Instruction)
-        KbWait();
-        Screen('flip',wPtr);
-        WaitSecs(1)
+    elseif level==3 && counter==length(Instruction)
+        GetClicks();
         break
     elseif counter==length(Instruction)
         KbWait();
