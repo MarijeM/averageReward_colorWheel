@@ -336,7 +336,7 @@ for p=1:pms.numBlocks
             elseif phase==7 % feedback about their reward
                Screen('Textsize', wPtr, 28);
                Screen('Textfont', wPtr, 'Times New Roman');
-               if respDif <= medDev(1,trial(g,p).setSize) % if they were accurate enough
+               if respDif <= pms.minAcc % if they were accurate enough
                    DrawFormattedText(wPtr,double(sprintf('You win %f ct',reward)),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                    Screen('Flip',wPtr);  
                    WaitSecs(pms.bonusduration);

@@ -151,7 +151,8 @@ while GetSecs-probeOnset<pms.maxRT %while they did not make a response during th
                 drawFixationCross(wPtr,rect)
                 Screen('Flip',wPtr)
             end
-        end      
+        end  
+        break
     end %if mousePress
     WaitSecs(0.1);
 end %while (mousePress==0...)
