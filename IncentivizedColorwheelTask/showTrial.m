@@ -47,38 +47,38 @@ cd IncentivizedColorwheelTask; %back to incentivized colorwheel directory
 
 %trials for practice session
 if practice==1
-    pms.numTrials=pms.numTrialsPr;
-    pms.numBlocks=pms.numBlocksPr;
+    pms.numTrials   = pms.numTrialsPr;
+    pms.numBlocks   = pms.numBlocksPr;
 elseif practice==2
-    pms.numTrials=pms.redoTrials;
-    pms.numBlocks=pms.redoBlocks;
+    pms.numTrials   = pms.redoTrials;
+    pms.numBlocks   = pms.redoBlocks;
 end
 
 Screen('TextSize',wPtr,16);
 Screen('TextStyle',wPtr,1);
 Screen('TextFont',wPtr,'Courier New');
 
-EncSymbol='M';
-UpdSymbol='U';
-IgnSymbol='I';
-rewardLow=0.01;
-rewardHigh=0.10;
-RewardTextLow = double(sprintf('for €%.2f', rewardLow));
-RewardTextHigh= double(sprintf('for €%.2f', rewardHigh));
+EncSymbol       = 'M';
+UpdSymbol       = 'U';
+IgnSymbol       = 'I';
+rewardLow       = 0.01;
+rewardHigh      = 0.10;
+RewardTextLow   = double(sprintf('for €%.2f', rewardLow));
+RewardTextHigh  = double(sprintf('for €%.2f', rewardHigh));
 
-M_color=[0 0 0];
-U_color=[0 0 0];
-I_color=[0 0 0];
-Reward_color=[0 0 0];
+M_color         = [0 0 0];
+U_color         = [0 0 0];
+I_color         = [0 0 0];
+Reward_color    = [0 0 0];
 %rect size
-rectOne=[0 0 100 100];
-rectTwo=[0 0 25 25];
-data2=struct();
-ovalRect=CenterRectOnPoint(rectTwo,pms.xCenter,pms.yCenter);
+rectOne         = [0 0 100 100];
+rectTwo         = [0 0 25 25];
+data2           = struct();
+ovalRect        = CenterRectOnPoint(rectTwo,pms.xCenter,pms.yCenter);
 
 %% loop around trials and blocks for stimulus presentation
 if practice == 0               % dit toegevoegd omdat numBlocks 1 is voordat je trial verdubbelt. na het verdubbelen van 64X1 naar 128X1, en reshapen naar 64X2; numblocks=2.
-    pms.numBlocks=2;
+    pms.numBlocks = 2;
 end
 
 bonus = 0; %start value of reward/bonus is €0.00

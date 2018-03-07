@@ -117,24 +117,24 @@ probeOnset = Screen('Flip',wPtr);
 
 
 % mousePress=0; %indication of no response
-respXAll    = [];
-respYAll    = [];
-rtAll       = [];
+respXAll=[];
+respYAll=[];
+rtAll=[];
 
 while GetSecs-probeOnset<pms.maxRT %while they did not make a response during the probe response duration
-    [~, secs, ~]    = KbCheck;
-    [x,y,buttons]   = GetMouse(wPtr);
-    mousePress      = any(buttons);%response was made
+    [~, secs, ~] = KbCheck;
+    [x,y,buttons]=GetMouse(wPtr);
+    mousePress=any(buttons);%response was made
     
     %first response counts, all are recorded
     if mousePress
-        respXAll    = [respXAll;x];
-        respYAll    = [respYAll;y];
-        rtAll       = [rtAll;secs-probeOnset];
-        respX       = respXAll(1);
-        respY       = respYAll(1);
-        rt          = rtAll(1);
-        [respDif,tau,thetaCorrect,radius] = respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %90 for red responses around 0
+        respXAll=[respXAll;x];
+        respYAll=[respYAll;y];
+        rtAll=[rtAll;secs-probeOnset];
+        respX=respXAll(1);
+        respY=respYAll(1);
+        rt=rtAll(1);
+        [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %90 for red responses around 0
         
         for ind=1:length(colors)
             Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
@@ -150,8 +150,12 @@ while GetSecs-probeOnset<pms.maxRT %while they did not make a response during th
                 Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness)
                 drawFixationCross(wPtr,rect)
                 Screen('Flip',wPtr)
+                %                   WaitSecs(pms.feedbackDuration)
             end
-        end      
+        end
+        %Even if they made response they have to wait maxRT secs.
+        %                 WaitSecs(pms.maxRT-rt)
+        
     end %if mousePress
     WaitSecs(0.1);
 end %while (mousePress==0...)
@@ -177,7 +181,7 @@ if exist('respX','var')
         %feedback if they are +-10 degrees from target color
         if abs(respDif) <=10
             Screen('TextSize',wPtr,15);
-            message = sprintf('Good Job! you deviated only %d degrees',abs(round(respDif)));
+            message=sprintf('Good Job! you deviated only %d degrees',abs(round(respDif)));
             DrawFormattedText(wPtr, message, 'center', 'center', messageColor);
         else
             %otherwise no feedback
@@ -203,9 +207,9 @@ if exist('respX','var')
 %are set to NaN. They receive feedback to respond faster. 
 elseif ~exist('respX','var')
     
-    respX   = NaN;
-    respY   = NaN;
-    rt      = NaN;
+    respX=NaN;
+    respY=NaN;
+    rt=NaN;
     
     for ind=1:length(colors)
         Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
@@ -214,7 +218,8 @@ elseif ~exist('respX','var')
     Screen('TextSize',wPtr,15);
     DrawFormattedText(wPtr, messageLate, 'center', 'center', messageColor);
     Screen('Flip',wPtr)
-    WaitSecs(pms.feedbackDuration);  
+    WaitSecs(pms.feedbackDuration);
+    
 end
 end
               
