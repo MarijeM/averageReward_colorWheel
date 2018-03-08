@@ -3,16 +3,7 @@ function [colorTestData]=colorVision(pms,wPtr,rect)
 %%%function that shows randomly selected colors and checks for color
 %%%perception
 
-% Screen('Preference', 'VisualDebugLevel',0);
-% Screen('Preference','SkipSyncTests',1); 
-% Screen('Preference', 'SuppressAllWarnings', 1);
 
-% [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')));
-
-
-% Screen('TextSize',wPtr,24);
-% Screen('TextStyle',wPtr,1);
-% Screen('TextFont',wPtr,'Times New Roman');
 
 numTrials=pms.colorTrials;
 rectOne=[0 0 100 100];
@@ -79,9 +70,7 @@ colorangle=360/length(colors);
                       Screen('FillRect', wPtr, probeColorCorrect, rectOne'); 
 
                       Screen('Flip',wPtr)
-%                           r=randi(100);
-%                             imageArray=Screen('GetImage',wPtr);
-%                             imwrite(imageArray,sprintf('ColTest%d.png',r),'png');
+
                      probeOnset=GetSecs();
 
                          [~, secs] = KbCheck;
@@ -96,7 +85,6 @@ colorangle=360/length(colors);
 
                          WaitSecs(0.001);
 
-% clear Screen
 
 %theta represents the angle for every color
  theta=zeros(length(colors),1);
@@ -123,7 +111,6 @@ end
       if ~isnan('tau')
              if radius>abs(insideRect(1)-insideRect(3))/2
       Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2);
-%           Screen('FillArc',wPtr,[0 0 0],outsideRect,thetaCorrect-0.2,0.2);
       Screen('FillOval',wPtr,pms.background,insideRect);
        Screen('FillRect', wPtr, probeColorCorrect, rectOne'); 
       Screen('Flip',wPtr);
@@ -144,25 +131,16 @@ end
       %otherwise no feedback
       end
          Screen('Flip',wPtr)
-%                                 r=randi(1000);
-%                             imageArray=Screen('GetImage',wPtr);
-%                             imwrite(imageArray,sprintf('ColTest%dFeedback.png',r),'png');   
+
          WaitSecs(0.8);
              end
       end
 
-%             Screen('TextSize',wPtr,20);
-%             DrawFormattedText(wPtr, 'How would you name the color you just saw?\n\n red,orange,yellow,light green, green, blue green, turquoise, cyan, blue, purple, pink or magenda?','center', centerY-100, [0 0 0])
-%             reply=Ask(wPtr,'Please type your response and press enter',[],[],'GetString','center','center',15);
-%             DrawFormattedText(wPtr, reply, 'center', centerY+100, [0 0 0])
-%             Screen('Flip',wPtr)
-%             WaitSecs(2)
 
          colorTestData(N).respDif=abs(respDif);  
          colorTestData(N).respDifDirection=respDif;           
          colorTestData(N).rt=rt;
          colorTestData(N).probeColor=probeColorCorrect;
-%              colorTestData(N).colorName=reply;
          colorTestData(N).pie=probePie;
          colorTestData(N).pieName=namePie;
          colorTestData(N).pieNumber=numberPie;
