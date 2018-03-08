@@ -43,7 +43,7 @@ if practice == 0               % dit toegevoegd omdat numBlocks 1 is voordat je 
     pms.numBlocks = 2;
 end
 
-bonus = 0; %start value of reward/bonus is €0.00
+bonus = 0; %start value of reward/bonus is ?0.00
 for p=1:pms.numBlocks
     for g=1:pms.numTrials
         for phase = 1:7 
@@ -267,9 +267,9 @@ for p=1:pms.numBlocks
                 end %if practice==1
                 
                 if practice==1 
-                    [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
+                    [respX,respY,rtDecision, rtResponse,colortheta]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
                 elseif practice==0
-                    [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
+                    [respX,respY,rtDecision, rtResponse,colortheta]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
                 end
                 
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
@@ -288,9 +288,8 @@ for p=1:pms.numBlocks
                 end
                 %save responses and data into a struct.
                 data(g,p).respCoord=[respX respY]; %saving response coordinates in struct where 1,1 is x and 1,2 y
-                data(g,p).rt=rt;
-                data(g,p).respCoordAll=[respXAll respYAll];
-                data(g,p).rtAll=rtAll;
+                data(g,p).rtDecision=rtDecision;
+                data(g,p).rtResponse=rtResponse;
                 data(g,p).probeLocation=[probeRectX probeRectY];
                 data(g,p).probeColorCorrect=trial(g,p).probeColorCorrect;
                 data(g,p).lureColor=trial(g,p).lureColor;

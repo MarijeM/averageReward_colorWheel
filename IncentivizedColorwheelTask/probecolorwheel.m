@@ -1,4 +1,4 @@
-function [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
+function [respX,respY,rtDecision, rtResponse,colortheta]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
@@ -114,28 +114,22 @@ probeOnset = Screen('Flip',wPtr);
 
 
 % mousePress=0; %indication of no response
-respXAll    = [];
-respYAll    = [];
-rtAll       = [];
-rtDecision  = [];
-
 while GetSecs-probeOnset<pms.maxRT %while they did not make a response during the probe response duration
     [~,~,buttons]   = GetMouse(wPtr);
     mousePress      = any(buttons);%response was made
     if mousePress==1;
-        rtDecision          = GetSecs-probeOnset; 
+        tDecision           = GetSecs; 
         %show mouse and place it in the center of the screen
         ShowCursor('Arrow');
         SetMouse(centerX,centerY,wPtr);
-        while mousePress==1 && GetSecs-rtDecision<pms.maxMotorTime;
+        while mousePress==1 && GetSecs-tDecision<pms.maxMotorTime;
             [x,y,buttons]   = GetMouse(wPtr);
             if buttons(1)==0 %mouse was released
-                respXAll    = [respXAll;x];
-                respYAll    = [respYAll;y];
-                rtAll       = [rtAll;GetSecs-probeOnset];
-                respX       = respXAll(1);
-                respY       = respYAll(1);
-                rtResponse  = rtAll(1);
+                rtDecision  = tDecision-probeOnset;
+                respX       = x;
+                respY       = y;
+                rtResponse  = GetSecs-probeOnset;
+                
                 [respDif,tau,thetaCorrect,radius] = respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %90 for red responses around 0
 
                 for ind=1:length(colors)
@@ -160,7 +154,7 @@ while GetSecs-probeOnset<pms.maxRT %while they did not make a response during th
         break; 
     end %if mousepress==1
 %     WaitSecs(0.1);
-end %while (mousePress==0...)
+end %while within maxRT
 
 HideCursor();
 
@@ -209,9 +203,10 @@ if exist('respX','var')
 %are set to NaN. They receive feedback to respond faster. 
 elseif ~exist('respX','var')
     
-    respX   = NaN;
-    respY   = NaN;
-    rt      = NaN;
+    respX       = NaN;
+    respY       = NaN;
+    rtDecision  = NaN;
+    rtResponse  = NaN;
     
     for ind=1:length(colors)
         Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);

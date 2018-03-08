@@ -1,4 +1,4 @@
-function [data2, trial, T, bonus] = BeautifulColorwheel(varargin)
+function [data, trial, T, bonus] = BeautifulColorwheel(varargin)
 % Colorhwheel
 %
 % This function presents the colorwheel task - here: part 1 of the
@@ -64,7 +64,7 @@ try
     pms.matlabVersion       = 'R2016a';
     % timings
     pms.maxRT               = 4; % max RT
-    pms.maxMotorTime        = 1; %maximum time from mouse press to mouse release (time from decision to response)
+    pms.maxMotorTime        = 0.8; %maximum time from mouse press to mouse release (time from decision to response)
     pms.encDuration         = 0.5;    %2 seconds of encoding
     pms.encDurationIgn      = 0.5;
     pms.encDurationUpd      = 0.5;
@@ -140,19 +140,19 @@ try
     dataHeader.logdir           = cd; %adapt logdir (MF: e.g.: fullfile(cd, 'log'))
     
     % initialize data set
-    data2.setsize               = []; %trial(:,:).setSize;
-    data2.trialNum              = []; %trial(:,:).number;
-    data2.trialtype             = []; %trial(:,:).trialType;
-    data2.location              = []; %trial(:,:).locations;
-    data2.colors                = []; %trial(:,:).colors;
-    data2.respCoord             = [];
-    data2.onset                 = [];
-    data2.rt                    = [];
-    data2.probeLocation         = [];
-    data2.stdev                 = [];
-    data2.thetaCorrect          = [];
-    data2.respDif               = [];
-    data2.reward                = []; 
+    data.setsize               = []; %trial(:,:).setSize;
+    data.trialNum              = []; %trial(:,:).number;
+    data.trialtype             = []; %trial(:,:).trialType;
+    data.location              = []; %trial(:,:).locations;
+    data.colors                = []; %trial(:,:).colors;
+    data.respCoord             = [];
+    data.onset                 = [];
+    data.rt                    = [];
+    data.probeLocation         = [];
+    data.stdev                 = [];
+    data.thetaCorrect          = [];
+    data.respDif               = [];
+    data.reward                = []; 
     
     % baseline for event onset timestamps
     exptOnset = GetSecs;
@@ -180,7 +180,7 @@ try
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    [data2, T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    [data, T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
         % showTrial opens colorwheel2 and stdev function
     
         
