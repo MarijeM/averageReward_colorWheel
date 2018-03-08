@@ -32,33 +32,10 @@ function [data2, trial, T, bonus] = BeautifulColorwheel(varargin)
 %   showTrial
 
 try
-    switch nargin
-        case 0
-    %% Provides subject number and practice status as keyboard input, names of the files and which manipulation should be used. Go into this function to adapt log-file name.
-    [subNo,dataFilename,dataFilenamePrelim,practice,manipulation,session]=getInfo;
-        case 3
-            subNo               = varargin{1};
-            practice            = varargin{2};
-            pms                 = varargin{3};
+    subNo               = varargin{1};
+    practice            = varargin{2};
+    pms                 = varargin{3};
     [subNo,dataFilename,dataFilenamePrelim,practice,manipulation]=getInfo(subNo,practice);            
-        case 4
-            subNo               = varargin{1};
-            practice            = varargin{2};
-            pms                 = varargin{3};
-            session             = varargin{4};
-            [subNo,dataFilename,dataFilenamePrelim,practice,manipulation,session]=getInfo(subNo,practice,session);
-       
-        case 6
-            subNo               = varargin{1};
-            practice            = varargin{2};
-            pms                 = varargin{3};      
-            manipulation        = 1;
-            pms.choiceSZ        = varargin{4};
-            pms.choiceCondition = varargin{5};
-            pms.bonus           = varargin{6};
-            dataFilename        = sprintf('ColorFun_s%d_Redo.mat',subNo);
-            dataFilenamePrelim  = sprintf('CF_s%d_Redo_pre.mat',subNo);
-    end
 
     %% set experiment parameters
     pms.numTrials           = 64; % adaptable; important to be dividable by 2 (conditions) and multiple of 4 (set size)

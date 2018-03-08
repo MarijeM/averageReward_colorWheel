@@ -56,29 +56,29 @@ if level==1
     Instruction{20}='';
     imgProbe4=importdata('ProbeSZ4.png');
     imageProbe4=Screen('MakeTexture',wPtr,imgProbe4);
-    Instruction{21}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many cents you can win on that trial.';
-    imgReward=importdata('Rewardcue.png');
-    imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{22} = 'After the reward, the trial begins.';
-    Instruction{23} = 'After every trial you will see if you won the money or not.'
-    Instruction{24} = 'Is everything clear?\n\n It is very important that you understand this part well and we realize that it might be confusing in the beginning.\n Please contact the researchers, they will start the practice when all questions are addressed..';
+    Instruction{21} = 'Is everything clear?\n\n It is very important that you understand this part well and we realize that it might be confusing in the beginning.\n Please contact the researchers, they will start the practice when all questions are addressed..';
     
 elseif level==2
     
     Instruction{1} = 'You finished the practice.\n\n You may now proceed with the actual task.';
     Instruction{2}='During the actual memory task, you will only see where you clicked on the color wheel, you will not see the correct response.';
     Instruction{3}=sprintf('We split the task in 2 blocks. \n\n After every block you can take a break or continue with the task.');
-    Instruction{4}='Good luck with the memory task!';
+    Instruction{4}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many cents you can win on that trial.';
+    imgReward=importdata('Rewardcue.png');
+    imageReward=Screen('MakeTexture',wPtr,imgReward);
+    Instruction{5} = 'After the reward, the trial begins.';
+    Instruction{6} = 'After every trial you will see if you won the money or not.'
+    Instruction{7}='Good luck with the memory task!';
     
 elseif level==3
-    Instruction{1}=double(sprintf('This is the end of the colorwheel memory task!\n Your total reward is €%.2f.\n\n Please contact the researcher.', bonus));
+    Instruction{1}=double(sprintf('This is the end of the colorwheel memory task!\n Your total reward is €%.2f.\n\n Please contact the researcher.', bonus/1000));
 
 end %level
 
 counter=1;
 
 for i=1:100 
-           RestrictKeysForKbCheck([37,39,40,38,32,97,98])
+           RestrictKeysForKbCheck([37,39,40,38,32,97,98]);
     if i==1
         back=0;
     end
@@ -90,21 +90,19 @@ for i=1:100
         % Exceptions for figures;
         switch counter
             case 5
-                Screen('DrawTexture', wPtr, imageEnc)
+                Screen('DrawTexture', wPtr, imageEnc);
             case 8
-                Screen('DrawTexture', wPtr, imageIgnore)
+                Screen('DrawTexture', wPtr, imageIgnore);
             case 10
-                Screen('DrawTexture', wPtr, imageUpdate)
+                Screen('DrawTexture', wPtr, imageUpdate);
             case 12
-                Screen('DrawTexture', wPtr, imageProbe)
+                Screen('DrawTexture', wPtr, imageProbe);
             case 17
-                Screen('DrawTexture', wPtr, imageEnc4)
+                Screen('DrawTexture', wPtr, imageEnc4);
             case 18
-                Screen('DrawTexture', wPtr, imageUpdate4)
+                Screen('DrawTexture', wPtr, imageUpdate4);
             case 20
-                Screen('DrawTexture',wPtr,imageProbe4)
-            case 21
-                Screen('DrawTexture',wPtr,imageReward)
+                Screen('DrawTexture',wPtr,imageProbe4);
         end
         if counter==12
             DrawFormattedText(wPtr,Instruction{counter},'center',pms.yCenter-90,pms.textColor,pms.wrapAt,[],[],pms.spacing);
@@ -113,7 +111,10 @@ for i=1:100
         end
     end %level
     
-    if level==2 || level==3 
+    if level==2 && counter==4
+        Screen('DrawTexture',wPtr,imageReward);
+        DrawFormattedText(wPtr,Instruction{counter},'center',pms.yCenter-90,pms.textColor,pms.wrapAt,[],[],pms.spacing);
+    elseif level==2 || level==3 
         DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
     end
     
@@ -122,16 +123,16 @@ for i=1:100
     if level==1 && counter==length(Instruction)
         GetClicks();
         Screen('flip',wPtr);
-        WaitSecs(2)
+        WaitSecs(2);
         break
     elseif level==2 && counter==length(Instruction)
         KbWait();
         Screen('flip',wPtr);
-        WaitSecs(1)
-        break
+        WaitSecs(1);
+        break;
     elseif counter==length(Instruction)
         KbWait();
-        break
+        break;
     else 
         KbWait();  
     end
@@ -151,7 +152,7 @@ for i=1:100
         end %level
     end %while responded==0
 end 
-RestrictKeysForKbCheck([])
+RestrictKeysForKbCheck([]);
 
 end 
 

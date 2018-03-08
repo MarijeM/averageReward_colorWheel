@@ -32,33 +32,10 @@ function [data2, trial, T, bonus] = BeautifulColorwheel(varargin)
 %   showTrial
 
 try
-    switch nargin
-        case 0
-    %% Provides subject number and practice status as keyboard input, names of the files and which manipulation should be used. Go into this function to adapt log-file name.
-    [subNo,dataFilename,dataFilenamePrelim,practice,manipulation,session]=getInfo;
-        case 3
-            subNo               = varargin{1};
-            practice            = varargin{2};
-            pms                 = varargin{3};
-    [subNo,dataFilename,dataFilenamePrelim,practice,manipulation]=getInfo(subNo,practice);            
-        case 4
-            subNo               = varargin{1};
-            practice            = varargin{2};
-            pms                 = varargin{3};
-            session             = varargin{4};
-            [subNo,dataFilename,dataFilenamePrelim,practice,manipulation,session]=getInfo(subNo,practice,session);
-       
-        case 6
-            subNo               = varargin{1};
-            practice            = varargin{2};
-            pms                 = varargin{3};      
-            manipulation        = 1;
-            pms.choiceSZ        = varargin{4};
-            pms.choiceCondition = varargin{5};
-            pms.bonus           = varargin{6};
-            dataFilename        = sprintf('ColorFun_s%d_Redo.mat',subNo);
-            dataFilenamePrelim  = sprintf('CF_s%d_Redo_pre.mat',subNo);
-    end
+    subNo               = varargin{1};
+    practice            = varargin{2};
+    pms                 = varargin{3};
+    [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);            
 
     %% set experiment parameters
     pms.numTrials           = 64; % adaptable; important to be dividable by 2 (conditions) and multiple of 4 (set size)
@@ -84,7 +61,6 @@ try
     pms.textStyle           = 1; 
     pms.ovalColor           = [0 0 0];
     pms.subNo               = subNo;
-    pms.session             = session;
     pms.matlabVersion       = 'R2013a';
     % timings
     pms.maxRT               = 4; % max RT
@@ -103,6 +79,7 @@ try
     pms.delay2DurationUpd   = 4.5;
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 0.7;
+    pms.responseDuration    = 0.4; 
     pms.jitter              = 0;
     pms.iti                 = 0.1;
     pms.rewardduration      = 1.0;
@@ -160,7 +137,6 @@ try
     dataHeader.subjectID        = subNo;
     dataHeader.dataName         = dataFilename;
     dataHeader.logdir           = cd; %adapt logdir (MF: e.g.: fullfile(cd, 'log'))
-    dataHeader.manipulation     = manipulation;
     
     % initialize data set
     data2.setsize               = []; %trial(:,:).setSize;
@@ -193,11 +169,6 @@ try
     % show instructions
     if     practice==1
            getInstructions(1,pms,wPtr);
-    elseif practice==0
-           getInstructions(2,pms,wPtr);
-    elseif practice==2
-           getInstructions(5,pms,wPtr);
-
     end
 
     %% Experiment starts with trials
@@ -215,34 +186,26 @@ try
     %% Save the data
     save(fullfile(pms.subdirICW,dataFilename));
     %% Close-out tasks
+    Screen('TextSize',wPtr,pms.textSize);
+    Screen('TextStyle',wPtr,pms.textStyle);
+    Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(4,pms,wPtr,bonus)   
+       getInstructions(3,pms,wPtr,bonus)   
     elseif practice==1
-       getInstructions(3,pms,wPtr)   
-    elseif practice==2
-        getInstructions(5,pms,wPtr)
+       getInstructions(2,pms,wPtr)   
     end
-   if practice==0
     clear Screen
     Screen('CloseAll');
     ShowCursor; % display mouse cursor again
     ListenChar(0); % allow keystrokes to Matlab
     Priority(0); % return Matlab's priority level to normal
     Screen('Preference','TextAlphaBlending',0);
-   end
 catch ME
     disp(getReport(ME));
     keyboard
     
     % save data
     save(fullfile(pms.subdirICW,dataFilename));
-    
-    % close-out tasks
-    Screen('CloseAll'); % close screen
-    ShowCursor; % display mouse cursor again
-    ListenChar(0); % allow keystrokes to Matlab
-    Priority(0); % return Matlab's priority level to normal
-    Screen('Preference','TextAlphaBlending',0);
     
 end %try-catch loop
 end % main function

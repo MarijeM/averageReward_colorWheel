@@ -12,8 +12,6 @@ function [data,T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,r
 % dataFilenamePrelim: name for log file between blogs provided by getInfo.m
 
 
-cd IncentivizedColorwheelTask; %back to incentivized colorwheel directory
-
 %trials for practice session
 if practice==1
     pms.numTrials   = pms.numTrialsPr;
@@ -27,9 +25,8 @@ Screen('TextFont',wPtr,'Courier New');
 EncSymbol       = 'M';
 UpdSymbol       = 'U';
 IgnSymbol       = 'I';
-% rewardLow       = 0.01;
-% rewardHigh      = 0.10;
-RewardText      = double(sprintf('for %f ct', reward));
+reward          = 1;
+RewardText      = double(sprintf('%d ct', reward));
 
 M_color         = [0 0 0];
 U_color         = [0 0 0];
@@ -51,6 +48,7 @@ for p=1:pms.numBlocks
     for g=1:pms.numTrials
         for phase = 1:7 
            if phase==1
+               if practice==0
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
                 DrawFormattedText(wPtr, RewardText, 'center', 'center', Reward_color);  
@@ -60,7 +58,7 @@ for p=1:pms.numBlocks
                 WaitSecs(pms.rewardduration)      
                 Screen('Flip',wPtr);
                 WaitSecs(pms.rewarddelay);         
-        
+               end 
             elseif phase==2    % encoding phase
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
@@ -309,14 +307,14 @@ for p=1:pms.numBlocks
                 data(g,p).reward=trial(g,p).reward;        
                 switch trial(g,p).type %if they performed better or equal to their average performance of session 1, they receive a bonus, else, they do not. 
                     case 0                                         %for update trials
-                        if respDif <= medDev(1,trial(g,p).setSize) %if they did better than their average
+                        if respDif <= pms.minAcc %if they did better than their average
                             data(g,p).bonus=trial(g,p).reward;
                             bonus = bonus + trial(g,p).reward;
                         else                                       %if they did not better than their average
                             data(g,p).bonus=0;
                         end 
                     case 2
-                        if respDif <= medDev(2,trial(g,p).setSize) 
+                        if respDif <= pms.minAcc
                             data(g,p).bonus=trial(g,p).reward;
                             bonus = bonus + trial(g,p).reward;
                         else 
@@ -334,16 +332,19 @@ for p=1:pms.numBlocks
                     data(g,p).interColLoc4=trial(g,p).interColLoc4;
                 end
             elseif phase==7 % feedback about their reward
-               Screen('Textsize', wPtr, 28);
-               Screen('Textfont', wPtr, 'Times New Roman');
-               if respDif <= pms.minAcc % if they were accurate enough
-                   DrawFormattedText(wPtr,double(sprintf('You win %f ct',reward)),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
-                   Screen('Flip',wPtr);  
-                   WaitSecs(pms.bonusduration);
-               else 
-                   DrawFormattedText(wPtr,'You win nothing', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
-                   Screen('Flip',wPtr);  
-                   WaitSecs(pms.bonusduration);
+               Screen('Flip',wPtr);  
+               if practice==0
+                   Screen('Textsize', wPtr, 28);
+                   Screen('Textfont', wPtr, 'Times New Roman');
+                   if respDif <= pms.minAcc % if they were accurate enough
+                       DrawFormattedText(wPtr,double(sprintf('You win %d ct',reward)),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       Screen('Flip',wPtr);  
+                       WaitSecs(pms.bonusduration);
+                   else 
+                       DrawFormattedText(wPtr,'You win nothing', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       Screen('Flip',wPtr);  
+                       WaitSecs(pms.bonusduration);
+                   end 
                end 
             end %if phase ==1
         end % for phase 1:6

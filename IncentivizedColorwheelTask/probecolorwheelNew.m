@@ -154,7 +154,7 @@ while GetSecs-probeOnset<pms.maxRT %while they did not make a response during th
         end  
         break
     end %if mousePress
-    WaitSecs(0.1);
+    WaitSecs(pms.responseDuration);
 end %while (mousePress==0...)
 
 HideCursor();
