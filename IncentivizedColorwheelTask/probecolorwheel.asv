@@ -37,6 +37,9 @@ function [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheel(pms
 %center coordinates
 centerX         = rect(3)/2;
 centerY         = rect(4)/2;
+%show mouse and place it in the center of the screen
+ShowCursor('Arrow');
+SetMouse(centerX,centerY,wPtr, [], 1);
 
 %feedback messages
 messageLate     = 'Please respond faster!';
@@ -70,7 +73,7 @@ colorangle      = 360/length(colors);
 %and we load it.
 switch nargin
     case 11
-        load starts;
+        load starts
         wheelStart  = starts(g,p);
     case 12
         trial       = varargin{1};
@@ -102,10 +105,10 @@ end
 %ring created with inside circle
 Screen('FillOval',wPtr,insideRectColor,insideRect);
 %all rectangles
-Screen('FrameRect',wPtr,probeColor,allRects);
+Screen('FrameRect',wPtr,probeColor,allRects)
 %probed rectangle 
-Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
-drawFixationCross(wPtr,rect);
+Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness)
+drawFixationCross(wPtr,rect)
 
 
 probeOnset = Screen('Flip',wPtr);
@@ -123,11 +126,9 @@ while GetSecs-probeOnset<pms.maxRT %while they did not make a response during th
     [~,~,buttons]   = GetMouse(wPtr);
     mousePress      = any(buttons);%response was made
     if mousePress==1;
-        rtDecision          = GetSecs-probeOnset; 
-        %show mouse and place it in the center of the screen
-        ShowCursor('Arrow');
-        SetMouse(centerX,centerY,wPtr);
-        while mousePress==1 && GetSecs-rtDecision<pms.maxMotorTime;
+        rtDecision      = GetSecs-probeOnset; 
+        SetMouse(centerX,centerY,wPtr, [], 0); %mouse can move freely 
+        while mousePress==1
             [x,y,buttons]   = GetMouse(wPtr);
             if buttons(1)==0 %mouse was released
                 respXAll    = [respXAll;x];
@@ -147,18 +148,20 @@ while GetSecs-probeOnset<pms.maxRT %while they did not make a response during th
                 if ~isnan('tau')
                     if radius>abs(insideRect(1)-insideRect(3))/2
                         Screen('FillArc',wPtr,lineColor,outsideRect,tau-lineThickness/2,lineThickness/2); %response indication arc
-                        Screen('FillOval',wPtr,insideRectColor,insideRect);
-                        Screen('FrameRect',wPtr,probeColor,allRects);
-                        Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
-                        drawFixationCross(wPtr,rect);
-                        Screen('Flip',wPtr);
+                        Screen('FillOval',wPtr,insideRectColor,insideRect)
+                        Screen('FrameRect',wPtr,probeColor,allRects)
+                        Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness)
+                        drawFixationCross(wPtr,rect)
+                        Screen('Flip',wPtr)
                     end
                 end  
                 break; 
             end
         end %while mousePress==1
-        break; 
     end %if mousepress==1
+    if ~empty(rtDecision);
+        break;
+    end 
 %     WaitSecs(0.1);
 end %while (mousePress==0...)
 
@@ -177,8 +180,8 @@ if exist('respX','var')
         Screen('FillArc',wPtr,lineColor,outsideRect,tau-lineThickness/2,lineThickness/2);
         Screen('FillArc',wPtr,lineColor,outsideRect,thetaCorrect-lineThickness/2,lineThickness/2);
         Screen('FillOval',wPtr,insideRectColor,insideRect);
-        Screen('FrameRect',wPtr,probeColor,allRects);
-        Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
+        Screen('FrameRect',wPtr,probeColor,allRects)
+        Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness)
         
         %feedback if they are +-10 degrees from target color
         if abs(respDif) <=10
@@ -187,9 +190,9 @@ if exist('respX','var')
             DrawFormattedText(wPtr, message, 'center', 'center', messageColor);
         else
             %otherwise no feedback
-            drawFixationCross(wPtr,rect);
+            drawFixationCross(wPtr,rect)
         end
-        Screen('Flip',wPtr);
+        Screen('Flip',wPtr)
         WaitSecs(pms.feedbackDurationPr);
     end %if practice=1
     %if they clicked in the inner circle or on the fixation cross they receive feedback to click on the
@@ -201,7 +204,7 @@ if exist('respX','var')
         Screen('FillOval',wPtr,insideRectColor,insideRect);
         Screen('TextSize',wPtr,15);
         DrawFormattedText(wPtr, messageWrong, 'center', 'center', messageColor);
-        Screen('Flip',wPtr);
+        Screen('Flip',wPtr)
         WaitSecs(pms.feedbackDuration);
     end
     
@@ -219,7 +222,7 @@ elseif ~exist('respX','var')
     Screen('FillOval',wPtr,insideRectColor,insideRect);
     Screen('TextSize',wPtr,15);
     DrawFormattedText(wPtr, messageLate, 'center', 'center', messageColor);
-    Screen('Flip',wPtr);
+    Screen('Flip',wPtr)
     WaitSecs(pms.feedbackDuration);  
 end
 end

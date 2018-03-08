@@ -61,9 +61,10 @@ try
     pms.textStyle           = 1; 
     pms.ovalColor           = [0 0 0];
     pms.subNo               = subNo;
-    pms.matlabVersion       = 'R2013a';
+    pms.matlabVersion       = 'R2016a';
     % timings
     pms.maxRT               = 4; % max RT
+    pms.maxMotorTime        = 1; %maximum time from mouse press to mouse release (time from decision to response)
     pms.encDuration         = 0.5;    %2 seconds of encoding
     pms.encDurationIgn      = 0.5;
     pms.encDurationUpd      = 0.5;
@@ -111,8 +112,8 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-    [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
-    
+%     [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+    [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
     pms.xCenter=rect(3)/2;
     pms.yCenter=rect(4)/2;     
     Screen('BlendFunction',wPtr,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
