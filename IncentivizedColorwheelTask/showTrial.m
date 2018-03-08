@@ -267,9 +267,9 @@ for p=1:pms.numBlocks
                 end %if practice==1
                 
                 if practice==1 
-                    [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheelNew(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
+                    [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
                 elseif practice==0
-                    [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheelNew(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
+                    [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
                 end
                 
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);

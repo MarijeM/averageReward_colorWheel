@@ -79,7 +79,7 @@ try
     pms.delay2DurationUpd   = 4.5;
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 0.7;
-    pms.responseDuration    = 0.4; 
+    pms.responseDuration    = 0.4;
     pms.jitter              = 0;
     pms.iti                 = 0.1;
     pms.rewardduration      = 1.0;

@@ -1,4 +1,4 @@
-function [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheelNew(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
+function [respX,respY,rt,colortheta,respXAll,respYAll,rtAll]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
