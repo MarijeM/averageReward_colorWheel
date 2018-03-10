@@ -78,8 +78,8 @@ try
     pms.delay2DurationUpdPr = 4.5;
     pms.delay2DurationIgn   = 2;
     pms.delay2DurationUpd   = 4.5;
-    pms.feedbackDuration    = 0.5; %feedback during colorwheel
-    pms.feedbackDurationPr  = 0.7;
+    pms.feedbackDuration    = 0.7; %feedback during colorwheel
+    pms.feedbackDurationPr  = 1;
     pms.responseDuration    = 0.4;
     pms.jitter              = 0;
     pms.iti                 = 0.1;
@@ -161,15 +161,19 @@ try
     Screen('TextSize',wPtr,pms.textSize);
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
-  %% Color vision task
-%   if practice==1
-%   colorTestData = colorVision(pms,wPtr,rect); % colorTestData = output colorVisiontest
-%   end
+
     %% Experiment starts with instructions
     %%%%%%% get instructions
     % show instructions
-    if     practice==1
-           getInstructions(1,pms,wPtr);
+    if practice==1
+       hooray = 0; 
+       while hooray==0
+        [hooray]=colorVision(pms,wPtr,rect);
+       end
+       Screen('TextSize',wPtr,pms.textSize);
+       Screen('TextStyle',wPtr,pms.textStyle);
+       Screen('TextFont',wPtr,pms.textFont);
+       getInstructions(1,pms,wPtr);
     end
 
     %% Experiment starts with trials
@@ -200,7 +204,7 @@ try
     ShowCursor; % display mouse cursor again
     ListenChar(0); % allow keystrokes to Matlab
     Priority(0); % return Matlab's priority level to normal
-    Screen('Preference','TextAlphaBlending',0);
+    Screen('Preference','TextAlphaBlending',0); 
 catch ME
     disp(getReport(ME));
     keyboard

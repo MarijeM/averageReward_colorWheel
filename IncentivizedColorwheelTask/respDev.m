@@ -78,5 +78,6 @@ if lureDif>180
    lureDif=mod(360,lureDif);
 end
 end
- 
+
+
 end %function

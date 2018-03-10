@@ -1,4 +1,4 @@
-function [respX,respY,rtDecision, rtResponse,colortheta]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
+function [respX,respY,rtDecision, rtResponse,colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
@@ -115,6 +115,7 @@ probeOnset = Screen('Flip',wPtr);
 
 % mousePress=0; %indication of no response
 while GetSecs-probeOnset<pms.maxRT %while they did not make a response during the probe response duration
+    wheelclick = 0;
     [~,~,buttons]   = GetMouse(wPtr);
     mousePress      = any(buttons);%response was made
     if mousePress==1;
@@ -130,8 +131,15 @@ while GetSecs-probeOnset<pms.maxRT %while they did not make a response during th
                 respY       = y;
                 rtResponse  = GetSecs-probeOnset;
                 
-                [respDif,tau,thetaCorrect,radius] = respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %90 for red responses around 0
-
+                [respDif,tau,thetaCorrect,radius] = respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); 
+                %determine if participant clicked on the wheel, and not
+                %inside or outside of the wheel
+                if radius>abs(insideRect(1)-insideRect(3))/2 || radius<abs(outsideRect(1)-outsideRect(3))/2
+                    wheelclick = 1;
+                else
+                    wheelclick = 0; 
+                end
+                
                 for ind=1:length(colors)
                     Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
                 end

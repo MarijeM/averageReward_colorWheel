@@ -267,13 +267,14 @@ for p=1:pms.numBlocks
                 end %if practice==1
                 
                 if practice==1 
-                    [respX,respY,rtDecision, rtResponse,colortheta]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
+                    [respX,respY,rtDecision, rtResponse,colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
                 elseif practice==0
-                    [respX,respY,rtDecision, rtResponse,colortheta]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
+                    [respX,respY,rtDecision, rtResponse,colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
                 end
                 
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                 save(fullfile(pms.subdirICW,dataFilenamePrelim));
+                
                 
                 %Break after every block
                 if practice==0
@@ -298,6 +299,7 @@ for p=1:pms.numBlocks
                 data(g,p).radius=radius;
                 data(g,p).thetaCorrect=thetaCorrect;
                 data(g,p).tau=tau;
+                data(g,p).wheelclick=wheelclick; %did they click on the wheel (1) or inside or outside of the wheel (0)?
                 data(g,p).rect=rect;
                 data(g,p).setsize = trial(g,p).setSize;
                 data(g,p).type=trial(g,p).type;
