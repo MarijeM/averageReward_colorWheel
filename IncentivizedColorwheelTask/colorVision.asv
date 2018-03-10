@@ -10,7 +10,7 @@ centerX=rect(3)/2;
 centerY=rect(4)/2;
 testOnset=GetSecs();
 wrptx=rect(3)/4;
-message='Welcome to our memory task!\n\n\n Before we start we need to check your color sensitivity. \n\n You will see a colored square in the middle of the screen.\n\n Find the corresponding color on the color wheel and click it!\n\n\n\n Responding works like this:\n\nFirst you determine the correct color.\n\nOnce you know where you want to click, you click on the mouse.\n\nThen you move the arrow to the color wheel as fast as possible and you click again once you reach the right color.\n\n\n\n Try to be as accurate as possible, but no need to take a lot of time to think!\n\n\n\n\nPress space to start.';
+message='Welcome to our memory task!\n\n\n Before we start we need to check your color sensitivity. \n\n You will see a colored square in the middle of the screen.\n\n Find the corresponding color on the color wheel and click it!\n\n\n\n Clicking on the color wheel works like this:\n\nFirst you determine the correct color.\n\nOnce you know where you want to click, you click on the mouse and you hold it.\n\nThen you move the arrow to the color wheel as fast as possible and release it once you reach the right color.\n\n\n\n Try to be as accurate as possible, but no need to take a lot of time to respond!\n\n\n\n\nPress space to start.';
 passingScore=15;
 
 DrawFormattedText(wPtr, message,'center','center',[],wrptx);

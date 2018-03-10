@@ -165,16 +165,16 @@ try
     %% Experiment starts with instructions
     %%%%%%% get instructions
     % show instructions
-%     if practice==1
-%        hooray = 0; 
-%        while hooray==0
-%         [hooray]=colorVision(pms,wPtr,rect);
-%        end
-%        Screen('TextSize',wPtr,pms.textSize);
-%        Screen('TextStyle',wPtr,pms.textStyle);
-%        Screen('TextFont',wPtr,pms.textFont);
-%        getInstructions(1,pms,wPtr);
-%     end
+    if practice==1
+       hooray = 0; 
+       while hooray==0
+        [hooray]=colorVision(pms,wPtr,rect);
+       end
+       Screen('TextSize',wPtr,pms.textSize);
+       Screen('TextStyle',wPtr,pms.textStyle);
+       Screen('TextFont',wPtr,pms.textFont);
+       getInstructions(1,pms,wPtr);
+    end
 
     %% Experiment starts with trials
     % stimOnset = Screen(wPtr,'Flip'); CHECK onsets
