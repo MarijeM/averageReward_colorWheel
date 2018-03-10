@@ -113,19 +113,27 @@ probeOnset = Screen('Flip',wPtr);
 %                           imwrite(imageArray,sprintf('Probe%d.png',g,p),'png');
 
 
+ShowCursor('Arrow');
+done = 0;
 % mousePress=0; %indication of no response
-while GetSecs-probeOnset<pms.maxRT %while they did not make a response during the probe response duration
+while done==0 && GetSecs-probeOnset<pms.maxRT %while they did not make a response during the probe response duration
+    SetMouse(centerX,centerY,wPtr);
     wheelclick = 0;
     [~,~,buttons]   = GetMouse(wPtr);
     mousePress      = any(buttons);%response was made
-    if mousePress==1;
+    if mousePress
+        tClick       = GetSecs;
+    else 
+        tClick       = 0;
+    end
+    while mousePress==1 && GetSecs-tClick<pms.maxMotorTime;
+        done                = 1;
         tDecision           = GetSecs; 
-        %show mouse and place it in the center of the screen
-        ShowCursor('Arrow');
-        SetMouse(centerX,centerY,wPtr);
-        while mousePress==1 && GetSecs-tDecision<pms.maxMotorTime;
+        [~,~,buttons]       = GetMouse(wPtr);
+        while buttons(1)==0 && GetSecs-tDecision<pms.maxMotorTime;
+            mousePress      = 0;
             [x,y,buttons]   = GetMouse(wPtr);
-            if buttons(1)==0 %mouse was released
+            if buttons(1)==1 %mouse was clicked again
                 rtDecision  = tDecision-probeOnset;
                 respX       = x;
                 respY       = y;
@@ -156,12 +164,9 @@ while GetSecs-probeOnset<pms.maxRT %while they did not make a response during th
                         Screen('Flip',wPtr);
                     end
                 end  
-                break; 
-            end
-        end %while mousePress==1
-        break; 
-    end %if mousepress==1
-%     WaitSecs(0.1);
+            end 
+        end %while buttons(1)==0 & within timelimit      
+    end %while mousepress==1
 end %while within maxRT
 
 HideCursor();
