@@ -232,7 +232,7 @@ if meanScore>passingScore
   WaitSecs(5);
   hooray = 0;
 elseif meanScore<=passingScore
-  DrawFormattedText(wPtr, 'Congratulations! You passed the color acuity test. \n You can continue with the rest of the experiment.','center','center',[],wrptx);
+  DrawFormattedText(wPtr, 'Congratulations! You passed the color acuity test. \n You can continue with the rest of the experiment by pressing the right arrow.','center','center',[],wrptx);
   Screen('Flip',wPtr);
   KbWait();
   hooray = 1;

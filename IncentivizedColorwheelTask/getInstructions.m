@@ -60,7 +60,7 @@ if level==1
     
 elseif level==2
     
-    Instruction{1} = 'You finished the practice.\n\n You may now proceed with the actual task.';
+    Instruction{1} = 'You finished the practice.\n\n You may now proceed with the actual task by pressing the right arrow.';
     Instruction{2}='During the actual memory task, you will only see where you clicked on the color wheel, you will not see the correct response.';
     Instruction{3}=sprintf('We split the task in %d blocks. \n\n After every block you can take a break or continue with the task.',pms.numBlocks*2);
     Instruction{4}='Every blocks lasts 7 minutes, and you will complete as many trials as you can within those 7 minutes.';
