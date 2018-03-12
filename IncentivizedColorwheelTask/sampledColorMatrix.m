@@ -41,10 +41,9 @@ sampledColors=colormatrix(indices,:);
 numPies=12;
 stepS=floor(length(colormatrix)/numPies);
 middle=0:stepS:512;
-sampledColors=zeros(length(middle)-1,3); %MF: comment: why 3? :) RGB?
+sampledColors=zeros(length(middle)-1,3); 
 maxPie=20; %the degree to which it is allowed to vary; 30 would be whole pie, here exclude 5 degrees border right?
 
-% MF: comment more from this point until end of function
 for x=1:length(middle)-1
     if x==1
         colormatrix=[colormatrix(1:maxPie/2,:);colormatrix((length(colormatrix)-maxPie/2):end,:)];
@@ -55,17 +54,6 @@ for x=1:length(middle)-1
     end 
 end
 
-%%check to see if colors are sampled from correct pies.
-
-% for N=1:length(colormatrix)
-%     for Y=1:length(sampledColors)
-%    if sampledColors(Y,:)==colormatrix(N,:)
-%        N
-%    end
-%     end
-% end
-
-% MF: what do you do here? Hard to get your head around :) comment
 pie.color=struct;
 K=round(stepS/2):stepS:pms.numWheelColors;
 pie(1).color=[colormatrix((pms.numWheelColors-stepS/2):pms.numWheelColors,:);colormatrix(1:stepS/2,:)];
