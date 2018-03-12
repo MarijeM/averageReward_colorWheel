@@ -64,7 +64,6 @@ for i=1:pms.numBlocks
         trial(t,i).setSize=setsizevectorFin(t,i); 
     end                                  
 end
-
 %% 5) add locations and colors to trial
 for v=1:pms.numBlocks
     for w=1:pms.numTrials
@@ -85,4 +84,15 @@ for v=1:pms.numBlocks
         end
     end
 end
+%% 6) add rewards to trial
+
+% add empty .reward to trial
+for i=1:pms.numBlocksPr
+    for j=1:pms.numTrialsPr
+        trial(j,i).reward = [];
+    end
+end 
+
+
+
 end
