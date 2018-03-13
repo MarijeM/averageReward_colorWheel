@@ -84,8 +84,8 @@ try
     pms.jitter              = 0;
     pms.iti                 = 0.1;
     pms.rewardduration      = 1.0;
-    pms.rewarddelay         = 0.8;
-    pms.bonusduration       = 1.5; %duration that the total reward up to that point is shown
+    pms.rewarddelay         = 0.5;
+    pms.bonusduration       = 1.0; %duration that the total reward up to that point is shown
     pms.minAcc              = 10; % maximum deviance to win reward
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;

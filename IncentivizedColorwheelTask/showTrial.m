@@ -275,6 +275,23 @@ for p=1:pms.numBlocks
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                 save(fullfile(pms.subdirICW,dataFilenamePrelim));
                 
+            elseif phase==7 % feedback about their reward
+               Screen('Flip',wPtr);  
+               if practice==0
+                   Screen('Textsize', wPtr, 28);
+                   Screen('Textfont', wPtr, 'Times New Roman');
+                   if respDif <= pms.minAcc % if they were accurate enough
+                       DrawFormattedText(wPtr,double(sprintf('You win %d ct',reward)),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       Screen('Flip',wPtr);  
+                       WaitSecs(pms.bonusduration);
+                   else 
+                       DrawFormattedText(wPtr,'You win nothing', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       Screen('Flip',wPtr);  
+                       WaitSecs(pms.bonusduration);
+                   end 
+               end 
+                
+                
                 
                 %Break after every block
                 if practice==0
@@ -332,21 +349,7 @@ for p=1:pms.numBlocks
                     data(g,p).interColLoc3=trial(g,p).interColLoc3;
                     data(g,p).interColLoc4=trial(g,p).interColLoc4;
                 end
-            elseif phase==7 % feedback about their reward
-               Screen('Flip',wPtr);  
-               if practice==0
-                   Screen('Textsize', wPtr, 28);
-                   Screen('Textfont', wPtr, 'Times New Roman');
-                   if respDif <= pms.minAcc % if they were accurate enough
-                       DrawFormattedText(wPtr,double(sprintf('You win %d ct',reward)),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
-                       Screen('Flip',wPtr);  
-                       WaitSecs(pms.bonusduration);
-                   else 
-                       DrawFormattedText(wPtr,'You win nothing', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
-                       Screen('Flip',wPtr);  
-                       WaitSecs(pms.bonusduration);
-                   end 
-               end 
+
             end %if phase ==1
         end % for phase 1:6
     end% for p=1:numBlocks

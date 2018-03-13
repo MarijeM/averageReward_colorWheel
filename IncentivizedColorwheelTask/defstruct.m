@@ -17,7 +17,12 @@ function [trial]=defstruct(pms,rect)
 
 % matrix created in [trial]=sampleStimuli and saved so that all participants
 % see same stimuli
-load trial.mat
+ 
+filename = sprintf('trialsPerBlock_%d.mat', pms.maxSetsize);        
+load filename; 
+
+%randomize block order, where the same block types (neutral, majority
+%ignore, majority update) can never follow each other directly. 
 
 % the square locations are created as fraction of rect (screen size), 
 % so that screen size differences are irrelevant. 
@@ -108,12 +113,6 @@ for y=1:size(trial,2) %numblocks
 
     end %for x=1:size(trial,1)
 end %fpr y=1:size(trial,2)
-
-%we can save this trial if we want to have the exact same color with the
-%pie for all participants, as long as we use the same monitor for all of
-%them.
- %save('trialFin','trial')
- 
  
  %% Nieuwe manier trial:
  trial1=trial(1:32,:);
@@ -179,60 +178,6 @@ RandVector=randperm(rows);
 %maak trial weer compleet
 trial=[trial1,trial2]; 
 
-
- %% add .reward to trial struct by replicating trial; add low reward to original and high reward to replica
-% add empty .reward to trial and replicate trial
-%for i=1:pms.numBlocks
- %   for j=1:pms.numTrials
-  %      trial(j,i).reward=[];
-   % end
-%end 
-
-%trial2=trial;
-
-% add low reward to original trial struct
-%lowReward=0.01 ;
-%for a=1:pms.numBlocks
- %   for b=1:pms.numTrials
-  %      trial(b,a).reward=lowReward ;
-   % end
-%end
-
-% add high reward to trial2
- %highReward=.10 ;
- %for a=1:pms.numBlocks
-  %   for b=1:pms.numTrials
-   %      trial2(b,a).reward=highReward ;
-    % end
- %end
-
- % add fields of trial2 beneath fields of trial
- %rowTrial=length(trial) ;         % rowTrial is lowest row of trial. beneath this row, insert fields of trial2.
-%lastRowNewStruct=rowTrial*2 ;    % new struct will be twice as big as trial, thus rowTrial*2.
-
-%for c=rowTrial+1 : lastRowNewStruct
- %   for d=1:pms.numBlocks 
-  %      trial(c,d)=trial2((c-rowTrial), d) ; % c-rowTrial because trial2 has row coordinates range of 1 to rowTrial.
-   % end                                        % 1, because t = rowTrial+1. (rowTrial+1)-rowTrial = 1
-%end
-
-%replicate trial so that you can randomize trial struct
-%trial2=trial; 
-
-% randomize trial struct
-%sizetrial2=size(trial2);
-%rows=sizetrial2(1); 
-%RandVector=randperm(rows);
-
- %   for i = 1:rows
-  %      h=RandVector(i);
-   %     trial(i,1)=trial2(h,1);
-    %end
-
-% consider preallocating for speed. dont know how to preallocate struct for
-% certain size
- 
-%trial=reshape(trial,[pms.numTrials,2]) ;    % reshape doubled numTrails X numBlock trial into numTrials X 2*numBlock
 pms.numBlocks=2;                     % 2 blocks of 64 after reshaping
 
 end %function
