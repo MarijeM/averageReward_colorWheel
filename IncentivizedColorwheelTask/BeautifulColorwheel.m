@@ -65,6 +65,8 @@ try
     % timings
     pms.maxRT               = 4; % max RT
     pms.maxMotorTime        = 0.8; %maximum time from mouse press to mouse release (time from decision to response)
+    pms.cueduration         = 1.0;
+    pms.cuedelay            = 0.5;
     pms.encDuration         = 0.5;    %2 seconds of encoding
     pms.encDurationIgn      = 0.5;
     pms.encDurationUpd      = 0.5;
