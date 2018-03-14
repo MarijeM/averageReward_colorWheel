@@ -18,15 +18,15 @@ function [trials]=defstruct(pms,rect)
 % matrix created in [trials]=sampleStimuli and saved so that all participants
 % see same stimuli
  
-filename = sprintf('trialsPerBlock_%d.mat', pms.maxSetsize);        
-load(filename); 
+filename = sprintf('trialssPerBlock_%d.mat', pms.maxSetsize);        
+load filename; 
 trial = [];
 
 %loop over block and randomize block order, where the same block types (neutral, majority
 %ignore, majority update) can never follow each other directly. 
 dif = 1;
 while dif==1
-    blockOrder = [randsample(pms.numBlocks, pms.numBlocks)]';
+    blockOrder = randsample(pms.numBlocks, pms.numBlocks);
     if any(find(abs(diff(blockOrder))==3))
         dif = 1;
     else
@@ -127,10 +127,8 @@ for b = blockOrder
     %% randomize trials in this block
     trialRandomizing = trials;
     rows = size(trials,1); 
-    r = 1;
     for i = randperm(rows)
-        trials(r,1) = trialRandomizing(i,1);
-        r = r+1;
+        trials(i,1) = trialRandomizing(i,1);
     end
     
     %% assign reward (gaussian random walk)

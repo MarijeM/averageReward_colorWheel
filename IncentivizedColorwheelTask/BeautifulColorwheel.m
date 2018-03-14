@@ -38,8 +38,8 @@ try
     [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);            
 
     %% set experiment parameters
-    pms.numTrials           = 64; % adaptable; important to be dividable by 2 (conditions) and multiple of 4 (set size)
-    pms.numBlocks           = 1;  % 1/2 of blocks of incentivized version, because after reshaping you get 2 blocks of 64.
+    pms.numTrials           = 32; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
+    pms.numBlocks           = 6;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
     pms.numTrialsPr         = 16;  

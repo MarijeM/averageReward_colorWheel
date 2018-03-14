@@ -1,5 +1,5 @@
-function AssignFixedStimuli(numSetsize,trialsPerSZ,numCounter,pieColors,numBlocks)
-% AssignFixedStimuli(4,192,4,15,6)
+function AssignFixedStimuli(numSetsize,trialsPerSZ,numCounter,pieColors)
+% AssignFixedStimuli(4,192,4,15)
 % numSetsize: maximum numbers of squares/color to remember on a given trial
 % trialsPerSZ: how many trials per set size do you want to prespecify?
 % numCounter: how many observations per cell (i.e. how many observations
@@ -81,13 +81,13 @@ for n=1:numSetsize
     cond=repmat(conditions,trialsPerSZ/length(conditions),1);
 
     predefinedStimuli.setsize       = repmat(n,trialsPerSZ,1);
-    predefinedStimuli.condition     = cond;
-    predefinedStimuli.locations     = location;
+    predefinedStimuli.type          = cond;
+    predefinedStimuli.locNums       = location;
     predefinedStimuli.probelocation = probelocation;
-    predefinedStimuli.colors        = colors;
+    predefinedStimuli.cols          = colors;
     predefinedStimuli.probecolor    = probecolor;
     predefinedStimuli.wheelValues   = wheelValues;
-    predefinedStimuli.colorIndex    = colorIndex;
+    predefinedStimuli.colIndex    = colorIndex;
       
     fields = fieldnames(predefinedStimuli);
     for x = 1:size(predefinedStimuli.setsize ,1)
