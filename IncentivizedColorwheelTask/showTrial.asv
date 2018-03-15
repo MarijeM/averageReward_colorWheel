@@ -50,23 +50,12 @@ for p=1:pms.numBlocks
         for phase = 1:8
             if phase==1 % reward on offer
                 if practice==0
-                    Screen('Textsize', wPtr, 34);
-                    Screen('Textfont', wPtr, 'Times New Roman');
-                    DrawFormattedText(wPtr, RewardText, 'center', 'center');  
-                    Screen('Flip',wPtr);
-                    %imageArray=Screen('GetImage',wPtr);
-                    %imwrite(imageArray,sprintf('RewardcueL%d%d.png',g,p),'png');
-                    WaitSecs(pms.rewardduration);      
-                    Screen('Flip',wPtr);
-                    WaitSecs(pms.rewarddelay); 
-                end 
-            elseif phase==2; %cue update or ignore
                    Screen('Textsize', wPtr, 34);
                    Screen('Textfont', wPtr, 'Times New Roman');
                    if trial(g,p).cue==0
-                       cueText     = 'ignore';
+                       cueText     = ignore;
                    elseif trial(g,p).cue==2
-                       cueText     = 'update';
+                       cueText     = update;
                    end 
                    DrawFormattedText(wPtr, cueText, 'center', 'center', cue_color);  
                    Screen('Flip',wPtr);
@@ -75,6 +64,19 @@ for p=1:pms.numBlocks
                    WaitSecs(pms.cueduration); 
                    Screen('Flip',wPtr);
                    WaitSecs(pms.cuedelay); 
+                end 
+            elseif phase==2; %cue update or ignore
+               if practice==0;
+                Screen('Textsize', wPtr, 34);
+                Screen('Textfont', wPtr, 'Times New Roman');
+                DrawFormattedText(wPtr, RewardText, 'center', 'center');  
+                Screen('Flip',wPtr);
+                %imageArray=Screen('GetImage',wPtr);
+                %imwrite(imageArray,sprintf('RewardcueL%d%d.png',g,p),'png');
+                WaitSecs(pms.rewardduration);      
+                Screen('Flip',wPtr);
+                WaitSecs(pms.rewarddelay);         
+               end 
             elseif phase==3    % encoding phase
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
