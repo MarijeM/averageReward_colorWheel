@@ -1,5 +1,5 @@
 function AssignFixedStimuli(numSetsize,trialsPerSZ,numCounter,pieColors)
-% AssignFixedStimuli(4,192,4,15)
+% AssignFixedStimuli(4,112,4,15)
 % numSetsize: maximum numbers of squares/color to remember on a given trial
 % trialsPerSZ: how many trials per set size do you want to prespecify?
 % numCounter: how many observations per cell (i.e. how many observations
@@ -21,7 +21,7 @@ for n=1:numSetsize
     
     switch n
     case 1
-        location=repmat(1:4,4,12); location=location(:);
+        location=repmat(1:4,4,7); location=location(:);
     case 2
         location(1,:)=[locLeft(1),locRight(1)];
         location(2,:)=[location(1,2) location(1,1)];  
@@ -32,10 +32,12 @@ for n=1:numSetsize
         location(7,:)=[locLeft(2),locRight(2)];
         location(8,:)=[location(7,2) location(7,1)];  
         location = location(repmat(1:size(location,1),numCounter,1),:);
-        location = repmat(location,trialsPerSZ/size(location,1),1);      
+        location = repmat(location,ceil(trialsPerSZ/size(location,1)),1);      
+        location([trialsPerSZ+1:end],:) = [];    
     case 3
-        location = [1 2 3; 4 1 3; 3 2 4; 2 1 4; 1 4 2; 4 2 3; 3 4 1; 2 1 3; 1 4 3; 4 2 1; 3 1 2; 2 3 4; 1 3 2; 2 4 1; 3 1 4; 4 1 2; 1 2 4; 1 3 4; 2 3 1; 2 4 3; 3 2 1; 3 4 2;  4 3 1; 4 3 2];
-        location = location(repmat(1:size(location,1),8,1),:);   
+        location = [1 2 3; 1 2 4; 1 3 4; 2 1 3; 2 1 4; 2 3 4; 3 1 2; 3 1 4; 3 2 4; 4 1 2; 4 1 3; 4 2 3];
+        location = location(repmat(1:size(location,1),4,3),:);   
+        location([trialsPerSZ+1:end],:) = [];    
     case 4
         location = [1 2 3 4; 2 1 3 4; 3 1 2 4; 4 1 2 3];
         location = location(repmat(1:size(location,1),numCounter,1),:);
@@ -44,7 +46,7 @@ for n=1:numSetsize
     probelocation = location(:,1);
 
 %% assign colors 
-    colors = zeros(64,2);
+    colors = zeros(trialsPerSZ,2);
     for iteration = [1:trialsPerSZ/numCounter]
             Colors = randsample([1:12],n*2); 
             Colors = repmat(Colors,2,1);
@@ -87,7 +89,7 @@ for n=1:numSetsize
     predefinedStimuli.cols          = colors;
     predefinedStimuli.probecolor    = probecolor;
     predefinedStimuli.wheelValues   = wheelValues;
-    predefinedStimuli.colIndex    = colorIndex;
+    predefinedStimuli.colIndex      = colorIndex;
       
     fields = fieldnames(predefinedStimuli);
     for x = 1:size(predefinedStimuli.setsize ,1)
@@ -99,24 +101,24 @@ for n=1:numSetsize
     filename = sprintf('Stimuli_%d.mat', n);
     save(filename,'Stimuli');
 
-%% Divide stimuli into blocks
-    % 6 blocks in total, 2 50/50, 2 majority ignore, 2 majority update
-
-    a = reshape(Stimuli, 4, size(Stimuli,1)/4);
-    %neutral blocks
-    block1 = [a(1,[1:16]),a(4,[1:16])]';
-    block4 = [a(2,[1:16]),a(3,[1:16])]';
-    %majority ignore blocks
-    block2 = [a(1,[17:40]),a(4,[17:24])]';
-    block5 = [a(2,[17:24]),a(3,[17:40])]';
-    %majority update blocks
-    block3 = [a(1,[41:48]),a(4,[25:48])]';
-    block6 = [a(2,[25:48]),a(3,[41:48])]';
-    
-    blocks = struct('block1', block1, 'block2', block2, 'block3', block3, 'block4', block4, 'block5', block5, 'block6', block6);
-
-    filename = sprintf('trialsPerBlock_%d.mat', n);
-    save(filename,'blocks');
+% %% Divide stimuli into blocks
+%     % 6 blocks in total, 2 50/50, 2 majority ignore, 2 majority update
+% 
+%     a = reshape(Stimuli, 4, size(Stimuli,1)/4);
+%     %neutral blocks
+%     block1 = [a(1,[1:16]),a(4,[1:16])]';
+%     block4 = [a(2,[1:16]),a(3,[1:16])]';
+%     %majority ignore blocks
+%     block2 = [a(1,[17:40]),a(4,[17:24])]';
+%     block5 = [a(2,[17:24]),a(3,[17:40])]';
+%     %majority update blocks
+%     block3 = [a(1,[41:48]),a(4,[25:48])]';
+%     block6 = [a(2,[25:48]),a(3,[41:48])]';
+%     
+%     blocks = struct('block1', block1, 'block2', block2, 'block3', block3, 'block4', block4, 'block5', block5, 'block6', block6);
+% 
+%     filename = sprintf('trialsPerBlock_%d.mat', n);
+%     save(filename,'blocks');
 
 end
 end

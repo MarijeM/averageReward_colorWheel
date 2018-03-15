@@ -39,7 +39,7 @@ try
 
     %% set experiment parameters
     pms.numTrials           = 32; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
-    pms.numBlocks           = 6;  
+    pms.numBlocks           = 2;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
     pms.numTrialsPr         = 16;  
@@ -80,14 +80,14 @@ try
     pms.delay2DurationUpdPr = 4.5;
     pms.delay2DurationIgn   = 2;
     pms.delay2DurationUpd   = 4.5;
-    pms.feedbackDuration    = 0.7; %feedback during colorwheel
+    pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 1;
-    pms.responseDuration    = 0.4;
+%     pms.responseDuration    = 0.4;
     pms.jitter              = 0;
     pms.iti                 = 0.1;
     pms.rewardduration      = 1.0;
     pms.rewarddelay         = 0.5;
-    pms.bonusduration       = 1.0; %duration that the total reward up to that point is shown
+    pms.bonusduration       = 1.0; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
