@@ -1,3 +1,5 @@
+function AssignFixedStimuli(numSetsize,trialsPerSZ,numCounter,pieColors)
+% AssignFixedStimuli(4,112,4,15)
 % numSetsize: maximum numbers of squares/color to remember on a given trial
 % trialsPerSZ: how many trials per set size do you want to prespecify?
 % numCounter: how many observations per cell (i.e. how many observations
@@ -5,13 +7,10 @@
 %   have 2 hemispheres, and 2 conditions (update and ignore). So numCounter
 %   has a minimum of 4: 1 observation for update-left, 1 for update-right,
 %   1 for ignore-left, 1 for ignore-right).
-%   pieColors: the number of possible subcolors per color pie.  
-%   Also defines wheelstarts for the predefined stimuli
+% pieColors: 
+% Also defines wheelstarts for the predefined stimuli
 
-numSetsize  = 4;
-trialsPerSZ = 112;
-numCounter  = 4;
-pieColors   = 15; 
+
 
 for n=1:numSetsize
     
@@ -84,17 +83,26 @@ for n=1:numSetsize
     conditions=[0;2];
     cond=repmat(conditions,trialsPerSZ/length(conditions),1);
 
-%% assign cue ("it will likely be update/ignore") and validity of cue (indeed update/ignore). valid = 1, invalid = 0. 
-cues = zeros(trialsPerSZ,1);  % set all trials to default valid (=0)
-cues(even) = 2; % set all update trials to default valid (=2)
+%% assign cue ("it will likely be update/ignore") and validity of cue (indeed update/ignore)
+cues = [];
+cues(odd) = zeros(trialsPerSZ,1); % set all ignore trials to default valid (=0)
+cues(even) = 2*ones(trialsPerSZ,1); % set all update trials to default valid (=2)
 n_valid = round(0.75*trialsPerSZ/length(conditions));     
 n_invalid = trialsPerSZ/length(conditions)-n_valid;
 cues(odd([1:2:n_invalid*2])) = 2; % every second ignore trial in de condition vector (specified above) will get an invalid cue (update cue) up to 16 invalid cues (every second to stick to the counterbalancing)
 cues(even([2:2:n_invalid*2])) = 0; % every second updade trial in de condition vector will get an invalid cue
-valid = zeros(trialsPerSZ,1); 
-valid(find(cues==0 & cond==0 | cues==2 & cond==2)) = 1;
+valid = 
 
 
+
+ even = [2:2:trialsPerSZ];
+    probecolor(odd,1) = colors(odd,1);
+    probecolor(even,1) = colors(even,n+1);   
+
+everyfirst = odd([1:2:32])
+
+
+    
     
 %% put everything together
     predefinedStimuli.setsize       = repmat(n,trialsPerSZ,1);
@@ -105,8 +113,6 @@ valid(find(cues==0 & cond==0 | cues==2 & cond==2)) = 1;
     predefinedStimuli.probecolor    = probecolor;
     predefinedStimuli.wheelValues   = wheelValues;
     predefinedStimuli.colIndex      = colorIndex;
-    predefinedStimuli.cue           = cues;
-    predefinedStimuli.valid         = valid;
       
     fields = fieldnames(predefinedStimuli);
     for x = 1:size(predefinedStimuli.setsize ,1)
@@ -138,6 +144,6 @@ valid(find(cues==0 & cond==0 | cues==2 & cond==2)) = 1;
 %     save(filename,'blocks');
 
 end
-
+end
 
 
