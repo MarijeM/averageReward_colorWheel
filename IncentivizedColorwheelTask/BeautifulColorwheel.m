@@ -38,7 +38,7 @@ try
     [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);            
 
     %% set experiment parameters
-    pms.numTrials           = 32; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
+    pms.numTrials           = 112; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
     pms.numBlocks           = 2;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
