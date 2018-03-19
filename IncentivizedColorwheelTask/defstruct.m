@@ -120,7 +120,10 @@ for block = 1:pms.numBlocks;
     end
     
     %% assign reward on offer (gaussian random walk)
-    [Stimuli.offer] = calculateRewardOnOffer(pms);
+    offers = calculateRewardOnOffer(pms);
+    for x = length(offers)
+        Stimuli(x).offer = offers(x);
+    end 
          
     %% combine blocks  
     trial = [trial, Stimuli];

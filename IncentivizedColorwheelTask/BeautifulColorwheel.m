@@ -42,10 +42,8 @@ try
     pms.numBlocks           = 2;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
-    pms.numTrialsPr         = 16;  
+    pms.numTrialsPr         = 8;  
     pms.numBlocksPr         = 1; 
-    pms.redoTrials          = 128; %trials for Redo
-    pms.redoBlocks          = 2; %blocks for Redo
     pms.maxSetsize          = 4; %maximum number of squares used
     pms.colorTrials         = 12;    
     %colors
@@ -128,8 +126,6 @@ try
  %then we can instead load trialFin instead and comment out the above line (MF: which line? still true?)
     elseif practice==1
          [trial]= trialstruct(pms,rect,1);   
-    elseif practice==2
-        [trial]=trialstruct(pms,rect,2);
     end
     %% prepare data for easy export later
     

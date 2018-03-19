@@ -14,7 +14,7 @@ valid_cues = repmat([0 2], 1, pms.numTrials/2/2);
 invalid_cues = repmat([2 0], 1, pms.numTrials/2/2); 
 cues = [valid_cues, invalid_cues]'; 
 
-valid = repmat([1 0], pms.numTrials/2,1); valid = valid(:); 
+
 
 %% 3)make location matrix
 rectsize=[0 0 100 100];
@@ -38,8 +38,6 @@ for i=1:pms.numBlocks
         trial(t,i).number=trialsmatrix(t,i);
         trial(t,i).type = typematrixFin(t,i);
         trial(t,i).setSize=setsizevectorFin(t,i); 
-        trial(t,i).cue=cues(t,i); 
-        trial(t,i).valid=valid(t,i); 
     end                                  
 end
 
@@ -66,7 +64,7 @@ end
 
 %% shuffle order of trials
 randomIdx=randperm(pms.numTrials);
-trial=trial(randomIdx);
+typematrixFin=typematrixFin(randomIdx);setsizevectorFin=setsizevectorFin(randomIdx);
 
 
 end
