@@ -1,4 +1,4 @@
-function [data,T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect,varargin)
+function [data,T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect)
 %this function shows the stimuli and collects the responses for the  INCENTIVIZED colorwheel
 %memory task.
 % data:     struct with fields:respCoord (where the ppt clicked), rt, probeLocation (square that was probed)
@@ -11,6 +11,10 @@ function [data,T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,r
 % practice: status of task, output of [subNo,dataFilename,dataFilenamePrelim,practice,manipulation]=getInfo
 % dataFilenamePrelim: name for log file between blogs provided by getInfo.m
 
+% make sure there is a maximum time for moving the mouse
+if ~exist(pms.median_rtMovement)
+    pms.median_rtMovement = 0.8;
+end 
 
 %trials for practice session
 if practice==1

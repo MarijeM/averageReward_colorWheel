@@ -1,4 +1,4 @@
-function [hooray]=colorVision(pms,wPtr,rect)
+function [hooray,median_rtMovement]=colorVision(pms,wPtr,rect)
 
 %%%function that shows randomly selected colors and checks for color
 %%%perception

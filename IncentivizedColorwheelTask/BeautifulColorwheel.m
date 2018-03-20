@@ -167,7 +167,8 @@ try
        getInstructions(1,pms,wPtr); 
        hooray = 0; 
        while hooray==0
-        [hooray]=colorVision(pms,wPtr,rect);
+        [hooray,median_rtMovement]=colorVision(pms,wPtr,rect)
+        pms.median_rtMovement = median_rtMovement;
        end
        Screen('TextSize',wPtr,pms.textSize);
        Screen('TextStyle',wPtr,pms.textStyle);
