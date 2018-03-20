@@ -77,16 +77,16 @@ for block = 1:pms.numBlocks;
                      switch m
                             case 1
                                 Stimuli(x,1).encColLoc1=Stimuli(x,1).colors(j,:);
-                                Stimuli(x,1).interColLoc1=Stimuli(x,1).colors(Stimuli(x,1).setsize+j,:);
+                                Stimuli(x,1).interColLoc1=Stimuli(x,1).colors(Stimuli(x,1).setSize+j,:);
                             case 2
                                 Stimuli(x,1).encColLoc2=Stimuli(x,1).colors(j,:);
-                                Stimuli(x,1).interColLoc2=Stimuli(x,1).colors(Stimuli(x,1).setsize+j,:);
+                                Stimuli(x,1).interColLoc2=Stimuli(x,1).colors(Stimuli(x,1).setSize+j,:);
                             case 3
                                 Stimuli(x,1).encColLoc3=Stimuli(x,1).colors(j,:);
-                                Stimuli(x,1).interColLoc3=Stimuli(x,1).colors(Stimuli(x,1).setsize+j,:);
+                                Stimuli(x,1).interColLoc3=Stimuli(x,1).colors(Stimuli(x,1).setSize+j,:);
                             case 4
                                 Stimuli(x,1).encColLoc4=Stimuli(x,1).colors(j,:);
-                                Stimuli(x,1).interColLoc4=Stimuli(x,1).colors(Stimuli(x,1).setsize+j,:);  
+                                Stimuli(x,1).interColLoc4=Stimuli(x,1).colors(Stimuli(x,1).setSize+j,:);  
                      end 
                 end
             end
@@ -100,11 +100,11 @@ for block = 1:pms.numBlocks;
                     %lure is the color on the same location during
                     %Interference. It is always the first of the intervening
                     %stimuli, so setSize+1. 
-                    Stimuli(x,1).lureColor=Stimuli(x,1).colors(Stimuli(x,1).setsize+1,:);
+                    Stimuli(x,1).lureColor=Stimuli(x,1).colors(Stimuli(x,1).setSize+1,:);
 
                 case 2    %for Update 
                     %reverse for Update; lure in update is the stimulus at same location during encoding.
-                    Stimuli(x,1).probeColorCorrect=Stimuli(x,1).colors(Stimuli(x,1).setsize+1,:); 
+                    Stimuli(x,1).probeColorCorrect=Stimuli(x,1).colors(Stimuli(x,1).setSize+1,:); 
                     Stimuli(x,1).lureColor=Stimuli(x,1).colors(1,:);
               end
 
@@ -121,10 +121,10 @@ for block = 1:pms.numBlocks;
     
     %% assign reward on offer (gaussian random walk)
     offers = calculateRewardOnOffer(pms);
-    for x = length(offers)
+    for x = 1:length(offers)
         Stimuli(x,1).offer = offers(x);
     end 
-         
+       
     %% combine blocks  
     trial = [trial, Stimuli];
 

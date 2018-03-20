@@ -1,4 +1,4 @@
-function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
+function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
@@ -144,7 +144,7 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
 
                 % draw the color wheel + response 
                 for ind=1:length(colors)
-                    Screen('FillArc',wPtr,colors(ind,:),outsideRect,startangle(ind),colorangle); % draw color wheel
+                    Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle); % draw color wheel
                 end
                 Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2); % draw line where they reached the wheel
                 Screen('FillOval',wPtr,pms.background,insideRect); % grey middle oval
@@ -161,9 +161,13 @@ HideCursor();
 
 %% Feedback
 % if response==1 participants responded
+correct = 0;
 if response==1
     %during practice a second line appears indicating the correct response. The line is
     %drawn as a small arc of 0.4 degrees
+    if abs(respDif) <=pms.minAcc
+        correct = 1;
+    end
     if practice==1 
         for ind=1:length(colors)
             Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
@@ -193,9 +197,12 @@ elseif movement==1 && mod(g,10)==0 %on the faster trials, participants response 
     rtMovement  = NaN;
     rtTotal     = NaN;
     [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 
+    if abs(respDif) <=pms.minAcc
+        correct = 1;
+    end 
     % draw the color wheel + response 
     for ind=1:length(colors)
-        Screen('FillArc',wPtr,colors(ind,:),outsideRect,startangle(ind),colorangle); % draw color wheel
+        Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle); % draw color wheel
     end
     Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2); % draw line where they reached the wheel
     Screen('FillOval',wPtr,pms.background,insideRect); % grey middle oval
@@ -225,7 +232,7 @@ elseif movement==0
     respY       = NaN;
     rtDecision  = NaN;
     rtMovement  = NaN;
-    rtTotal     = Nan;    
+    rtTotal     = NaN;    
     for ind=1:length(colors)
         Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
     end

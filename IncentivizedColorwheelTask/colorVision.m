@@ -8,7 +8,7 @@ numTrials=pms.colorTrials;
 rectOne=[0 0 100 100];
 centerX=rect(3)/2;
 centerY=rect(4)/2;
-wrptx=rect(3)/4;
+% wrptx=rect(3)/4;
 passingScore=15;
 
 insideRect=[rect(1) rect(2) 0.67*rect(4) 0.67*rect(4)]; %the white oval coordinates
@@ -182,7 +182,7 @@ if meanScore>passingScore
   WaitSecs(5);
   hooray = 0;
 elseif meanScore<=passingScore
-  DrawFormattedText(wPtr, 'Congratulations! You passed the color sensitivity test. \n You can continue with the rest of the experiment by pressing the right arrow.','center','center',[],wrptx);
+  DrawFormattedText(wPtr, 'Congratulations! You passed the color sensitivity test. You can continue with the rest of the experiment by pressing the right arrow.','center','center',[],pms.wrapAt);
   Screen('Flip',wPtr);
   KbWait();
   hooray = 1; %as long as hooray is not 1, they have to do the color wheel test again

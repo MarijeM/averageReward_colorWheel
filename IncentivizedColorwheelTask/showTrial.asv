@@ -12,12 +12,12 @@ function [data,T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,r
 % dataFilenamePrelim: name for log file between blogs provided by getInfo.m
 
 % make sure there is a maximum time for moving the mouse
-if ~exist(pms.median_rtMovement)
+if ~exist('pms.median_rtMovement', 'var')
     pms.median_rtMovement = 0.8;
 end 
 
 %trials for practice session
-if practice==1
+if practice~=0
     pms.numTrials   = pms.numTrialsPr;
     pms.numBlocks   = pms.numBlocksPr;
 end
@@ -29,8 +29,7 @@ Screen('TextFont',wPtr,'Courier New');
 EncSymbol       = 'M';
 UpdSymbol       = 'U';
 IgnSymbol       = 'I';
-offer          = 1;
-offerText      = double(sprintf('%d', reward));
+
 
 
 M_color         = [0 0 0];
@@ -55,15 +54,16 @@ for p=1:pms.numBlocks
         for phase = 1:8
             if phase==1 % reward on offer
                 if practice==0
+                    offer = double(sprintf('%d', trial(g,p).offer));
                     Screen('Textsize', wPtr, 34);
                     Screen('Textfont', wPtr, 'Times New Roman');
-                    DrawFormattedText(wPtr, offerText, 'center', 'center');  
+                    DrawFormattedText(wPtr, offer, 'center', 'center');  
                     Screen('Flip',wPtr);
                     %imageArray=Screen('GetImage',wPtr);
                     %imwrite(imageArray,sprintf('RewardcueL%d%d.png',g,p),'png');
                     WaitSecs(pms.offerduration);      
                     Screen('Flip',wPtr);
-                    WaitSecs(pms.offerddelay); 
+                    WaitSecs(pms.offerdelay); 
                 end 
             elseif phase==2; %cue update or ignore
                 if practice~=1
@@ -230,7 +230,7 @@ for p=1:pms.numBlocks
                 drawFixationCross(wPtr,rect);
                 Screen('Flip',wPtr);
                 
-                if practice==1         
+                if practice~=0         
                     switch trial(g,p).type
                         case 0
                             WaitSecs(pms.delay2DurationIgnPr);
@@ -259,7 +259,7 @@ for p=1:pms.numBlocks
                 
             elseif phase==7  %probe phase
                 
-                if practice==1 
+                if practice~=0 
                     locationsrect=trial(g,p).locations;
                     %for practice we randomly select a square for probe. Index2 
                     %selects randomly 1 of the encoding phase squares.
@@ -289,12 +289,8 @@ for p=1:pms.numBlocks
                     probeRectY=trial(g,p).locations(1,2);                 
                 end %if practice==1
                 
-                if practice==1 
-                    [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
-                elseif practice==0
-                    [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
-                end
-                
+                [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
+
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
             elseif phase==8 % feedback about their reward
@@ -302,8 +298,8 @@ for p=1:pms.numBlocks
                if practice==0
                    Screen('Textsize', wPtr, 28);
                    Screen('Textfont', wPtr, 'Times New Roman');
-                   if respDif <= pms.minAcc % if they were accurate enough
-                       DrawFormattedText(wPtr,double(sprintf('You win %d ct',offer)),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                   if correct==1 % if they were accurate enough
+                       DrawFormattedText(wPtr,sprintf('You win %d ct',trial(g,p).offer),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
                        WaitSecs(pms.rewardduration);
                    else 
@@ -316,6 +312,7 @@ for p=1:pms.numBlocks
        
                 %save responses and data into a struct.
                 data(g,p).respCoord=[respX respY]; %saving response coordinates in struct where 1,1 is x and 1,2 y
+                data(g,p).correct=correct;
                 data(g,p).rtDecision=rtDecision;
                 data(g,p).rtMovement=rtMovement;
                 data(g,p).rt=rtTotal;
@@ -327,24 +324,25 @@ for p=1:pms.numBlocks
                 data(g,p).radius=radius;
                 data(g,p).thetaCorrect=thetaCorrect;
                 data(g,p).tau=tau;
-                data(g,p).wheelclick=wheelclick; %did they click on the wheel (1) or inside or outside of the wheel (0)?
                 data(g,p).rect=rect;
                 data(g,p).setsize = trial(g,p).setSize;
                 data(g,p).type=trial(g,p).type;
                 data(g,p).location =trial(g,p).locations;
                 data(g,p).colors = trial(g,p).colors;
-                data(g,p).offer=trial(g,p).offer;                                                      
+                if practice==0
+                    data(g,p).offer=trial(g,p).offer;
+                end 
                 if practice~=1
                     data(g,p).cue = trial(g,p).cue;
                     data(g,p).valid = trial(g,p).valid;
                 end 
                 if practice==0
-                    if respDif <= pms.minAcc %if they did better than a maximum deviance
+                    if correct==1 %if they did better than a maximum deviance
                         data(g,p).reward=trial(g,p).offer;
                     else                                      
                         data(g,p).reward=0;
                     end 
-                    data(g,p).bonus = bonus + trial(g,p).reward;
+                    data(g,p).bonus = bonus + data(g,p).reward;
                     data(g,p).encColLoc1=trial(g,p).encColLoc1;
                     data(g,p).encColLoc2=trial(g,p).encColLoc2;
                     data(g,p).encColLoc3=trial(g,p).encColLoc3;
@@ -354,11 +352,12 @@ for p=1:pms.numBlocks
                     data(g,p).interColLoc3=trial(g,p).interColLoc3;
                     data(g,p).interColLoc4=trial(g,p).interColLoc4;
                 end
-                save(fullfile(pms.subdirICW,dataFilenamePrelim),data);
+                save(fullfile(pms.subdirICW,dataFilenamePrelim),'data');
             end %if phase ==1
         end % for phase 1:6
         % break after each block (after 20 min)
         if practice==0
+            bonus = data(g,p).bonus;
             if GetSecs-blockOnset > pms.blockDuration
                 DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to continue the next block.',p ),'center','center',[0 0 0]);
                 Screen('Flip',wPtr);

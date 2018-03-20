@@ -62,7 +62,6 @@ try
     pms.matlabVersion       = 'R2016a';
     % timings
     pms.maxRT               = 4; % max RT
-    pms.maxMotorTime        = 0.8; %maximum time from mouse press to mouse release (time from decision to response)
     pms.cueduration         = 1.0;
     pms.cuedelay            = 0.5;
     pms.encDuration         = 0.5;    %2 seconds of encoding
@@ -83,10 +82,11 @@ try
 %     pms.responseDuration    = 0.4;
     pms.jitter              = 0;
     pms.iti                 = 0.1;
-    pms.rewardduration      = 1.0;
-    pms.rewarddelay         = 0.5;
-    pms.bonusduration       = 1.0; %duration of "you win xx" 
+    pms.offerduration      = 1.0;
+    pms.offerdelay         = 0.5;
+    pms.rewardduration       = 1.0; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward
+    pms.blockDuration       = 20*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
@@ -117,16 +117,7 @@ try
     pms.xCenter=rect(3)/2;
     pms.yCenter=rect(4)/2;     
     Screen('BlendFunction',wPtr,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    %% get trialstrcutre depending on pms
-    %%%%%% prepare trials
-    % function to get trialstructure using pms (parameters) as input
-    if practice==0
-         [trial]=defstruct(pms,rect);
- %if we have already created a trial structure for all participants (like we did for the real task?)
- %then we can instead load trialFin instead and comment out the above line (MF: which line? still true?)
-    elseif practice==1
-         [trial]= trialstruct(pms,rect,1);   
-    end
+
     %% prepare data for easy export later
     
     % log general subject and session info
@@ -163,6 +154,9 @@ try
     %% Experiment starts with instructions
     %%%%%%% get instructions
     % show instructions
+    Screen('TextSize',wPtr,pms.textSize);
+    Screen('TextStyle',wPtr,pms.textStyle);
+    Screen('TextFont',wPtr,pms.textFont);
     if practice==1
        getInstructions(1,pms,wPtr); 
        hooray = 0; 
@@ -170,18 +164,20 @@ try
         [hooray,median_rtMovement]=colorVision(pms,wPtr,rect)
         pms.median_rtMovement = median_rtMovement;
        end
-       Screen('TextSize',wPtr,pms.textSize);
-       Screen('TextStyle',wPtr,pms.textStyle);
-       Screen('TextFont',wPtr,pms.textFont);
        getInstructions(2,pms,wPtr);
+       [trial]= trialstruct(pms,rect,1,0); 
+    elseif practice==2
+       getInstructions(3,pms,wPtr);
+       [trial]= trialstruct(pms,rect,1,1);  
+    elseif practice==0
+       getInstructions(4,pms,wPtr);
+       [trial]=defstruct(pms,rect); 
     end
 
-  
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
     [data, T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
-        % showTrial opens colorwheel2 and stdev function
     
         
     %% Save the data
@@ -191,16 +187,15 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(4,pms,wPtr,bonus)   
-    elseif practice==1
-       getInstructions(3,pms,wPtr)   
+       getInstructions(5,pms,wPtr,bonus)  
+       clear Screen
+       Screen('CloseAll');
+       ShowCursor; % display mouse cursor again
+       ListenChar(0); % allow keystrokes to Matlab
+       Priority(0); % return Matlab's priority level to normal
+       Screen('Preference','TextAlphaBlending',0); 
     end
-    clear Screen
-    Screen('CloseAll');
-    ShowCursor; % display mouse cursor again
-    ListenChar(0); % allow keystrokes to Matlab
-    Priority(0); % return Matlab's priority level to normal
-    Screen('Preference','TextAlphaBlending',0); 
+    
 catch ME
     disp(getReport(ME));
     keyboard

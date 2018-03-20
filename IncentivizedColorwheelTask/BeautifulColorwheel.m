@@ -44,7 +44,7 @@ try
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
     pms.numTrialsPr         = 8;  
     pms.numBlocksPr         = 1; 
-    pms.maxSetsize          = 4; %maximum number of squares used
+    pms.maxSetsize          = 1; %maximum number of squares used
     pms.colorTrials         = 12;    
     %colors
     pms.numWheelColors      = 512;

@@ -182,7 +182,7 @@ if meanScore>passingScore
   WaitSecs(5);
   hooray = 0;
 elseif meanScore<=passingScore
-  DrawFormattedText(wPtr, 'Congratulations! You passed the color sensitivity test. \n You can continue with the rest of the experiment by pressing the right arrow.','center','center',[],wrptx);
+  DrawFormattedText(wPtr, 'Congratulations! You passed the color sensitivity test. You can continue with the rest of the experiment by pressing the right arrow.','center','center',[],pms.);
   Screen('Flip',wPtr);
   KbWait();
   hooray = 1; %as long as hooray is not 1, they have to do the color wheel test again

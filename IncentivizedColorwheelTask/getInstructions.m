@@ -22,9 +22,9 @@ HideCursor;
 
 
 if level==1
-    Instruction{1} = 'Welcome to our color wheel memory task.\n You can walk through the instructions by using the left and right arrow keys.\n Press the right arrow to start...';
+    Instruction{1} = 'Welcome to our color wheel memory task.\n\n You can walk through the instructions by using the left and right arrow keys.\n Press the right arrow to start...';
     Instruction{2} = 'Before we start we need to check your color sensitivity. \n\n You will see a colored square in the middle of the screen.\n\n You should find the corresponding color on a color wheel around the square and click it!'; 
-    Instruction{3} = 'Responding works like this:\n\nFirst you determine the correct color on the color wheel.\n\nOnce you know where you want to click, you move the arrow to that color on the color wheel as fast as possible, but still try to be as accurate as possible. You don''t have to click on the wheel, you only need to hover over it. Once you reach a particular color on the wheel, that color is taken as your answer.\n\n\nPlease note that to answer as quickly as possible after you have started moving the mouse, you should first decide on the color before moving the mouse.\n\n\n\n\nPress space to start.';
+    Instruction{3} = 'Responding works like this:\n\nFirst you determine the correct color on the color wheel.\n\nOnce you know where you want to click, you move the arrow to that color on the color wheel as fast as possible, but still try to be as accurate as possible. You don''t have to click on the wheel, you only need to hover over it. Once you reach a particular color on the wheel, that color is taken as your answer.\n\n\nPlease note that in order to answer as quickly as possible after you have started moving the mouse, you should first decide on the color before moving the mouse.\n\n\n\n\nPress space to start.';
 
 elseif level==2
     
@@ -68,29 +68,28 @@ elseif level==3
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
     Instruction{2}='During the actual memory task, you will only see where you clicked on the color wheel, you will not see the correct response anymore.';
     Instruction{3}='Before every new trial you will now see a cue.\n\nThis cue tells you something about the upcoming trial.';
-    Instruction{4}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If the cue says ignore, you will most likely get an ignore trial. \n However, in 25% of the cases you will get an update trial althought the cue says ignore.';
-    imgIgnoreCue=importdata('Ignorecue.png');
+    Instruction{4}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If the cue says ignore, you will most likely get an ignore trial. \n However, in 25% of the cases you will get an update trial although the cue says ignore.';
+    imgIgnoreCue=importdata('Rewardcue.png');
     imageIgnoreCue=Screen('MakeTexture',wPtr,imgIgnoreCue);
-    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If the cue says update, you will most likely get an update trial. \n However, in 25% of the cases you will get an ignore trial althought the cue says update.';
-    imgUpdateCue=importdata('Updatecue.png');
+    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If the cue says update, you will most likely get an update trial. \n However, in 25% of the cases you will get an ignore trial although the cue says update.';
+    imgUpdateCue=importdata('Rewardcue.png');
     imageUpdateCue=Screen('MakeTexture',wPtr,imgUpdateCue);
     Instruction{6} = 'After the cue, the trial begins.';
     Instruction{7} = 'You will now get a few examples to practice.';
     
 elseif level==4
     
-    Instruction{1} = 'You finished the practice trials.\n\n You may now proceed with the actual task by pressing the right arrow.';
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
-    Instruction{3}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break or continue with the task.',pms.numBlocks*2);
-    Instruction{4}='Each blocks lasts 20 minutes, and you will complete as many trials as you can within those 20 minutes.';
-    Instruction{5}='On each trial you can win money.';
-    Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many cents you can win on that trial.';
+    Instruction{2}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break or continue with the task.',pms.numBlocks);
+    Instruction{3}='Each blocks lasts 20 minutes, and you will complete as many trials as you can within those 20 minutes.';
+    Instruction{4}='On each trial you can win money.';
+    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many cents you can win on that trial.';
     imgReward=importdata('Rewardcue.png');
     imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{7} = 'After you were shown how much money you can win on that trial, the trial begins.';
-    Instruction{8}='If you are close enough to the correct color, you win the money. At the end, the amount you won on all the trials will be summed up and you will receive a bonus proportional to this amount.';
-    Instruction{9}='Now please contact the researcher before continuing with the task.';
-    Instruction{10}='Good luck with the memory task!';
+    Instruction{6} = 'After you were shown how much money you can win on that trial, the trial begins.';
+    Instruction{7}='If you are close enough to the correct color, you win the money. At the end, the amount you won on all the trials will be summed up and you will receive a bonus proportional to this amount.';
+    Instruction{8}='Now please contact the researcher before continuing with the task.';
+    Instruction{9}='Good luck with the memory task!';
     
 elseif level==5
     Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', bonus/1000));
@@ -136,11 +135,10 @@ for i=1:100
             Screen('DrawTexture',wPtr,imageIgnoreCue);
          elseif level==3 && counter==5
             Screen('DrawTexture',wPtr,imageUpdateCue);    
-         elseif level==4 && counter==6
+         elseif level==4 && counter==5
             Screen('DrawTexture',wPtr,imageReward);    
          end 
-         DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing)
-    end        
+    DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing)       
     end %level
     Screen('flip',wPtr);
   
