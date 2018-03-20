@@ -117,6 +117,9 @@ SetMouse(centerX,centerY,wPtr);
 
 movement = 0;
 response = 0;
+if mod(g,10)==0 %if devisible by 10
+   pms.median_rtMovement = pms.median_rtMovement-0.1; % in 10% of cases, every 10th trial, participants have 100ms less to reach the wheel, to promote fast responding
+end
 while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start moving the mouse, but within maxRT
     [x,y,~]     = GetMouse(wPtr); %constantly read mouse position
     radius      = sqrt((x-centerX)^2+(y-centerY)^2);  % calculate radius based on x and y coordinate of the mouse
@@ -149,19 +152,19 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
                 Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness); %draw probed square
                 drawFixationCross(wPtr,rect);
                 Screen('Flip',wPtr);
-                WaitSecs(0.2);
+                WaitSecs(pms.feedbackDuration);  
             end 
         end       
     end 
 end 
-
+HideCursor();
 
 %% Feedback
 % if response==1 participants responded
 if response==1
     %during practice a second line appears indicating the correct response. The line is
     %drawn as a small arc of 0.4 degrees
-    if practice==1 && radius>abs(insideRect(1)-insideRect(3))/2
+    if practice==1 
         for ind=1:length(colors)
             Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
         end
@@ -184,6 +187,23 @@ if response==1
         Screen('Flip',wPtr);
         WaitSecs(pms.feedbackDurationPr);
     end %if practice=1
+elseif movement==1 && mod(g,10)==0 %on the faster trials, participants response will be shown if they have started moving, even though they havent reached the wheel yet (response is angle at latest timepoint)
+    respX       = x; %take last x as response
+    respY       = y; %take last y as response
+    rtMovement  = NaN;
+    rtTotal     = NaN;
+    [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 
+    % draw the color wheel + response 
+    for ind=1:length(colors)
+        Screen('FillArc',wPtr,colors(ind,:),outsideRect,startangle(ind),colorangle); % draw color wheel
+    end
+    Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2); % draw line where they reached the wheel
+    Screen('FillOval',wPtr,pms.background,insideRect); % grey middle oval
+    Screen('FrameRect',wPtr,probeColor,allRects); % draw squares
+    Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness); %draw probed square
+    drawFixationCross(wPtr,rect);
+    Screen('Flip',wPtr);
+    WaitSecs(pms.feedbackDuration);  
 %if the participant started moving on time, but did not reach the wheel in time, movement is 1, but response is 0. 
 elseif movement==1
     respX       = x; %take last x as response
@@ -200,14 +220,12 @@ elseif movement==1
     WaitSecs(pms.feedbackDuration);  
 %%if the participant was too late movement is still 0, so respX, respY and rt
 %are set to NaN. They receive feedback to respond faster. 
-elseif movement==0
-    
+elseif movement==0    
     respX       = NaN;
     respY       = NaN;
     rtDecision  = NaN;
     rtMovement  = NaN;
-    rtTotal     = Nan;
-    
+    rtTotal     = Nan;    
     for ind=1:length(colors)
         Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
     end
