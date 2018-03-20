@@ -316,6 +316,17 @@ for p=1:pms.numBlocks
                 
                 
                 
+                %Break after every block
+                if practice==0
+                    if g==pms.numTrials && p<pms.numBlocks
+                        DrawFormattedText(wPtr,sprintf('End of block %d, press space to continue.',p ),'center','center',[0 0 0]);
+                        Screen('Flip',wPtr);
+                        save(fullfile(pms.subdirICW,dataFilenamePrelim));
+                        RestrictKeysForKbCheck(32);
+                        KbWait();
+                        RestrictKeysForKbCheck([]);
+                    end
+                end
                 %save responses and data into a struct.
                 data(g,p).respCoord=[respX respY]; %saving response coordinates in struct where 1,1 is x and 1,2 y
                 data(g,p).rtDecision=rtDecision;
@@ -364,16 +375,8 @@ for p=1:pms.numBlocks
 
             end %if phase ==1
         end % for phase 1:6
-        % break after each block (after 20 min)
-        if practice==0
-            if GetSecs-blockOnset > pms.blockDuration
-                DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to continue the next block.',p ),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                save(fullfile(pms.subdirICW,dataFilenamePrelim));
-                RestrictKeysForKbCheck(32);
-                KbWait();
-                RestrictKeysForKbCheck([])
-            end 
+        if GetSecs-blockOnset > pms.blockDuration
+            
         end 
     end% for p=1:numBlocks
 end  % for g=1:numTrials

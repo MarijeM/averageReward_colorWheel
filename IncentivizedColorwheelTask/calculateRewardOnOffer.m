@@ -21,7 +21,7 @@ sd        = 20;
 %% Gaussian random walk
 offers = randi([min_limit,max_limit],1); %initial reward;
 for i=2:n_trials
-    offers(i,1) = offers(i-1,1) + randn(1)*sd+mu;
+    offers(i,1) = round(offers(i-1,1) + randn(1)*sd+mu);
     if offers (i,1) > max_limit
        offers(i,1) = max_limit - ((offers(i,1) - max_limit)); %please check rewards. If you set the sd too high, it is possible that the rewards fall outside of the boundaries using this script. If so, adjust script. 
     elseif offers (i,1) < min_limit
