@@ -42,7 +42,7 @@ try
     pms.numBlocks           = 2;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
-    pms.numTrialsPr         = 8;  
+    pms.numTrialsPr         = 4;  
     pms.numBlocksPr         = 1; 
     pms.maxSetsize          = 4; %maximum number of squares used
     pms.colorTrials         = 12;    
@@ -164,6 +164,7 @@ try
     %%%%%%% get instructions
     % show instructions
     if practice==1
+       getInstructions(1,pms,wPtr); 
        hooray = 0; 
        while hooray==0
         [hooray]=colorVision(pms,wPtr,rect);
@@ -171,7 +172,7 @@ try
        Screen('TextSize',wPtr,pms.textSize);
        Screen('TextStyle',wPtr,pms.textStyle);
        Screen('TextFont',wPtr,pms.textFont);
-       getInstructions(1,pms,wPtr);
+       getInstructions(2,pms,wPtr);
     end
 
     %% Experiment starts with trials
@@ -193,9 +194,9 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(3,pms,wPtr,bonus)   
+       getInstructions(4,pms,wPtr,bonus)   
     elseif practice==1
-       getInstructions(2,pms,wPtr)   
+       getInstructions(3,pms,wPtr)   
     end
     clear Screen
     Screen('CloseAll');

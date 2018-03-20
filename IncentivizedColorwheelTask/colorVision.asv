@@ -116,15 +116,21 @@ for N=1:numTrials
                     rtTotal     = RT - probeOnset;
                     response    = 1
                     HideCursor;
+                    
+                    
+                    theta=zeros(length(colors),1); %theta represents the angle for every color
+                    for ind=1:length(colors)   
+                        theta(ind)=(360*ind)/length(colors);
+                    end
 
                     lureColor=probePie(2,:); %don't need it here
                     [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 
                     
-                    % draw the color wheel + response + line for correct
-                    % response + feedback
+                    
                     for ind=1:length(colors)
                         Screen('FillArc',wPtr,colors(ind,:),outsideRect,startangle(ind),colorangle); % draw color wheel
                     end
+                    
                     Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2); % draw line where they reached the wheel
                     Screen('FillOval',wPtr,pms.background,insideRect); % grey middle oval
                     Screen('FillRect', wPtr, probeColorCorrect, rectOne'); % draw square
@@ -162,12 +168,12 @@ for N=1:numTrials
              
 end  %for N=1:numTrials
 
-%% calculate their mean accuracy and median movement time on the color wheel test.
+% calculate their mean accuracy and median movement time on the color wheel test.
 meanScore           = mean([colorTestData.respDif],'omitnan');
 median_rtMovement   = median([colorTestData.rtMovement],'omitnan');
 
 
-%% save data
+% save data
 filename=sprintf('ColorTest_s%d.mat',pms.subNo);
 if exist (filename,'file')
     randAttach = round(rand*10000);
@@ -176,7 +182,8 @@ end
 save(fullfile(pms.subdirICW,filename),'colorTestData', 'meanScore', 'median_rtMovement');
 
 
-%% show the color wheel with a message telling them if they passed the color wheel test (or not)
+% show the color wheel with a message telling them if they passed the color
+% wheel test (or not)
 for ind=1:length(colors)
     Screen('FillArc',wPtr,colors(ind,:),outsideRect,startangle(ind),colorangle);
 end

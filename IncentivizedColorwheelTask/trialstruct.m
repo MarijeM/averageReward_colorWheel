@@ -1,4 +1,4 @@
-function[trial]=trialstruct(pms,rect,practice,varargin)
+function[trial]=trialstruct(pms,rect,practice,cues)
 
    
 % in the case of practice, the trials are not randomized and we may define maximum setsize in pms
@@ -10,11 +10,13 @@ trialTypes=[0 2]';
 typematrixFin=repmat(trialTypes,pms.numTrials/length(trialTypes),pms.numBlocks);
 
 %% add cue and cue validity 
-valid_cues = repmat([0 2], 1, pms.numTrials/2/2); 
-invalid_cues = repmat([2 0], 1, pms.numTrials/2/2); 
-cues = [valid_cues, invalid_cues]'; 
+if cues == 1
+    valid_cues = repmat([0 2], 1, pms.numTrials/2/2); 
+    invalid_cues = repmat([2 0], 1, pms.numTrials/2/2); 
+    cues = [valid_cues, invalid_cues]'; 
 
-valid = repmat([1 0], pms.numTrials/2,1); valid = valid(:); 
+    valid = repmat([1 0], pms.numTrials/2,1); valid = valid(:); 
+end 
 
 %% 3)make location matrix
 rectsize=[0 0 100 100];
@@ -38,8 +40,10 @@ for i=1:pms.numBlocks
         trial(t,i).number=trialsmatrix(t,i);
         trial(t,i).type = typematrixFin(t,i);
         trial(t,i).setSize=setsizevectorFin(t,i); 
-        trial(t,i).cue=cues(t,i); 
-        trial(t,i).valid=valid(t,i); 
+        if cues==1
+            trial(t,i).cue=cues(t,i); 
+            trial(t,i).valid=valid(t,i); 
+        end 
     end                                  
 end
 
@@ -63,10 +67,5 @@ for v=1:pms.numBlocks
         end
     end
 end
-
-%% shuffle order of trials
-randomIdx=randperm(pms.numTrials);
-trial=trial(randomIdx);
-
 
 end
