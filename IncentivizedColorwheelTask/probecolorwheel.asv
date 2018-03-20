@@ -124,7 +124,7 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
         startResponse = GetSecs;
         rtDecision  = startResponse - probeOnset;
         movement = 1;
-        while response == 0 && GetSecs-startResponse < pms.median_rtMovement %while they did not reach the color wheel, but still within max movement time
+        while response == 0
             [x,y,~]     = GetMouse(wPtr); %constantly read mouse position
             radius      = sqrt((x-centerX)^2+(y-centerY)^2);                
             if radius > abs(insideRect(1)-insideRect(3))/2 %when the mouse reaches the color wheel
@@ -139,7 +139,8 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
 
                 [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 
 
-                % draw the color wheel + response 
+                % draw the color wheel + response + line for correct
+                % response + feedback
                 for ind=1:length(colors)
                     Screen('FillArc',wPtr,colors(ind,:),outsideRect,startangle(ind),colorangle); % draw color wheel
                 end
@@ -150,11 +151,80 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
                 drawFixationCross(wPtr,rect);
                 Screen('Flip',wPtr);
                 WaitSecs(0.2);
+%                 for ind=1:length(colors)
+%                    Screen('FillArc',wPtr,colors(ind,:),outsideRect,startangle(ind),colorangle);
+%                 end
+%                 Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2);
+%                 if practice == 1
+%                     Screen('FillArc',wPtr,[0 0 0],outsideRect,thetaCorrect-0.2,0.2); %draw line where the correct color is (only for first practice trials)
+%                 end
+%                 Screen('FillOval',wPtr,pms.background,insideRect);
+% 
+%                 Screen('Flip',wPtr);   
+%                 WaitSecs(0.8);
             end 
         end       
     end 
 end 
 
+
+% ShowCursor('Arrow');
+% done = 0;
+% % mousePress=0; %indication of no response
+% while done==0 && GetSecs-probeOnset<pms.maxRT %while they did not make a response during the probe response duration
+%     SetMouse(centerX,centerY,wPtr);
+%     wheelclick = 0;
+%     [~,~,buttons]   = GetMouse(wPtr);
+%     mousePress      = any(buttons);%response was made
+%     if mousePress
+%         tClick       = GetSecs;
+%     else 
+%         tClick       = 0;
+%     end
+%     while mousePress==1 && GetSecs-tClick<pms.maxMotorTime;
+%         done                = 1;
+%         tDecision           = GetSecs; 
+%         [~,~,buttons]       = GetMouse(wPtr);
+%         while buttons(1)==0 && GetSecs-tDecision<pms.maxMotorTime;
+%             mousePress      = 0;
+%             [x,y,buttons]   = GetMouse(wPtr);
+%             if buttons(1)==1 %mouse was clicked again
+%                 rtDecision  = tDecision-probeOnset;
+%                 respX       = x;
+%                 respY       = y;
+%                 rtResponse  = GetSecs-probeOnset;
+%                 
+%                 [respDif,tau,thetaCorrect,radius] = respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); 
+%                 %determine if participant clicked on the wheel, and not
+%                 %inside or outside of the wheel
+%                 if radius>abs(insideRect(1)-insideRect(3))/2 || radius<abs(outsideRect(1)-outsideRect(3))/2
+%                     wheelclick = 1;
+%                 else
+%                     wheelclick = 0; 
+%                 end
+%                 
+%                 for ind=1:length(colors)
+%                     Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
+%                 end
+% 
+%                 %Response indication: if they didn't click on the fixation cross (radius~=0) or within the inner circle, a line appears indicating
+%                 %their choice
+%                 if ~isnan('tau')
+%                     if radius>abs(insideRect(1)-insideRect(3))/2
+%                         Screen('FillArc',wPtr,lineColor,outsideRect,tau-lineThickness/2,lineThickness/2); %response indication arc
+%                         Screen('FillOval',wPtr,insideRectColor,insideRect);
+%                         Screen('FrameRect',wPtr,probeColor,allRects);
+%                         Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
+%                         drawFixationCross(wPtr,rect);
+%                         Screen('Flip',wPtr);
+%                     end
+%                 end  
+%             end 
+%         end %while buttons(1)==0 & within timelimit      
+%     end %while mousepress==1
+% end %while within maxRT
+
+% HideCursor();
 
 %% Feedback
 % if response==1 participants responded
