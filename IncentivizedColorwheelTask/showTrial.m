@@ -29,8 +29,8 @@ Screen('TextFont',wPtr,'Courier New');
 EncSymbol       = 'M';
 UpdSymbol       = 'U';
 IgnSymbol       = 'I';
-reward          = 1;
-RewardText      = double(sprintf('%d ct', reward));
+offer          = 1;
+offerText      = double(sprintf('%d', reward));
 
 
 M_color         = [0 0 0];
@@ -57,13 +57,13 @@ for p=1:pms.numBlocks
                 if practice==0
                     Screen('Textsize', wPtr, 34);
                     Screen('Textfont', wPtr, 'Times New Roman');
-                    DrawFormattedText(wPtr, RewardText, 'center', 'center');  
+                    DrawFormattedText(wPtr, offerText, 'center', 'center');  
                     Screen('Flip',wPtr);
                     %imageArray=Screen('GetImage',wPtr);
                     %imwrite(imageArray,sprintf('RewardcueL%d%d.png',g,p),'png');
-                    WaitSecs(pms.rewardduration);      
+                    WaitSecs(pms.offerduration);      
                     Screen('Flip',wPtr);
-                    WaitSecs(pms.rewarddelay); 
+                    WaitSecs(pms.offerddelay); 
                 end 
             elseif phase==2; %cue update or ignore
                 if practice~=1
@@ -290,36 +290,35 @@ for p=1:pms.numBlocks
                 end %if practice==1
                 
                 if practice==1 
-                    [respX,respY,rtDecision, rtResponse,colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
+                    [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
                 elseif practice==0
-                    [respX,respY,rtDecision, rtResponse,colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
+                    [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,wheelclick]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
                 end
                 
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
-                save(fullfile(pms.subdirICW,dataFilenamePrelim));
-                
+               
             elseif phase==8 % feedback about their reward
                Screen('Flip',wPtr);  
                if practice==0
                    Screen('Textsize', wPtr, 28);
                    Screen('Textfont', wPtr, 'Times New Roman');
                    if respDif <= pms.minAcc % if they were accurate enough
-                       DrawFormattedText(wPtr,double(sprintf('You win %d ct',reward)),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       DrawFormattedText(wPtr,double(sprintf('You win %d ct',offer)),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
-                       WaitSecs(pms.bonusduration);
+                       WaitSecs(pms.rewardduration);
                    else 
                        DrawFormattedText(wPtr,'You win nothing', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
-                       WaitSecs(pms.bonusduration);
+                       WaitSecs(pms.rewardduration);
                    end 
                end 
                 
-                
-                
+       
                 %save responses and data into a struct.
                 data(g,p).respCoord=[respX respY]; %saving response coordinates in struct where 1,1 is x and 1,2 y
                 data(g,p).rtDecision=rtDecision;
-                data(g,p).rtResponse=rtResponse;
+                data(g,p).rtMovement=rtMovement;
+                data(g,p).rt=rtTotal;
                 data(g,p).probeLocation=[probeRectX probeRectY];
                 data(g,p).probeColorCorrect=trial(g,p).probeColorCorrect;
                 data(g,p).lureColor=trial(g,p).lureColor;
@@ -334,24 +333,18 @@ for p=1:pms.numBlocks
                 data(g,p).type=trial(g,p).type;
                 data(g,p).location =trial(g,p).locations;
                 data(g,p).colors = trial(g,p).colors;
-                data(g,p).reward=trial(g,p).reward;        
-                switch trial(g,p).type %if they performed better or equal to their average performance of session 1, they receive a bonus, else, they do not. 
-                    case 0                                         %for update trials
-                        if respDif <= pms.minAcc %if they did better than their average
-                            data(g,p).bonus=trial(g,p).reward;
-                            bonus = bonus + trial(g,p).reward;
-                        else                                       %if they did not better than their average
-                            data(g,p).bonus=0;
-                        end 
-                    case 2
-                        if respDif <= pms.minAcc
-                            data(g,p).bonus=trial(g,p).reward;
-                            bonus = bonus + trial(g,p).reward;
-                        else 
-                            data(g,p).bonus=0;
-                        end 
+                data(g,p).offer=trial(g,p).offer;                                                      
+                if practice~=1
+                    data(g,p).cue = trial(g,p).cue;
+                    data(g,p).valid = trial(g,p).valid;
                 end 
                 if practice==0
+                    if respDif <= pms.minAcc %if they did better than a maximum deviance
+                        data(g,p).reward=trial(g,p).offer;
+                    else                                      
+                        data(g,p).reward=0;
+                    end 
+                    data(g,p).bonus = bonus + trial(g,p).reward;
                     data(g,p).encColLoc1=trial(g,p).encColLoc1;
                     data(g,p).encColLoc2=trial(g,p).encColLoc2;
                     data(g,p).encColLoc3=trial(g,p).encColLoc3;
@@ -361,7 +354,7 @@ for p=1:pms.numBlocks
                     data(g,p).interColLoc3=trial(g,p).interColLoc3;
                     data(g,p).interColLoc4=trial(g,p).interColLoc4;
                 end
-
+                save(fullfile(pms.subdirICW,dataFilenamePrelim),data);
             end %if phase ==1
         end % for phase 1:6
         % break after each block (after 20 min)
@@ -369,13 +362,13 @@ for p=1:pms.numBlocks
             if GetSecs-blockOnset > pms.blockDuration
                 DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to continue the next block.',p ),'center','center',[0 0 0]);
                 Screen('Flip',wPtr);
-                save(fullfile(pms.subdirICW,dataFilenamePrelim));
                 RestrictKeysForKbCheck(32);
                 KbWait();
                 RestrictKeysForKbCheck([])
+                break; %go to next block
             end 
-        end 
-    end% for p=1:numBlocks
-end  % for g=1:numTrials
+        end         
+    end% for g=1:numTrials
+end  % for p=1:numBlocks
 end
 

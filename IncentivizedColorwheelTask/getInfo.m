@@ -9,7 +9,7 @@ practice=varargin{2};
 if practice==0
     dataFilename = sprintf('ColorFun_s%d.mat',subNo);
     dataFilenamePrelim=sprintf('CF_s%d_pre.mat',subNo);
-elseif practice==1
+elseif practice~=0
     dataFilename = sprintf('ColorFun_s%d_practice.mat',subNo);
     dataFilenamePrelim=sprintf('CF_s%d_pre_practice.mat',subNo);
 end
