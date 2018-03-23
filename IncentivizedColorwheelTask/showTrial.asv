@@ -1,4 +1,4 @@
-function [data,T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect)
+function [data,T,bonus,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect)
 %this function shows the stimuli and collects the responses for the  INCENTIVIZED colorwheel
 %memory task.
 % data:     struct with fields:respCoord (where the ppt clicked), rt, probeLocation (square that was probed)
@@ -12,9 +12,9 @@ function [data,T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,r
 % dataFilenamePrelim: name for log file between blogs provided by getInfo.m
 
 % make sure there is a maximum time for moving the mouse
-if ~exist('pms.median_rtMovement', 'var')
-    pms.median_rtMovement = 0.8;
-end 
+% if ~exist('pms.median_rtMovement', 'var')
+%     pms.median_rtMovement = 0.8;
+% end 
 
 %trials for practice session
 if practice~=0
@@ -47,20 +47,18 @@ if practice == 0
     pms.numBlocks = 2;
 end
 
-blockOnset  = GetSecs; %onset time of block. Block lasts 20 min. After 20 min, block ends automatically.
 bonus       = 0; %start value of reward/bonus is 0.00
 for p=1:pms.numBlocks
+    blockOnset  = GetSecs; %onset time of block. Block lasts 20 min. After 20 min, block ends automatically.
     for g=1:pms.numTrials
         for phase = 1:8
             if phase==1 % reward on offer
                 if practice==0
-                    offer = double(sprintf('%d', trial(g,p).offer));
+                    offer = sprintf('%d', trial(g,p).offer);
                     Screen('Textsize', wPtr, 34);
                     Screen('Textfont', wPtr, 'Times New Roman');
                     DrawFormattedText(wPtr, offer, 'center', 'center');  
                     Screen('Flip',wPtr);
-                    %imageArray=Screen('GetImage',wPtr);
-                    %imwrite(imageArray,sprintf('RewardcueL%d%d.png',g,p),'png');
                     WaitSecs(pms.offerduration);      
                     Screen('Flip',wPtr);
                     WaitSecs(pms.offerdelay); 
@@ -75,9 +73,7 @@ for p=1:pms.numBlocks
                        cueText     = 'update';
                    end 
                    DrawFormattedText(wPtr, cueText, 'center', 'center', cue_color);  
-                   Screen('Flip',wPtr);
-                   %imageArray=Screen('GetImage',wPtr);
-                   %imwrite(imageArray,sprintf('RewardcueL%d%d.png',g,p),'png');     
+                   Screen('Flip',wPtr);               
                    WaitSecs(pms.cueduration); 
                    Screen('Flip',wPtr);
                    WaitSecs(pms.cuedelay);
@@ -116,7 +112,11 @@ for p=1:pms.numBlocks
                         Screen('FillRect',wPtr,colorEnc,allRects);
                         DrawFormattedText(wPtr, EncSymbol, 'center', 'center', M_color);
                         T.encoding_on(g,p) = GetSecs;
-                        Screen('Flip',wPtr);           
+                        Screen('Flip',wPtr);     
+                        
+%                         imageArray=Screen('GetImage',wPtr);                     
+%                         imwrite(imageArray,sprintf('encoding2%d%d.png',g,p),'png');     
+                        
                         switch trial(g,p).type
                             case 0
                                 WaitSecs(pms.encDurationIgn);
@@ -184,11 +184,11 @@ for p=1:pms.numBlocks
                             Screen('FillRect',wPtr,colorInt,allRects);
                             DrawFormattedText(wPtr, IgnSymbol, 'center', 'center', I_color);
                             T.I_ignore_on(g,p) = GetSecs;
-                            Screen('Flip',wPtr);
+                            Screen('Flip',wPtr);                           
                             WaitSecs(pms.interfDurationIgn);
                             T.I_ignore_off(g,p) = GetSecs;
                         
-                        case 2 %Inteference Update
+                        case 2 %Interference Update
                         
                             switch trial(g,p).setSize
                                 case 1
@@ -219,7 +219,7 @@ for p=1:pms.numBlocks
                             Screen('FillRect',wPtr,colorInt,allRects);
                             DrawFormattedText(wPtr, UpdSymbol, 'center', 'center', U_color);
                             T.I_update_on(g,p) = GetSecs;
-                            Screen('Flip',wPtr);
+                            Screen('Flip',wPtr);                     
                             WaitSecs(pms.interfDurationUpd);
                             T.I_update_off(g,p) = GetSecs;       
                     end % trial.type
@@ -289,7 +289,7 @@ for p=1:pms.numBlocks
                     probeRectY=trial(g,p).locations(1,2);                 
                 end %if practice==1
                 
-                [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
+                [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
 
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
@@ -359,12 +359,14 @@ for p=1:pms.numBlocks
         if practice==0
             bonus = data(g,p).bonus;
             if GetSecs-blockOnset > pms.blockDuration
+                if block==
                 DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to continue the next block.',p ),'center','center',[0 0 0]);
+                
                 Screen('Flip',wPtr);
                 RestrictKeysForKbCheck(32);
                 KbWait();
                 RestrictKeysForKbCheck([])
-                break; %go to next block
+                break; %end numTrials loop and go to next block
             end 
         end         
     end% for g=1:numTrials

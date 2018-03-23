@@ -1,4 +1,4 @@
-function [data, trial, T, bonus] = BeautifulColorwheel(varargin)
+function [data, trial, T, bonus, pms] = BeautifulColorwheel(varargin)
 % Colorhwheel
 %
 % This function presents the colorwheel task - here: part 1 of the
@@ -44,7 +44,7 @@ try
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
     pms.numTrialsPr         = 8;  
     pms.numBlocksPr         = 1; 
-    pms.maxSetsize          = 1; %maximum number of squares used
+    pms.maxSetsize          = 4; %maximum number of squares used
     pms.colorTrials         = 12;    
     %colors
     pms.numWheelColors      = 512;
@@ -79,7 +79,6 @@ try
     pms.delay2DurationUpd   = 4.5;
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 1;
-%     pms.responseDuration    = 0.4;
     pms.jitter              = 0;
     pms.iti                 = 0.1;
     pms.offerduration      = 1.0;
@@ -177,7 +176,7 @@ try
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    [data, T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    [data, T,bonus,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
     
         
     %% Save the data

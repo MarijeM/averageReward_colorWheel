@@ -67,14 +67,15 @@ colorangle      = 360/length(colors);
 %We want to shift the orientation of the colorwheel in every trial so we use an offset. To keep
 %it same for every participant we have saved the offset (using formula starts = randi(360,pms.numTrials,pms.numBlocks) 
 %and we load it.
-switch nargin
-    case 11
-        load starts;
-        wheelStart  = starts(g,p);
-    case 12
-        trial       = varargin{1};
-        wheelStart  = trial(g,p).wheelStart;
-end
+if practice==0
+    trial       = varargin{1};
+    wheelStart  = trial(g,p).wheelValues;
+else 
+    load starts;
+    wheelStart  = starts(g,p);
+end 
+ 
+
 %defines locations of every color arc
 wheelAngles         = wheelStart:colorangle:360+wheelStart;
 
@@ -106,10 +107,7 @@ Screen('FrameRect',wPtr,probeColor,allRects);
 Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
 drawFixationCross(wPtr,rect);
 
-
 probeOnset = Screen('Flip',wPtr);
-%                           imageArray=Screen('GetImage',wPtr);
-%                           imwrite(imageArray,sprintf('Probe%d.png',g,p),'png');
 
 %show and set the mouse in the center
 ShowCursor('Arrow');
