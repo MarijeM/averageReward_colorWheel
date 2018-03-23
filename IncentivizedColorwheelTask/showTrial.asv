@@ -62,6 +62,13 @@ for p=1:pms.numBlocks
                     WaitSecs(pms.offerduration);      
                     Screen('Flip',wPtr);
                     WaitSecs(pms.offerdelay); 
+                    %let them press space to continue (as manipulation check to hopefully see effect of average reward on vigor)
+                    Screen('Textsize', wPtr, 34);
+                    Screen('Textfont', wPtr, 'Times New Roman');
+                    DrawFormattedText(wPtr, offer, 'center', 'center');
+                    DrawFormattedText(wPtr, 'Press space bar to start trial', 'center', 'center');
+                    Screen('Flip',wPtr);
+                    kbwait
                 end 
             elseif phase==2; %cue update or ignore
                 if practice~=1
@@ -359,9 +366,11 @@ for p=1:pms.numBlocks
         if practice==0
             bonus = data(g,p).bonus;
             if GetSecs-blockOnset > pms.blockDuration
-                if block==
-                DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to continue the next block.',p ),'center','center',[0 0 0]);
-                
+                if block==pms.numBlocks
+                    DrawFormattedText(wPtr,sprintf('End of the experiment. Please press space.'),'center','center',[0 0 0]);
+                else 
+                    DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to continue the next block.',p ),'center','center',[0 0 0]);
+                end
                 Screen('Flip',wPtr);
                 RestrictKeysForKbCheck(32);
                 KbWait();

@@ -12,9 +12,9 @@ function [data,T,bonus,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wP
 % dataFilenamePrelim: name for log file between blogs provided by getInfo.m
 
 % make sure there is a maximum time for moving the mouse
-% if ~exist('pms.median_rtMovement', 'var')
-%     pms.median_rtMovement = 0.8;
-% end 
+if ~exist('pms.median_rtMovement', 'var')
+    pms.median_rtMovement = 0.8;
+end 
 
 %trials for practice session
 if practice~=0
@@ -59,7 +59,14 @@ for p=1:pms.numBlocks
                     Screen('Textfont', wPtr, 'Times New Roman');
                     DrawFormattedText(wPtr, offer, 'center', 'center');  
                     Screen('Flip',wPtr);
-                    WaitSecs(pms.offerduration);      
+                    WaitSecs(pms.offerduration+randn(1)*0.1);      
+                    %let them press space to continue (as manipulation check to hopefully see effect of average reward on vigor)
+                    Screen('Textsize', wPtr, 34);
+                    Screen('Textfont', wPtr, 'Times New Roman');
+                    DrawFormattedText(wPtr, offer, 'center', 'center');
+                    DrawFormattedText(wPtr, '[Press space bar to start trial]', 'center', rect(4)/8*7);
+                    Screen('Flip',wPtr);
+                    KbWait();
                     Screen('Flip',wPtr);
                     WaitSecs(pms.offerdelay); 
                 end 
@@ -359,7 +366,7 @@ for p=1:pms.numBlocks
         if practice==0
             bonus = data(g,p).bonus;
             if GetSecs-blockOnset > pms.blockDuration
-                if block==pms.numBlocks
+                if p==pms.numBlocks
                     DrawFormattedText(wPtr,sprintf('End of the experiment. Please press space.'),'center','center',[0 0 0]);
                 else 
                     DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to continue the next block.',p ),'center','center',[0 0 0]);
