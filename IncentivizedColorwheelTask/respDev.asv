@@ -85,15 +85,15 @@ if abs(respDif)>180
    if respDif==abs(respDif)
        respDif=respDif-360;
    else 
-       respDif=respDif+360;
+       respDif=mod(360,abs(respDif));
    end 
 end
 
 if abs(lureDif)>180
    if lureDif==abs(lureDif)
-       lureDif=lureDif-360;
+       lureDif=-(mod(360,lureDif));
    else 
-       lureDif=lureDif+360;
+       lureDif=mod(360,abs(lureDif));
    end 
 end
 end
