@@ -64,8 +64,7 @@ try
     pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated
     pms.allowedResps.drift = 'space';
     pms.allowedResps.driftOK = 'd';
-    pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate
-    pms.diagTol = 100; % diagonal pixels of tolerance for fixation
+    pms.driftShift = [0,0]; % how much to adjust [x,y] for pupil drift, updated every trial
     % timings
     pms.maxRT               = 4; % max RT
     pms.cueduration         = 1.0;
@@ -89,7 +88,7 @@ try
     pms.offerdelay          = 0.2;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward
-    pms.blockDuration       = 0.5*60; %duration in seconds of one block
+    pms.blockDuration       = 3*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else

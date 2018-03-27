@@ -50,6 +50,10 @@ end
 bonus       = 0; %start value of reward/bonus is 0.00
 for p=1:pms.numBlocks
     blockOnset  = GetSecs; %onset time of block. Block lasts 20 min. After 20 min, block ends automatically.
+    pms.driftShift = [0,0]; % how much to adjust [x,y] for pupil drift, updated every trial
+%     if practice==0
+%         EyelinkInitDefaults(wPtr);
+%     end 
     for g=1:pms.numTrials
         for phase = 1:8
             if phase==1 % reward on offer
@@ -64,8 +68,7 @@ for p=1:pms.numBlocks
                     %let them press space to continue (as manipulation check to hopefully see effect of average reward on vigor)
                     Screen('Textsize', wPtr, 34);
                     Screen('Textfont', wPtr, 'Times New Roman');
-                    DrawFormattedText(wPtr, offer, 'center', 'center');
-                    DrawFormattedText(wPtr, '[Press space bar to start trial]', 'center', rect(4)/8*7);
+                    DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);
                     Screen('Flip',wPtr);
                     KbWait();
                     Screen('Flip',wPtr);
