@@ -65,18 +65,8 @@ end
 
 %% Estimating response deviance from correct color angle(tau from theta).
 %We always want the smaller angle created between response and correct
-%color or response and lure, so we use mod.
+%color or response and lure
 
-% respDif=thetaCorrect-tau;
-% lureDif=thetaLure-tau;
-% 
-% if abs(respDif)>180
-%    if respDif==abs(respDif)
-%        respDif=-(mod(360,respDif));
-%    else 
-%        respDif=mod(360,abs(respDif));
-%    end 
-% end
 
 respDif=tau-thetaCorrect;
 lureDif=tau-thetaLure;
