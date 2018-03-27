@@ -59,6 +59,7 @@ for p=1:pms.numBlocks
                     Screen('Textfont', wPtr, 'Times New Roman');
                     DrawFormattedText(wPtr, offer, 'center', 'center');  
                     Screen('Flip',wPtr);
+                    T.offer_on(g,p) = GetSecs;
                     WaitSecs(pms.offerduration+randn(1)*0.1);      
                     %let them press space to continue (as manipulation check to hopefully see effect of average reward on vigor)
                     Screen('Textsize', wPtr, 34);
@@ -68,6 +69,7 @@ for p=1:pms.numBlocks
                     Screen('Flip',wPtr);
                     KbWait();
                     Screen('Flip',wPtr);
+                    T.offer_off(g,p) = GetSecs;
                     WaitSecs(pms.offerdelay); 
                 end 
             elseif phase==2; %cue update or ignore
@@ -81,7 +83,9 @@ for p=1:pms.numBlocks
                    end 
                    DrawFormattedText(wPtr, cueText, 'center', 'center', cue_color);  
                    Screen('Flip',wPtr);               
-                   WaitSecs(pms.cueduration); 
+                   T.cue_on(g,p) = GetSecs;
+                   WaitSecs(pms.cueduration);
+                   T.cue_off(g,p) = GetSecs;
                    Screen('Flip',wPtr);
                    WaitSecs(pms.cuedelay);
                 end
@@ -294,10 +298,11 @@ for p=1:pms.numBlocks
                     %location/square
                     probeRectX=trial(g,p).locations(1,1);
                     probeRectY=trial(g,p).locations(1,2);                 
-                end %if practice==1
+                end %if practice==0
                 
+                T.probe_on(g,p) = GetSecs;
                 [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
-
+                T.probe_off(g,p) = GetSecs;
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
             elseif phase==8 % feedback about their reward
@@ -308,12 +313,15 @@ for p=1:pms.numBlocks
                    if correct==1 % if they were accurate enough
                        DrawFormattedText(wPtr,sprintf('You win %d ct',trial(g,p).offer),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
+                       T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
                    else 
                        DrawFormattedText(wPtr,'You win nothing', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
+                       T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
-                   end 
+                   end
+                   T.feedback_off(g,p) = GetSecs;
                end 
                 
        
@@ -359,7 +367,7 @@ for p=1:pms.numBlocks
                     data(g,p).interColLoc3=trial(g,p).interColLoc3;
                     data(g,p).interColLoc4=trial(g,p).interColLoc4;
                 end
-                save(fullfile(pms.subdirICW,dataFilenamePrelim),'data');
+                save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T');
             end %if phase ==1
         end % for phase 1:6
         % break after each block (after 20 min)
