@@ -62,7 +62,7 @@ try
     pms.matlabVersion       = 'R2016a';
     %eyelink parameters
     pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated
-    pms.allowedResps.drift = 'space';
+    pms.allowedResps.drift = 'left_control';
     pms.allowedResps.driftOK = 'd';
     pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate
     pms.diagTol = 100; % diagonal pixels of tolerance for fixation
@@ -71,21 +71,17 @@ try
     pms.cueduration         = 1.0;
     pms.cuedelay            = 0.5;
     pms.encDuration         = 0.5;    %2 seconds of encoding
-    pms.encDurationIgn      = 0.5;
-    pms.encDurationUpd      = 0.5;
     pms.delay1DurationPr    = 0.5; %2 seconds of delay 1 during practice
-    pms.delay1DurationUpd   = 0.5;
-    pms.delay1DurationIgn   = 0.5;        
+    pms.delay1Duration      = 0.5;      
     pms.interfDurationPr    = 0.5; %2 seconds interfering stim during practice
-    pms.interfDurationIgn   = 0.5;
-    pms.interfDurationUpd   = 0.5;
+    pms.interfDuration      = 0.5;
     pms.delay2DurationIgnPr = 0.5; %2 seconds of delay 2 during practice
     pms.delay2DurationUpdPr = 1.5;
     pms.delay2DurationIgn   = 0.5;
     pms.delay2DurationUpd   = 1.5;
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 1;
-    pms.offerduration       = 0.75;
+%     pms.offerduration       = 0.75;
     pms.offerdelay          = 0.2;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward
@@ -180,7 +176,7 @@ try
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    [data, T,bonus,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    [data, T,bonus,pms,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
     
         
     %% Save the data

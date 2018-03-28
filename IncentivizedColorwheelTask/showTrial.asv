@@ -130,6 +130,7 @@ for p=1:pms.numBlocks
                     Screen('Flip',wPtr);
                     KbWait();
                     T.offer_off(g,p) = Screen('Flip',wPtr);
+                    T.offer_off(g,p) = GetSecs;
                     WaitSecs(pms.offerdelay); 
                 end 
             elseif phase==2; %cue update or ignore
@@ -142,9 +143,11 @@ for p=1:pms.numBlocks
                        cueText     = 'update';
                    end 
                    DrawFormattedText(wPtr, cueText, 'center', 'center', cue_color);  
-                   T.cue_on(g,p) = Screen('Flip',wPtr);               
+                   Screen('Flip',wPtr);               
+                   T.cue_on(g,p) = GetSecs;
                    WaitSecs(pms.cueduration);
-                   T.cue_off(g,p) = Screen('Flip',wPtr);
+                   T.cue_off(g,p) = GetSecs;
+                   Screen('Flip',wPtr);
                    WaitSecs(pms.cuedelay);
                 end
             elseif phase==3    % encoding phase
@@ -178,17 +181,19 @@ for p=1:pms.numBlocks
                                 
                         Screen('FillRect',wPtr,colorEnc,allRects);
                         DrawFormattedText(wPtr, EncSymbol, 'center', 'center', M_color);
-                        T.encoding_on(g,p) = Screen('Flip',wPtr);     
+                        T.encoding_on(g,p) = GetSecs;
+                        onset = Screen('Flip',wPtr);     
 
 %                         imageArray=Screen('GetImage',wPtr);                     
 %                         imwrite(imageArray,sprintf('encoding2%d%d.png',g,p),'png');  
-                        [itrack_encoding] = sampleGaze(driftShift,T.encoding_on(g,p),pms.encDuration)                        
+                        [itrack_encoding] = sampleGaze(driftShift,onset,pms.encDuration)                        
                         T.encoding_off(g,p) = GetSecs;                        
                 
             elseif phase==4      %delay 1 phase
                 
                 drawFixationCross(wPtr,rect);
-                T.delay1_on(g,p) = Screen('Flip',wPtr);
+                Screen('Flip',wPtr);
+                T.delay1_on(g,p) = GetSecs;
                 
                 if practice==1 
                     WaitSecs(pms.delay1DurationPr);
@@ -275,15 +280,17 @@ for p=1:pms.numBlocks
                                                                 
                             Screen('FillRect',wPtr,colorInt,allRects);
                             DrawFormattedText(wPtr, UpdSymbol, 'center', 'center', U_color);
-                            T.interference_on(g,p) = Screen('Flip',wPtr);                     
-                            [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDurationUpd)
+                            T.I_update_on(g,p) = GetSecs;
+                            Screen('Flip',wPtr);                     
+                            WaitSecs(pms.interfDurationUpd);
                             T.interference_off(g,p) = GetSecs;       
                     end % trial.type
                 
             elseif phase==6 %phase delay 2
                 
+                T.delay2_on(g,p) = GetSecs;
                 drawFixationCross(wPtr,rect);
-                T.delay2_on(g,p) = Screen('Flip',wPtr);
+                Screen('Flip',wPtr);
                 
                 if practice~=0         
                     switch trial(g,p).type
