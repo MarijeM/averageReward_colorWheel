@@ -345,7 +345,7 @@ for p=1:pms.numBlocks
                 end %if practice==0
                 
                 T.probe_on(g,p) = GetSecs;
-                [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
+                [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct,itrack_probe]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
                 T.probe_off(g,p) = GetSecs;
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
@@ -410,8 +410,10 @@ for p=1:pms.numBlocks
                     data(g,p).interColLoc2=trial(g,p).interColLoc2;
                     data(g,p).interColLoc3=trial(g,p).interColLoc3;
                     data(g,p).interColLoc4=trial(g,p).interColLoc4;
-                    gazedata(trial) = eyetrack; % save all eyetracker data here
-                    pms.driftShift = eyetrack.driftShift; % update for next trial
+                    gazedata(g,p).encoding = itrack_encoding; % save all eyetracker data here
+                    gazedata(g,p).interference = itrack_interference; % save all eyetracker data here
+                    gazedata(g,p).probe = itrack_probe; % save all eyetracker data here
+                    pms.driftShift = itrack.driftShift; % update for next trial
                 end
                 save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T', 'gazedata');
             end %if phase ==1
