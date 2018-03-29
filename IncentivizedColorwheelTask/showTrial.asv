@@ -62,6 +62,7 @@ for p=1:pms.numBlocks
     for g=1:pms.numTrials
         for phase = 1:8
             if phase==1 % reward on offer
+                valid = 1;
                 if practice==0
                     offer = sprintf('%d', trial(g,p).offer);
                     Screen('Textsize', wPtr, 34);
@@ -130,9 +131,9 @@ for p=1:pms.numBlocks
                     Screen('Flip',wPtr);
                     KbWait();
                     T.offer_off(g,p) = Screen('Flip',wPtr);
-                    T.offer_off(g,p) = GetSecs;
                     WaitSecs(pms.offerdelay); 
                 end 
+                valid = valid +1;
             elseif phase==2; %cue update or ignore
                 if practice~=1
                    Screen('Textsize', wPtr, 34);
@@ -143,13 +144,12 @@ for p=1:pms.numBlocks
                        cueText     = 'update';
                    end 
                    DrawFormattedText(wPtr, cueText, 'center', 'center', cue_color);  
-                   Screen('Flip',wPtr);               
-                   T.cue_on(g,p) = GetSecs;
+                   T.cue_on(g,p) = Screen('Flip',wPtr);               
                    WaitSecs(pms.cueduration);
-                   T.cue_off(g,p) = GetSecs;
-                   Screen('Flip',wPtr);
+                   T.cue_off(g,p) = Screen('Flip',wPtr);
                    WaitSecs(pms.cuedelay);
                 end
+                valid = valid +1;
             elseif phase==3    % encoding phase
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
@@ -181,31 +181,32 @@ for p=1:pms.numBlocks
                                 
                         Screen('FillRect',wPtr,colorEnc,allRects);
                         DrawFormattedText(wPtr, EncSymbol, 'center', 'center', M_color);
-                        T.encoding_on(g,p) = GetSecs;
-                        onset = Screen('Flip',wPtr);     
+                        T.encoding_on(g,p) = Screen('Flip',wPtr);     
 
 %                         imageArray=Screen('GetImage',wPtr);                     
 %                         imwrite(imageArray,sprintf('encoding2%d%d.png',g,p),'png');  
-                        [itrack_encoding] = sampleGaze(driftShift,onset,pms.encDuration)                        
-                        T.encoding_off(g,p) = GetSecs;                        
-                
+                        [itrack_encoding] = sampleGaze(driftShift,T.encoding_on(g,p),pms.encDuration)                        
+                        T.encoding_off(g,p) = GetSecs;                                         
+                 if sum(itrack_encoding.X < 0.4*rect(3)-100 || itrack_encoding.X > 0.6*rect(3)+100 || itrack_encoding.Y < 0.4*rect(4)-100 || itrack_encoding.X > 0.6*rect(4)+100) > 80 % if eyes were closed for too long (negative x and y values) or gaze was not directed at the squares or the center of the screen during approx 40% of encoding, trial will be marked as invalid.
+                     continue;
+                 end 
+                 valid = valid +1;
             elseif phase==4      %delay 1 phase
-                
+                if valid ~= phase
+                    DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
+                    Screen('Flip',wPtr);
+                    WaitSecs(pms.delay1Duration);
+                    continue; 
+                end 
                 drawFixationCross(wPtr,rect);
-                Screen('Flip',wPtr);
-                T.delay1_on(g,p) = GetSecs;
+                T.delay1_on(g,p) = Screen('Flip',wPtr);
                 
                 if practice==1 
                     WaitSecs(pms.delay1DurationPr);
                 else
                     switch nargin   %number of arguments
                         case 6      % 6 arguments in showTrial function: 
-                            switch trial(g,p).type
-                                case 0
-                                    WaitSecs(pms.delay1DurationIgn);
-                                case 2
-                                    WaitSecs(pms.delay1DurationUpd);
-                            end
+                            WaitSecs(pms.delay1Duration);
                         case 7      % 7 arguments in showTrial function:
                             if varargin{1}==1   %and variable argument is 1 (manipulation)
                                 WaitSecs(trial(g,p).delay1)     %use predefined delays in trial.mat
@@ -213,8 +214,14 @@ for p=1:pms.numBlocks
                     end
                 end
                 T.delay1_off(g,p) = GetSecs;
-                
+                valid = valid +1;
             elseif phase==5 %interference phase
+                if valid ~= phase
+                    DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
+                    Screen('Flip',wPtr);
+                    WaitSecs(pms.interfDuration);
+                    continue; 
+                end 
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');              
                     switch trial(g,p).type
@@ -247,7 +254,7 @@ for p=1:pms.numBlocks
                             Screen('FillRect',wPtr,colorInt,allRects);
                             DrawFormattedText(wPtr, IgnSymbol, 'center', 'center', I_color);
                             T.interference_on(g,p) = Screen('Flip',wPtr); 
-                            [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDurationIgn)
+                            [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration)
                             T.interference_off(g,p) = GetSecs;
                         
                         case 2 %Interference Update
@@ -280,17 +287,25 @@ for p=1:pms.numBlocks
                                                                 
                             Screen('FillRect',wPtr,colorInt,allRects);
                             DrawFormattedText(wPtr, UpdSymbol, 'center', 'center', U_color);
-                            T.I_update_on(g,p) = GetSecs;
-                            Screen('Flip',wPtr);                     
-                            WaitSecs(pms.interfDurationUpd);
+                            T.interference_on(g,p) = Screen('Flip',wPtr);                     
+                            [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration)
                             T.interference_off(g,p) = GetSecs;       
                     end % trial.type
                 
             elseif phase==6 %phase delay 2
-                
-                T.delay2_on(g,p) = GetSecs;
+                if valid ~= phase
+                    DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
+                    Screen('Flip',wPtr);    
+                    switch trial(g,p).type
+                        case 0
+                            WaitSecs(pms.delay2DurationIgn);
+                        case 2
+                            WaitSecs(pms.delay2DurationUpd);
+                    end
+                    continue; 
+                end 
                 drawFixationCross(wPtr,rect);
-                Screen('Flip',wPtr);
+                T.delay2_on(g,p) = Screen('Flip',wPtr);
                 
                 if practice~=0         
                     switch trial(g,p).type
@@ -320,7 +335,12 @@ for p=1:pms.numBlocks
                 
                 
             elseif phase==7  %probe phase
-                
+                if valid ~= phase
+                    DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
+                    Screen('Flip',wPtr);
+                    WaitSecs(pms.maxRT + pms.median_rtMovement);
+                    continue; 
+                end 
                 if practice~=0 
                     locationsrect=trial(g,p).locations;
                     %for practice we randomly select a square for probe. Index2 
@@ -352,7 +372,7 @@ for p=1:pms.numBlocks
                 end %if practice==0
                 
                 T.probe_on(g,p) = GetSecs;
-                [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
+                [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct,itrack_probe]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
                 T.probe_off(g,p) = GetSecs;
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
@@ -417,8 +437,10 @@ for p=1:pms.numBlocks
                     data(g,p).interColLoc2=trial(g,p).interColLoc2;
                     data(g,p).interColLoc3=trial(g,p).interColLoc3;
                     data(g,p).interColLoc4=trial(g,p).interColLoc4;
-                    gazedata(trial) = eyetrack; % save all eyetracker data here
-                    pms.driftShift = eyetrack.driftShift; % update for next trial
+                    gazedata(g,p).encoding = itrack_encoding; % save all eyetracker data here
+                    gazedata(g,p).interference = itrack_interference; % save all eyetracker data here
+                    gazedata(g,p).probe = itrack_probe; % save all eyetracker data here
+                    pms.driftShift = itrack.driftShift; % update for next trial
                 end
                 save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T', 'gazedata');
             end %if phase ==1
