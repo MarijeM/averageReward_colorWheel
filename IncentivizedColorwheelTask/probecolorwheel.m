@@ -118,17 +118,20 @@ response = 0;
 if mod(g,10)==0 %if devisible by 10
    pms.median_rtMovement = pms.median_rtMovement-0.1; % in 10% of cases, every 10th trial, participants have 100ms less to reach the wheel, to promote fast responding
 end
-[itrack,sampleTime] = sampleGaze(driftShift,probeOnset,[],1)
+if practice == 0
+    [itrack,sampleTime] = sampleGaze(driftShift,probeOnset,[],1)
+end
 while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start moving the mouse, but within maxRT
     [x,y,~]     = GetMouse(wPtr); %constantly read mouse position
     radius      = sqrt((x-centerX)^2+(y-centerY)^2);  % calculate radius based on x and y coordinate of the mouse
     %track gaze
-    sample = getEyelinkData();
-    x = sample(1); y = sample(2); %get the x and y coordinates of the current eye trace
-    p = sample(3); st = sample(4);
-    sampleTime = GetSecs();
-    itrack.X=[itrack.X;x]; itrack.Y=[itrack.Y;y]; itrack.Xdrift=[itrack.Xdrift;x+driftShift(1)]; itrack.Ydrift=[itrack.Ydrift;y+driftShift(2)]; itrack.pSize=[itrack.pSize;p]; itrack.sampleTimes=[itrack.sampleTimes;st,sampleTime-probeOnset];
-          
+    if practice == 0
+        sample = getEyelinkData();
+        x = sample(1); y = sample(2); %get the x and y coordinates of the current eye trace
+        p = sample(3); st = sample(4);
+        sampleTime = GetSecs();
+        itrack.X=[itrack.X;x]; itrack.Y=[itrack.Y;y]; itrack.Xdrift=[itrack.Xdrift;x+driftShift(1)]; itrack.Ydrift=[itrack.Ydrift;y+driftShift(2)]; itrack.pSize=[itrack.pSize;p]; itrack.sampleTimes=[itrack.sampleTimes;st,sampleTime-probeOnset];
+    end       
     if radius > 25 %if they move far enough away from the center, time starts and we measure how long their motor response takes. They are instructed to only start moving the mouse once they have made a decision. 
         startResponse = GetSecs;
         rtDecision  = startResponse - probeOnset;
@@ -137,12 +140,13 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
             [x,y,~]     = GetMouse(wPtr); %constantly read mouse position
             radius      = sqrt((x-centerX)^2+(y-centerY)^2);                
             %track gaze
-            sample = getEyelinkData();
-            x = sample(1); y = sample(2); %get the x and y coordinates of the current eye trace
-            p = sample(3); st = sample(4);
-            sampleTime = GetSecs();
-            itrack.X=[itrack.X;x]; itrack.Y=[itrack.Y;y]; itrack.Xdrift=[itrack.Xdrift;x+driftShift(1)]; itrack.Ydrift=[itrack.Ydrift;y+driftShift(2)]; itrack.pSize=[itrack.pSize;p]; itrack.sampleTimes=[itrack.sampleTimes;st,sampleTime-probeOnset];
-       
+            if practice == 0
+                sample = getEyelinkData();
+                x = sample(1); y = sample(2); %get the x and y coordinates of the current eye trace
+                p = sample(3); st = sample(4);
+                sampleTime = GetSecs();
+                itrack.X=[itrack.X;x]; itrack.Y=[itrack.Y;y]; itrack.Xdrift=[itrack.Xdrift;x+driftShift(1)]; itrack.Ydrift=[itrack.Ydrift;y+driftShift(2)]; itrack.pSize=[itrack.pSize;p]; itrack.sampleTimes=[itrack.sampleTimes;st,sampleTime-probeOnset];
+            end 
             if radius > abs(insideRect(1)-insideRect(3))/2 %when the mouse reaches the color wheel
                 RT          = GetSecs; 
                 respX       = x;

@@ -26,6 +26,7 @@ Screen('TextSize',wPtr,16);
 Screen('TextStyle',wPtr,1);
 Screen('TextFont',wPtr,'Courier New');
 
+
 EncSymbol       = 'M';
 UpdSymbol       = 'U';
 IgnSymbol       = 'I';
@@ -40,7 +41,6 @@ cue_color       = [0 50 210]; %blue
 rectOne         = [0 0 100 100];
 rectTwo         = [0 0 25 25];
 data            = struct();
-ovalRect        = CenterRectOnPoint(rectTwo,pms.xCenter,pms.yCenter);
 
 %% loop around trials and blocks for stimulus presentation
 if practice == 0               
@@ -49,16 +49,16 @@ end
 
 bonus       = 0; %start value of reward/bonus is 0.00
 for p=1:pms.numBlocks
-    blockOnset  = GetSecs; %onset time of block. Block lasts 20 min. After 20 min, block ends automatically.
-    
     %set up eyetracking
     pms.driftShift = [0,0]; % how much to adjust [x,y] for pupil drift, updated every trial
     if practice==0
         EyelinkInitDefaults(wPtr);
         pms.el = EyelinkSetup(1,wPtr);
         Eyelink('StartRecording')
+        Screen('FillRect', wPtr, pms.background, rect);
     end 
-
+    
+    blockOnset  = GetSecs; %onset time of block. Block lasts 20 min. After 20 min, block ends automatically.
     for g=1:pms.numTrials
         for phase = 1:8
             if phase==1 % reward on offer
@@ -185,9 +185,13 @@ for p=1:pms.numBlocks
 
 %                         imageArray=Screen('GetImage',wPtr);                     
 %                         imwrite(imageArray,sprintf('encoding2%d%d.png',g,p),'png');  
-                        [itrack_encoding] = sampleGaze(driftShift,T.encoding_on(g,p),pms.encDuration)                        
-                        T.encoding_off(g,p) = GetSecs;                                         
-                 if sum(itrack_encoding.X < 0.4*rect(3)-100 || itrack_encoding.X > 0.6*rect(3)+100 || itrack_encoding.Y < 0.4*rect(4)-100 || itrack_encoding.X > 0.6*rect(4)+100) > 80 % if eyes were closed for too long (negative x and y values) or gaze was not directed at the squares or the center of the screen during approx 40% of encoding, trial will be marked as invalid.
+                        if practice == 0
+                            [itrack_encoding] = sampleGaze(driftShift,T.encoding_on(g,p),pms.encDuration); 
+                        else
+                            WaitSecs(pms.encDuration);
+                        end 
+                        T.encoding_off(g,p) = GetSecs;
+                 if practice==0 && (sum(itrack_encoding.X < 0.4*rect(3)-100 | itrack_encoding.X > 0.6*rect(3)+100 | itrack_encoding.Y < 0.4*rect(4)-100 | itrack_encoding.Y > 0.6*rect(4)+100) > 80) % if eyes were closed for too long (negative x and y values) or gaze was not directed at the squares or the center of the screen during approx 40% of encoding, trial will be marked as invalid.
                      continue;
                  end 
                  valid = valid +1;
@@ -254,7 +258,11 @@ for p=1:pms.numBlocks
                             Screen('FillRect',wPtr,colorInt,allRects);
                             DrawFormattedText(wPtr, IgnSymbol, 'center', 'center', I_color);
                             T.interference_on(g,p) = Screen('Flip',wPtr); 
-                            [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration)
+                            if practice == 0
+                                [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration);                        
+                            else
+                                WaitSecs(pms.interfDuration);
+                            end 
                             T.interference_off(g,p) = GetSecs;
                         
                         case 2 %Interference Update
@@ -288,10 +296,14 @@ for p=1:pms.numBlocks
                             Screen('FillRect',wPtr,colorInt,allRects);
                             DrawFormattedText(wPtr, UpdSymbol, 'center', 'center', U_color);
                             T.interference_on(g,p) = Screen('Flip',wPtr);                     
-                            [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration)
+                            if practice == 0
+                                [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration);                        
+                            else
+                                WaitSecs(pms.interfDuration);
+                            end 
                             T.interference_off(g,p) = GetSecs;       
                     end % trial.type
-                 if sum(itrack_interference.X < 0.4*rect(3)-100 || itrack_interference.X > 0.6*rect(3)+100 || itrack_interference.Y < 0.4*rect(4)-100 || itrack_interference.X > 0.6*rect(4)+100) > 80 % if eyes were closed for too long (negative x and y values) or gaze was not directed at the squares or the center of the screen during approx 40% of encoding, trial will be marked as invalid.
+                 if practice == 0 && (sum(itrack_interference.X < 0.4*rect(3)-100 | itrack_interference.X > 0.6*rect(3)+100 | itrack_interference.Y < 0.4*rect(4)-100 | itrack_interference.Y > 0.6*rect(4)+100) > 80) % if eyes were closed for too long (negative x and y values) or gaze was not directed at the squares or the center of the screen during approx 40% of encoding, trial will be marked as invalid.
                      continue;
                  end 
                  valid = valid +1;
@@ -341,6 +353,7 @@ for p=1:pms.numBlocks
                 if valid ~= phase
                     DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
                     Screen('Flip',wPtr);
+                    correct = 0;
                     WaitSecs(pms.maxRT + pms.median_rtMovement);
                     continue; 
                 end 
@@ -375,7 +388,11 @@ for p=1:pms.numBlocks
                 end %if practice==0
                 
                 T.probe_on(g,p) = GetSecs;
-                [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct,itrack_probe]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial);
+                if practice == 0
+                     [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct,itrack_probe]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,driftShift, trial);
+                else 
+                     [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p);
+                end
                 T.probe_off(g,p) = GetSecs;
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
@@ -424,7 +441,8 @@ for p=1:pms.numBlocks
                 if practice~=1
                     data(g,p).cue = trial(g,p).cue;
                     data(g,p).valid = trial(g,p).valid;
-                end 
+                end
+                save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T');
                 if practice==0
                     if correct==1 %if they did better than a maximum deviance
                         data(g,p).reward=trial(g,p).offer;
@@ -443,9 +461,9 @@ for p=1:pms.numBlocks
                     gazedata(g,p).encoding = itrack_encoding; % save all eyetracker data here
                     gazedata(g,p).interference = itrack_interference; % save all eyetracker data here
                     gazedata(g,p).probe = itrack_probe; % save all eyetracker data here
-                    pms.driftShift = itrack.driftShift; % update for next trial
+                    pms.driftShift = driftShift; % update for next trial
+                    save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T', 'gazedata');
                 end
-                save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T', 'gazedata');
             end %if phase ==1
         end % for phase 1:6
         % break after each block (after 20 min)

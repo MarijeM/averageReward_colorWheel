@@ -1,5 +1,5 @@
 function [data, trial, T, bonus, pms] = BeautifulColorwheel(varargin)
-% Colorhwheel
+% Colorwheel
 %
 % This function presents the colorwheel task - here: part 1 of the
 % QuantifyingCC study: incentivized version!!!. 
@@ -169,16 +169,19 @@ try
        getInstructions(3,pms,wPtr);
        [trial]= trialstruct(pms,rect,1,1);  
     elseif practice==0
-       getInstructions(4,pms,wPtr);
+%        getInstructions(4,pms,wPtr);
        [trial]=defstruct(pms,rect); 
     end
 
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    [data, T,bonus,pms,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    if practice == 0
+        [data, T,bonus,pms,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    else 
+        [data, T,bonus,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    end
     
-        
     %% Save the data
     save(fullfile(pms.subdirICW,dataFilename));
     %% Close-out tasks

@@ -90,7 +90,7 @@ elseif level==4
     Instruction{10}='Good luck with the memory task!';
     
 elseif level==5
-    Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', bonus/1000));
+    Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', bonus/2000));
 
 end %level
 
