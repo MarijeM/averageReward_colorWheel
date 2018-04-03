@@ -36,8 +36,8 @@ for n=1:numSetsize
         location = repmat(location,ceil(trialsPerSZ/size(location,1)),1);      
         location([trialsPerSZ+1:end],:) = [];    
     case 3
-        location = [1 2 3; 2 1 4; 3 2 4; 4 1 3; 1 2 4; 2 1 3; 3 1 2; 4 2 3; 1 3 4; 2 3 4; 3 1 4; 4 1 2];  
-        location = location(repmat(1:size(location,1),4,ceil(trialsPerSZ/46)),:);   
+        location = [1 2 3; 1 2 4; 1 3 4; 2 1 3; 2 1 4; 2 3 4; 3 1 2; 3 1 4; 3 2 4; 4 1 2; 4 1 3; 4 2 3];
+        location = location(repmat(1:size(location,1),4,3),:);   
         location([trialsPerSZ+1:end],:) = [];    
     case 4
         location = [1 2 3 4; 2 1 3 4; 3 1 2 4; 4 1 2 3];
@@ -86,8 +86,6 @@ for n=1:numSetsize
 
 %% assign cue ("it will likely be update/ignore") and validity of cue (indeed update/ignore). valid = 1, invalid = 0. 
 cues = zeros(trialsPerSZ,1);  % set all trials to default valid (=0)
-even = [2:2:length(cues)];
-odd = [1:2:length(cues)];
 cues(even) = 2; % set all update trials to default valid (=2)
 n_valid = round(0.75*trialsPerSZ/length(conditions));     
 n_invalid = trialsPerSZ/length(conditions)-n_valid;
@@ -117,7 +115,7 @@ valid(find(cues==0 & cond==0 | cues==2 & cond==2)) = 1;
        end        
     end
     
-    filename = sprintf('Stimuli_%d.mat', n);
+    filename = sprintf('stimuliTest_%d.mat', n);
     save(filename,'Stimuli');
 
 % %% Divide stimuli into blocks
