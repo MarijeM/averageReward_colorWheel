@@ -36,7 +36,7 @@ IgnSymbol       = 'I';
 M_color         = [0 0 0];
 U_color         = [0 0 0];
 I_color         = [0 0 0];
-cue_color       = [0 50 210]; %blue
+cue_color       = [0 0 0]; %black
 %rect size
 rectOne         = [0 0 100 100];
 rectTwo         = [0 0 25 25];
@@ -56,6 +56,9 @@ for p=1:pms.numBlocks
         pms.el = EyelinkSetup(1,wPtr);
         Eyelink('StartRecording')
         Screen('FillRect', wPtr, pms.background, rect);
+        DrawFormattedText(wPtr, 'Good luck with the memory task!\n Please keep your hand on the mouse', 'center', 'center');
+        Screen('Flip',wPtr);
+        WaitSecs(3); 
     end 
     
     blockOnset  = GetSecs; %onset time of block. Block lasts 20 min. After 20 min, block ends automatically.
@@ -128,6 +131,7 @@ for p=1:pms.numBlocks
                     Screen('Textsize', wPtr, 34);
                     Screen('Textfont', wPtr, 'Times New Roman');
                     DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);
+                    DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, cue_color);
                     Screen('Flip',wPtr);
                     KbWait();
                     T.offer_off(g,p) = Screen('Flip',wPtr);

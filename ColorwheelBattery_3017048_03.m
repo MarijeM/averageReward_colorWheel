@@ -39,8 +39,8 @@ cd(pms.inccwdir);
 disp('TASK: Color Wheel');          % display which task starts.
 WaitSecs(2); %show message for 2 sec
 
-[~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1 
-BeautifulColorwheel(subNo,2,pms); %practice=2: practice with cues
+% [~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1 
+% BeautifulColorwheel(subNo,2,pms); %practice=2: practice with cues
 BeautifulColorwheel(subNo,0,pms); %practice=0
 
 cd(pms.rootdir)

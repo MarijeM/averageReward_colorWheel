@@ -23,13 +23,13 @@ HideCursor;
 
 if level==1
     Instruction{1} = 'Welcome to our color wheel memory task.\n\n You can walk through the instructions by using the left and right arrow keys.\n Press the right arrow to start...';
-    Instruction{2} = 'Before we start we need to check your color sensitivity. \n\n You will see a colored square in the middle of the screen.\n\n You should find the corresponding color on a color wheel around the square and click it!'; 
-    Instruction{3} = 'Responding works like this:\n\nFirst you determine the correct color on the color wheel.\n\nOnce you know where you want to click, you move the arrow to that color on the color wheel as fast as possible, but still try to be as accurate as possible. You don''t have to click on the wheel, you only need to hover over it. Once you reach a particular color on the wheel, that color is taken as your answer.\n\n\nPlease note that in order to answer as quickly as possible after you have started moving the mouse, you should first decide on the color before moving the mouse.\n\n\n\n\nPress space to start.';
+    Instruction{2} = 'Before we start we need to check your color sensitivity. \n\n You will see a colored square in the middle of the screen.\n\n You should find the corresponding color on a color wheel around the square!'; 
+    Instruction{3} = 'Responding works like this:\n\nFirst you determine the correct color on the color wheel.\nOnce you have decided on the color, you move the arrow to that color on the color wheel as fast as possible, but still try to be as accurate as possible. You don''t have to click on the wheel, you only need to move your mouse towards it. Once you reach a particular color on the wheel, that color is taken as your answer.\nPlease note that in order to move the mouse towards the color wheel as quickly as possible, you should first decide on the color before moving the mouse.\n\n A line appears which indicates your response. A second line indicates the correct color.\n\n\n\n\nPress space to start.';
 
 elseif level==2
     
     Instruction{1} = 'This task consists of multiple trials.';
-    Instruction{2} = 'Every trial consists of 3 phases. First, you will have to memorize colors and locations. Then, you see new colors that you might need to memorize. Finally you are tested on our color wheel!';
+    Instruction{2} = 'Every trial consists of 3 phases. First, you will have to memorize colors. Then, you see new colors that you might need to memorize. Finally you are tested on our color wheel!';
     Instruction{3} =sprintf('Phase 1: you will see colored squares and the letter "M" (memorize) on the screen.\n The squares will be shown for %.1f seconds.',pms.encDuration);
     Instruction{4} = 'You always need to memorize the colors and the locations of the squares.';
     imgEnc=imread(sprintf('encoding%d.png',pms.maxSetsize));
@@ -44,10 +44,10 @@ elseif level==2
     imgUpdate=imread(sprintf('update%d.png',pms.maxSetsize));
     imageUpdate=Screen('MakeTexture',wPtr,imgUpdate);
     Instruction{10}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Phase 2: Update these squares to your memory.' ;
-    Instruction{11} = sprintf('Phase 1:\n You always MEMORIZE the colors and locations of the squares.\n\n Phase 2:\n If the letter in the centre is I:\nyou IGNORE the new colors in phase 2.\n If the letter in the centre is U:\n you UPDATE your memory with ONLY the new squares.\n\n Phase 3:\n You see a color wheel and the frame of a square without color.\n You need to indicate by hovering over the wheel, which color you needed to remember.\n You have %d seconds to respond.',pms.maxRT);
+    Instruction{11} = 'Phase 1:\n You always MEMORIZE the colors and locations of the squares.\n\n Phase 2:\n If the letter in the centre is I:\nyou IGNORE the new colors in phase 2.\n If the letter in the centre is U:\n you UPDATE your memory with ONLY the new squares.\n\n Phase 3:\n You see a color wheel and the frame of a square without color.\n You need to indicate by moving towards the wheel, which color you needed to remember.';
     imgProbe=imread(sprintf('probe%d.png',pms.maxSetsize));
     imageProbe=Screen('MakeTexture',wPtr,imgProbe);
-    Instruction{12}='\nHover over the correct color!\n(Not now, this is an example!)';
+    Instruction{12}='\nMove towards the correct color!\n(Not now, this is an example!)';
     Instruction{13}='Only your first response counts. Please always try to respond, even if you are not certain, and try to be as accurate and fast as possible. Keep your hand on the mouse so that you have enough time to respond.';
     Instruction{14}='Please always look at the screen while doing the task.';
     Instruction{15} ='Summary: \n\n Phase 1:\n You always MEMORIZE the colors and locations of the squares.\n\n Phase 2:\n If the letter in the centre is I:\n you IGNORE the new colors in phase 2.\n If the letter in the centre is U:\n you UPDATE your memory with ONLY the new squares.\n\n Phase 3: On the color wheel you indicate which color you needed to remember.';
@@ -58,12 +58,12 @@ elseif level==2
     Instruction{18}='Of all colors you need to indicate \n only the color of the highlighted square.';
     Instruction{19}='\n\n\n\n\n\n\n\n\n\n\n\n Not now, this is still an example.';
     imageProbe=Screen('MakeTexture',wPtr,imgProbe);
-    Instruction{20} = 'Is everything clear?\n\n It is very important that you understand this part well and we realize that it might be confusing in the beginning.\n You will now do some practice trials.';
+    Instruction{20} = 'Is everything clear?\n\n It is very important that you understand this part well and we realize that it might be confusing in the beginning.\n You will now do some practice trials.\nPlease keep your hand on the mouse.';
     
 elseif level==3
     
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
-    Instruction{2}='During the actual memory task, you will only see where you clicked on the color wheel, you will not see the correct response anymore.';
+    Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
     Instruction{3}='Before every new trial you will now see a cue.\n\nThis cue tells you something about the upcoming trial.';
     Instruction{4}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If the cue says ignore, you will most likely get an ignore trial. \n However, in 25% of the cases you will get an update trial although the cue says ignore.';
     imgIgnoreCue=imread('ignorecue.png');
@@ -72,28 +72,27 @@ elseif level==3
     imgUpdateCue=imread('updatecue.png');
     imageUpdateCue=Screen('MakeTexture',wPtr,imgUpdateCue);
     Instruction{6} = 'After the cue, the trial begins.';
-    Instruction{7} = 'You will now get a few examples to practice.';
+    Instruction{7} = 'You will now get a few examples to practice.\nPlease keep your hand on the mouse.';
     
 elseif level==4
     
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
     Instruction{2}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break and continue with the task when you are ready.',pms.numBlocks);
-    Instruction{3}='Each blocks lasts 20 minutes, and you will complete as many trials as you can within those 20 minutes.';
+    Instruction{3}='Each block lasts 20 minutes, and you will complete as many trials as you can within those 20 minutes.';
     Instruction{4}='On each trial you can win points.';
     Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many points you can win on that trial.';
     imgReward=importdata('Rewardcue.png');
     imageReward=Screen('MakeTexture',wPtr,imgReward);
     Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n At the same time, we will track your gaze.';
-    Instruction{7}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You have to fixate on the points for 1 second, after which the color of the points changes from black to blue.';
-    Instruction{8}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Once the points have turned blue, you can press the space bar to start the trial.';
-    Instruction{9}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you stare at the points for much more than 1 second and the trial does not start, press the left control key, and the points will turn green to indicate that re-calibration is needed.';
-    Instruction{10}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you press the left control key, keep your eyes locked on the points until it turns black again, indicating that it has been re-calibrated.';
-    Instruction{11}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Once the points turn blue, you can press the space bar to start the trial as usual.';
-    Instruction{12}='If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
-    Instruction{13}='Please look at the screen while doing the task. If you do not look at the colors, the trial will abort and you cannot win any points.';
-    Instruction{14}='Note that the faster you are, the more trials you can do, and the more money you could earn.';
-    Instruction{15}='Please take a moment to tell your experimenter what is going to happen in this task.';
-    Instruction{16}='Good luck with the memory task!';
+    Instruction{7}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You have to fixate on the points for 1 second, after which you are asked to press the space bar to start the trial.';
+    Instruction{8}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you stare at the points for much more than 1 second and you are not asked to press space, press the left Ctrl key, and the points will turn green to indicate that re-calibration is needed.';
+    Instruction{9}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you press the left Ctrl key, keep your eyes locked on the points until it turns black again, indicating that it has been re-calibrated.';
+    Instruction{10}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You are then asked to press the space bar to start the trial as usual.';
+    Instruction{11}='If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
+    Instruction{12}='Please look at the screen while doing the task. If you do not look at the colors, the trial will abort and you cannot win any points.';
+    Instruction{13}='Note that the faster you are, the more trials you can do, and the more money you can earn.';
+    Instruction{14}='Please take a moment to tell your experimenter what is going to happen in this task.';
+%     Instruction{15}='Good luck with the memory task!';
 
 
 elseif level==5
@@ -137,31 +136,47 @@ for i=1:100
         end
     else 
          if level==3 && counter==4
-            Screen('DrawTexture',wPtr,imageIgnoreCue);
+%             Screen('DrawTexture',wPtr,imageIgnoreCue);
+             Screen('Textsize', wPtr, 34); %change font for example text
+             Screen('Textfont', wPtr, 'Times New Roman');
+             DrawFormattedText(wPtr, 'ignore', 'center', 'center', [0 0 0]); 
          elseif level==3 && counter==5
-            Screen('DrawTexture',wPtr,imageUpdateCue);    
+%             Screen('DrawTexture',wPtr,imageUpdateCue);
+             Screen('Textsize', wPtr, 34);
+             Screen('Textfont', wPtr, 'Times New Roman');
+             DrawFormattedText(wPtr, 'update', 'center', 'center', [0 0 0]); 
 %          elseif level==4 && counter==5
 %             Screen('DrawTexture',wPtr,imageReward);   
-         elseif level==4 && (counter==5 || counter==6 || counter==10)
-            DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
-         elseif level==4 && (counter==7 || counter==8 || counter==11)
-            DrawFormattedText(wPtr, '50', 'center', 'center', [0 50 210]);%blue reward cue
-         elseif level==4 && counter==9
-            DrawFormattedText(wPtr, '50', 'center', 'center', [10 150 10]);%green reward cue   
-         end 
-    DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing)       
+         elseif level==4 && (counter==5 || counter==6 ||counter==9)
+             Screen('Textsize', wPtr, 34);
+             Screen('Textfont', wPtr, 'Times New Roman');
+             DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
+         elseif level==4 && (counter==7 || counter==10)
+             Screen('Textsize', wPtr, 34);
+             Screen('Textfont', wPtr, 'Times New Roman');
+             DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
+             DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, [0 0 0]);
+         elseif level==4 && counter==8
+             Screen('Textsize', wPtr, 34);
+             Screen('Textfont', wPtr, 'Times New Roman');
+             DrawFormattedText(wPtr, '50', 'center', 'center', [10 150 10]);%green reward cue
+         end
+    Screen('TextSize',wPtr,pms.textSize); %change back to normal
+    Screen('TextFont',wPtr,pms.textFont);     
+    DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing)
     end %level
     Screen('flip',wPtr);
+
   
        
-    if level==4 && counter==length(Instruction)-1
+    if level==4 && counter==length(Instruction)
         GetClicks();
         Screen('flip',wPtr);
         WaitSecs(1);
         break;
-    elseif level==4 && counter==length(Instruction)
-        WaitSecs(5);
-        break;        
+%     elseif level==4 && counter==length(Instruction)
+%         WaitSecs(5);
+%         break;        
     elseif counter==length(Instruction)
         KbWait();
         Screen('flip',wPtr);

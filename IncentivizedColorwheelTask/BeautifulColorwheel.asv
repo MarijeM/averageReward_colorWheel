@@ -190,7 +190,7 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(5,pms,wPtr,bonus);  
+       getInstructions(5,pms,wPtr,bonus)  
        clear Screen
        Screen('CloseAll');
        ShowCursor; % display mouse cursor again
