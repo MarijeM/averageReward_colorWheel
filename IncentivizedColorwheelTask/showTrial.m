@@ -411,6 +411,8 @@ for p=1:pms.numBlocks
                        Screen('Flip',wPtr);  
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
+                       respX = []; 
+                       respY = [];
                    end
                    T.feedback_off(g,p) = GetSecs;
                end 

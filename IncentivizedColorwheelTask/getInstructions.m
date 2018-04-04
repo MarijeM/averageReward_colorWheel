@@ -85,14 +85,15 @@ elseif level==4
     imageReward=Screen('MakeTexture',wPtr,imgReward);
     Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n At the same time, we will track your gaze.';
     Instruction{7}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You have to fixate on the points for 1 second, after which the color of the points changes from black to blue.';
-    Instruction{8}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Once the points turned blue, you can press the space bar to start the trial.';
+    Instruction{8}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Once the points have turned blue, you can press the space bar to start the trial.';
     Instruction{9}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you stare at the points for much more than 1 second and the trial does not start, press the left control key, and the points will turn green to indicate that re-calibration is needed.';
     Instruction{10}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you press the left control key, keep your eyes locked on the points until it turns black again, indicating that it has been re-calibrated.';
     Instruction{11}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Once the points turn blue, you can press the space bar to start the trial as usual.';
     Instruction{12}='If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
-    Instruction{13}='Note that the faster you are, the more trials you can do, and the more money you could earn.';
-    Instruction{14}='Please take a moment to tell your experimenter what is going to happen in this task.';
-    Instruction{15}='Good luck with the memory task!';
+    Instruction{13}='Please look at the screen while doing the task. If you do not look at the colors, the trial will abort and you cannot win any points.';
+    Instruction{14}='Note that the faster you are, the more trials you can do, and the more money you could earn.';
+    Instruction{15}='Please take a moment to tell your experimenter what is going to happen in this task.';
+    Instruction{16}='Good luck with the memory task!';
 
 
 elseif level==5

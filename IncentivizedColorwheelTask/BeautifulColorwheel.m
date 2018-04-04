@@ -85,7 +85,7 @@ try
     pms.offerdelay          = 0.2;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward
-    pms.blockDuration       = 0.5*60; %duration in seconds of one block
+    pms.blockDuration       = 5*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
