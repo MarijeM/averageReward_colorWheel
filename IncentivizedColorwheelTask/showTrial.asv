@@ -205,7 +205,6 @@ for p=1:pms.numBlocks
                      lureDif = [];
                      radius = [];
                      tau = [];
-                     thetaCorrect = []; 
                      itrack_interference = [];
                      itrack_probe = [];
                      continue;
@@ -329,7 +328,6 @@ for p=1:pms.numBlocks
                      lureDif = [];
                      radius = [];
                      tau = [];
-                     thetaCorrect = []; 
                      itrack_interference = [];
                      itrack_probe = [];
                      continue;
