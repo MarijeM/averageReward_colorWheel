@@ -83,18 +83,21 @@ elseif level==4
     Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many points you can win on that trial.';
     imgReward=importdata('Rewardcue.png');
     imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n At the same time, we will track your gaze.';
-    Instruction{7}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You have to fixate on the points for 1 second, after which the color of the points changes from black to blue.';
-    Instruction{8}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Once the points turned blue, you can press the space bar to start the trial.';
-    Instruction{9}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you stare at the points for much more than 1 second and the trial does not start, press the left control key, and the points will turn green to indicate that re-calibration is needed.';
-    Instruction{10}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you press the left control key, keep your eyes locked on the points until it turns black again, indicating that it has been re-calibrated.';
-    Instruction{11}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Once the points turn blue, you can press the space bar to start the trial as usual.';
-    Instruction{12}='If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
-    Instruction{13}='Note that the faster you are, the more trials you can do, and the more money you could earn.';
-    Instruction{14}='Please take a moment to tell your experimenter what is going to happen in this task.';
-    Instruction{15}='Good luck with the memory task!';
+    Instruction{6}='At the same time, we will track your gaze.';
+    Instruction{7}='You have to fixate on the points for 1 second, after which the color of the points changes from black to blue.';
+    Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Once the points turned blue, you can press the space bar to start the trial.';
+    Instruction{10}='If you stare at the points for much more than 1 second and the trial does not start, press the left control key, and the points will turn green to indicate that re-calibration is needed.';
+    Instruction{10}='If you press the left control key, keep your eyes locked on the points until it turns black again, indicating that it has been re-calibrated.';
+    Instruction{10}='Once the points turn blue, you can press the space bar to start the trial as usual.';
+    Instruction{7}='If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
+    Instruction{8}='Note that the faster you are, the more trials you can do, and the more money you could earn.';
+    Instruction{10}='Please take a moment to tell your experimenter what is going to happen in this task.';
+    Instruction{10}='Good luck with the memory task!';
 
-
+  
+    
+    
+    
 elseif level==5
     Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', bonus/2000));
 
@@ -139,14 +142,10 @@ for i=1:100
             Screen('DrawTexture',wPtr,imageIgnoreCue);
          elseif level==3 && counter==5
             Screen('DrawTexture',wPtr,imageUpdateCue);    
-%          elseif level==4 && counter==5
-%             Screen('DrawTexture',wPtr,imageReward);   
-         elseif level==4 && (counter==5 || counter==6 || counter==10)
-            DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
-         elseif level==4 && (counter==7 || counter==8 || counter==11)
-            DrawFormattedText(wPtr, '50', 'center', 'center', [0 50 210]);%blue reward cue
-         elseif level==4 && counter==9
-            DrawFormattedText(wPtr, '50', 'center', 'center', [10 150 10]);%green reward cue   
+         elseif level==4 && counter==5
+            Screen('DrawTexture',wPtr,imageReward);   
+         elseif level==4 && counter==6  
+            DrawFormattedText(wPtr, '50', 'center', 'center', [0 50 210]);
          end 
     DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing)       
     end %level
@@ -159,7 +158,7 @@ for i=1:100
         WaitSecs(1);
         break;
     elseif level==4 && counter==length(Instruction)
-        WaitSecs(5);
+        WaitSecs(3);
         break;        
     elseif counter==length(Instruction)
         KbWait();

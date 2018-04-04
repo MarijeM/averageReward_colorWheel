@@ -61,7 +61,7 @@ try
     pms.subNo               = subNo;
     pms.matlabVersion       = 'R2016a';
     %eyelink parameters
-    pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated
+    pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated (changes into green)
     pms.allowedResps.drift = 'left_control';
     pms.allowedResps.driftOK = 'd';
     pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate

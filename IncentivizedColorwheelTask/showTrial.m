@@ -402,7 +402,7 @@ for p=1:pms.numBlocks
                    Screen('Textsize', wPtr, 28);
                    Screen('Textfont', wPtr, 'Times New Roman');
                    if correct==1 % if they were accurate enough
-                       DrawFormattedText(wPtr,sprintf('You win %d ct',trial(g,p).offer),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       DrawFormattedText(wPtr,sprintf('You win %d points',trial(g,p).offer),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
@@ -473,7 +473,7 @@ for p=1:pms.numBlocks
                 if p==pms.numBlocks
                     DrawFormattedText(wPtr,sprintf('End of the experiment. Please press space.'),'center','center',[0 0 0]);
                 else 
-                    DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to continue the next block.',p ),'center','center',[0 0 0]);
+                    DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to calibrate your gaze and start the new block.',p ),'center','center',[0 0 0]);
                 end
                 Screen('Flip',wPtr);
                 RestrictKeysForKbCheck(32);
