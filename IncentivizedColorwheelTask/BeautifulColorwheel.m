@@ -110,14 +110,18 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-%     if practice == 1
+    if practice == 1
         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
         pms.wPtr = wPtr;
         pms.rect = rect;
-%     elseif practice ~= 1
-%         wPtr = pms.wPtr;
-%         rect = pms.rect;     
-%     end 
+    elseif practice ~= 1
+        wPtr = pms.wPtr;
+        rect = pms.rect;
+    elseif varargin(end)=='debug' %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
+        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+        pms.wPtr = wPtr;
+        pms.rect = rect;
+    end 
 %     [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
     pms.xCenter=rect(3)/2;
     pms.yCenter=rect(4)/2;     
