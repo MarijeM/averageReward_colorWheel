@@ -35,11 +35,15 @@ try
     subNo               = varargin{1};
     practice            = varargin{2};
     pms                 = varargin{3};
-    [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);            
+    [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);
+    
+    % Make sure that people with high and low DA are equally distributed
+    % over block order
+    CBblockOrder(subNo);   
 
     %% set experiment parameters
     pms.numTrials           = 112; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
-    pms.numBlocks           = 2;  
+    pms.numBlocks           = 3;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
     pms.numTrialsPr         = 8;  
@@ -82,7 +86,7 @@ try
     pms.delay2DurationUpd   = 1.5;
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 1;
-    pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration; % because I trials are shorter, I need to add some extra time at the end of the trial 
+    pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 
     pms.offerdelay          = 0.5;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward

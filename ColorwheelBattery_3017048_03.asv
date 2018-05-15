@@ -11,12 +11,13 @@ clc;
 subNo= input('Subject ID: '); %request user input: subject ID
 checked=input(sprintf('participant number is %d',subNo)); %returns answer
 pms.blockCB= input('Which block first?\n\nPress 0 for Ignore\nPress 2 for Update'); %request user input: block order
+
 if pms.blockCB == 0
     firstBlock = 'Ignore';
 elseif pms.blockCB == 2
-    firstBlock = 'Update';
+    
 end 
-checked=input(sprintf('Block order: first %s',firstBlock)); %returns answer
+checked=input(sprintf('Block order is first %s',pms.blockCB)); %returns answer
 
 
 %% create directories.
