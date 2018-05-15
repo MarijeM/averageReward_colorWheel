@@ -82,7 +82,7 @@ try
     pms.delay2DurationUpd   = 1.5;
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 1;
-%     pms.offerduration       = 0.75;
+    pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration; % because I trials are shorter, I need to add some extra time at the end of the trial 
     pms.offerdelay          = 0.5;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward
