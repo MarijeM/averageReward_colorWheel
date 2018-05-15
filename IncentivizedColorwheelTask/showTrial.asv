@@ -436,7 +436,7 @@ for p=1:pms.numBlocks
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
                    else 
-                       DrawFormattedText(wPtr,'You win 0 points', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       DrawFormattedText(wPtr,'You win nothing', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
@@ -494,11 +494,7 @@ for p=1:pms.numBlocks
                     save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T', 'gazedata');
                 end
                 
-            elseif phase==9 % extra time for I trials
-                Screen('Flip',wPtr);  
-                if trial(g,p).type == 0                    
-                    WaitSecs(pms.makeUpDurationI);
-                end 
+            elseif phase==9 % extra time for I tira
                 
             end %if phase ==1
         end % for phase 1:6
