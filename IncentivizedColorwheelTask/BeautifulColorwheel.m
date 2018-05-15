@@ -62,30 +62,31 @@ try
     pms.matlabVersion       = 'R2016a';
     %eyelink parameters
     pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated (changes into green)
-    pms.allowedResps.drift = 'left_control';
+%     pms.allowedResps.drift = 'left_control';
+    pms.allowedResps.drift = 'c';
     pms.allowedResps.driftOK = 'd';
     pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate
     pms.diagTol = 100; % diagonal pixels of tolerance for fixation
     % timings
     pms.maxRT               = 4; % max RT
     pms.cueduration         = 1.0;
-    pms.cuedelay            = 0.5;
-    pms.encDuration         = 0.5;    %2 seconds of encoding
-    pms.delay1DurationPr    = 0.5; %2 seconds of delay 1 during practice
+    pms.cuedelay            = 0.75;
+    pms.encDuration         = 0.5;    % encoding
+    pms.delay1DurationPr    = 0.5; % delay 1 during practice
     pms.delay1Duration      = 0.5;      
-    pms.interfDurationPr    = 0.5; %2 seconds interfering stim during practice
+    pms.interfDurationPr    = 0.5; % interfering stim during practice
     pms.interfDuration      = 0.5;
-    pms.delay2DurationIgnPr = 0.5; %2 seconds of delay 2 during practice
+    pms.delay2DurationIgnPr = 0.5; %delay 2 during practice
     pms.delay2DurationUpdPr = 1.5;
     pms.delay2DurationIgn   = 0.5;
     pms.delay2DurationUpd   = 1.5;
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 1;
 %     pms.offerduration       = 0.75;
-    pms.offerdelay          = 0.2;
+    pms.offerdelay          = 0.5;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward
-    pms.blockDuration       = 5*60; %duration in seconds of one block
+    pms.blockDuration       = 3*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
@@ -110,14 +111,14 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-    if practice == 1
-        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
-        pms.wPtr = wPtr;
-        pms.rect = rect;
-    elseif practice ~= 1
+%     if varargin{end}==1 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
+%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+%         pms.wPtr = wPtr;
+%         pms.rect = rect;
+    if practice ~= 1
         wPtr = pms.wPtr;
         rect = pms.rect;
-    elseif varargin(end)=='debug' %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
+    elseif practice == 1
         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
         pms.wPtr = wPtr;
         pms.rect = rect;

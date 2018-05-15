@@ -104,7 +104,7 @@ for p=1:pms.numBlocks
                                 %report = '***** Drift adjusted! *****';
                                 %report = sprintf('x = %0.2f, y = %0.2f',driftShift(1),driftShift(2));
                                 doDrift = 0;
-                                DrawFormattedText(wPtr, offer, 'center', 'center');   % change its color back to background text color
+                                DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);   % change its color back to background text color
                                 Screen('Flip',wPtr);
                             end
                         end
@@ -122,6 +122,7 @@ for p=1:pms.numBlocks
                             %report = '***** The participant indicates drift! *****'
                             doDrift = 1;
                             DrawFormattedText(wPtr, offer, 'center', 'center', pms.driftCueCol); % change its color
+                            DrawFormattedText(wPtr, 'Please look at the center of the screen.', 'center', 'center', pms.driftCueCol);
                             Screen('Flip',wPtr);
                         end
                     end
@@ -450,7 +451,7 @@ for p=1:pms.numBlocks
                 data(g,p).rtDecision=rtDecision;
                 data(g,p).rtMovement=rtMovement;
                 data(g,p).rt=rtTotal;
-                data(g,p).probeLocation=[probeRectX probeRectY];
+                data(g,p).probeLocation=[trial(g,p).locations(1,1) trial(g,p).locations(1,2)];
                 data(g,p).probeColorCorrect=trial(g,p).probeColorCorrect;
                 data(g,p).lureColor=trial(g,p).lureColor;
                 data(g,p).respDif=respDif;

@@ -48,8 +48,8 @@ cd(pms.rootdir)
 
 %% debugging: either practice phase 1, 2 or 0, without needing the previous ones; just comment out the phase you want to debug
 cd(pms.inccwdir);
-% [~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms, 'debug'); %practice=1 
-% BeautifulColorwheel(subNo,2,pms, 'debug'); %practice=2: practice with cues
-% BeautifulColorwheel(subNo,0,pms, 'debug'); %practice=0
+[~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms, 1); %practice=1 
+BeautifulColorwheel(subNo,2,pms, 1); %practice=2: practice with cues
+BeautifulColorwheel(subNo,0,pms, 1); %practice=0
 
 cd(pms.rootdir)
