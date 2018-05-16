@@ -100,7 +100,7 @@ elseif level==4
     Instruction{2} = 'Good luck!';
     
 
-elseif level==6
+elseif level==5
     Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', bonus/2000));
 
 end %level
@@ -139,8 +139,20 @@ for i=1:100
         else
             DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
         end
-    else   
-         if level==3 && (counter==4 || counter==5 ||counter==8)
+    else 
+         if level==3 && counter==4
+%             Screen('DrawTexture',wPtr,imageIgnoreCue);
+             Screen('Textsize', wPtr, 34); %change font for example text
+             Screen('Textfont', wPtr, 'Times New Roman');
+             DrawFormattedText(wPtr, 'ignore', 'center', 'center', [0 0 0]); 
+         elseif level==3 && counter==5
+%             Screen('DrawTexture',wPtr,imageUpdateCue);
+             Screen('Textsize', wPtr, 34);
+             Screen('Textfont', wPtr, 'Times New Roman');
+             DrawFormattedText(wPtr, 'update', 'center', 'center', [0 0 0]); 
+%          elseif level==4 && counter==5
+%             Screen('DrawTexture',wPtr,imageReward);   
+         elseif level==3 && (counter==4 || counter==5 ||counter==8)
              Screen('Textsize', wPtr, 34);
              Screen('Textfont', wPtr, 'Times New Roman');
              DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue

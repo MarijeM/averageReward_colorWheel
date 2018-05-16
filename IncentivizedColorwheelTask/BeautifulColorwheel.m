@@ -178,8 +178,8 @@ try
     elseif practice==2
        getInstructions(3,pms,wPtr);
        [trial]= trialstruct(pms,rect,1,1);  
-    elseif practice==0
        getInstructions(4,pms,wPtr);
+    elseif practice==0
        [trial]=defstruct(pms,rect); 
     end
 

@@ -11,13 +11,12 @@ clc;
 subNo= input('Subject ID: '); %request user input: subject ID
 checked=input(sprintf('participant number is %d',subNo)); %returns answer
 pms.blockCB= input('Which block first?\n\nPress 0 for Ignore\nPress 2 for Update'); %request user input: block order
-
 if pms.blockCB == 0
     firstBlock = 'Ignore';
 elseif pms.blockCB == 2
-    
+    firstBlock = 'Update';
 end 
-checked=input(sprintf('Block order is first %s',pms.blockCB)); %returns answer
+checked=input(sprintf('Block order: first %s',firstBlock)); %returns answer
 
 
 %% create directories.
@@ -47,10 +46,9 @@ end
 cd(pms.inccwdir);
 disp('TASK: Color Wheel');          % display which task starts.
 WaitSecs(2); %show message for 2 sec
-
-[~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1 
-BeautifulColorwheel(subNo,2,pms); %practice=2: practice with cues
-BeautifulColorwheel(subNo,0,pms); %practice=0
+[~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
+BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
+BeautifulColorwheel(subNo,0,pms); %practice=0: instruc
 
 cd(pms.rootdir)
 

@@ -506,10 +506,12 @@ for p=1:numBlocks
         if practice==0
             bonus = data(g,p).bonus;
             if GetSecs-blockOnset > pms.blockDuration
-                if p==numBlocks
+                if p==1
+                    getInstructions(5,pms,wPtr);
+                elseif p==numBlocks
                     DrawFormattedText(wPtr,sprintf('End of the experiment. Please press space.'),'center','center',[0 0 0]);
                 else 
-                    DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to calibrate your gaze and start the new block.',p ),'center','center',[0 0 0]);
+                    DrawFormattedText(wPtr,sprintf('End of this block. You can now have a break.\nPress space when you are ready to calibrate your gaze and start the new block.'),'center','center',[0 0 0]);
                 end
                 Screen('Flip',wPtr);
                 RestrictKeysForKbCheck(32);
