@@ -59,7 +59,31 @@ for p=1:numBlocks
         DrawFormattedText(wPtr, 'Good luck with the memory task!\n Please keep your hand on the mouse', 'center', 'center');
         Screen('Flip',wPtr);
         WaitSecs(3); 
+        if p==2
+            if pms.blockCB==0
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE'),'center','center',[0 0 0]);
+                Screen('Flip',wPtr);
+                WaitSecs(5);
+            elseif pms.blockCB==2
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE'),'center','center',[0 0 0]);
+                Screen('Flip',wPtr);
+                WaitSecs(5);
+            end 
+        elseif p==3
+           if pms.blockCB==0
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE'),'center','center',[0 0 0]);
+                Screen('Flip',wPtr);
+                WaitSecs(5);
+           elseif pms.blockCB==2
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE'),'center','center',[0 0 0]);
+                Screen('Flip',wPtr);
+                WaitSecs(5);
+           end  
+        end
     end 
+    
+    Screen('Flip',wPtr);
+    WaitSecs(3);
     
     blockOnset  = GetSecs; %onset time of block. Block lasts x min. After x min, block ends automatically.
     for g=1:numTrials

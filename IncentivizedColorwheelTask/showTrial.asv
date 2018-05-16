@@ -18,8 +18,11 @@ end
 
 %trials for practice session
 if practice~=0
-    pms.numTrials   = pms.numTrialsPr;
-    pms.numBlocks   = pms.numBlocksPr;
+    numTrials   = pms.numTrialsPr;
+    numBlocks   = pms.numBlocksPr;
+elseif practice == 0
+    numTrials   = pms.numTrials;
+    numBlocks   = pms.numBlocks; 
 end
 
 Screen('TextSize',wPtr,16);
@@ -43,12 +46,9 @@ rectTwo         = [0 0 25 25];
 data            = struct();
 
 %% loop around trials and blocks for stimulus presentation
-if practice == 0               
-    pms.numBlocks = 2;
-end
 
 bonus       = 0; %start value of reward/bonus is 0.00
-for p=1:pms.numBlocks
+for p=1:numBlocks
     %set up eyetracking
     pms.driftShift = [0,0]; % how much to adjust [x,y] for pupil drift, updated every trial
     if practice==0
@@ -59,11 +59,22 @@ for p=1:pms.numBlocks
         DrawFormattedText(wPtr, 'Good luck with the memory task!\n Please keep your hand on the mouse', 'center', 'center');
         Screen('Flip',wPtr);
         WaitSecs(3); 
+        if p==2
+            if pms.blockCB==0
+            DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE'),'center','center',[0 0 0]);
+            Screen('Flip',wPtr);
+            WaitSecs(5);
+        elseif p==3
+            
+        end
     end 
     
-    blockOnset  = GetSecs; %onset time of block. Block lasts 20 min. After 20 min, block ends automatically.
-    for g=1:pms.numTrials
-        for phase = 1:8
+    Screen('Flip',wPtr);
+    WaitSecs(3);
+    
+    blockOnset  = GetSecs; %onset time of block. Block lasts x min. After x min, block ends automatically.
+    for g=1:numTrials
+        for phase = 1:9
             if phase==1 % reward on offer
                 valid = 1;
                 if practice==0
@@ -140,20 +151,20 @@ for p=1:pms.numBlocks
                 end 
                 valid = valid +1;
             elseif phase==2; %cue update or ignore
-                if practice~=1
-                   Screen('Textsize', wPtr, 34);
-                   Screen('Textfont', wPtr, 'Times New Roman');
-                   if trial(g,p).cue==0
-                       cueText     = 'ignore';
-                   elseif trial(g,p).cue==2
-                       cueText     = 'update';
-                   end 
-                   DrawFormattedText(wPtr, cueText, 'center', 'center', cue_color);  
-                   T.cue_on(g,p) = Screen('Flip',wPtr);               
-                   WaitSecs(pms.cueduration);
-                   T.cue_off(g,p) = Screen('Flip',wPtr);
-                   WaitSecs(pms.cuedelay);
-                end
+%                 if practice~=1
+%                    Screen('Textsize', wPtr, 34);
+%                    Screen('Textfont', wPtr, 'Times New Roman');
+%                    if trial(g,p).cue==0
+%                        cueText     = 'ignore';
+%                    elseif trial(g,p).cue==2
+%                        cueText     = 'update';
+%                    end 
+%                    DrawFormattedText(wPtr, cueText, 'center', 'center', cue_color);  
+%                    T.cue_on(g,p) = Screen('Flip',wPtr);               
+%                    WaitSecs(pms.cueduration);
+%                    T.cue_off(g,p) = Screen('Flip',wPtr);
+%                    WaitSecs(pms.cuedelay);
+%                 end
                 valid = valid +1;
             elseif phase==3    % encoding phase
                 Screen('Textsize', wPtr, 34);
@@ -436,7 +447,7 @@ for p=1:pms.numBlocks
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
                    else 
-                       DrawFormattedText(wPtr,'You win nothing', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       DrawFormattedText(wPtr,'You win 0 points', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
@@ -494,7 +505,11 @@ for p=1:pms.numBlocks
                     save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T', 'gazedata');
                 end
                 
-            elseif phase==9 % extra time for I tira
+            elseif phase==9 % extra time for I trials
+                Screen('Flip',wPtr);  
+                if trial(g,p).type == 0                    
+                    WaitSecs(pms.makeUpDurationI);
+                end 
                 
             end %if phase ==1
         end % for phase 1:6
@@ -502,10 +517,12 @@ for p=1:pms.numBlocks
         if practice==0
             bonus = data(g,p).bonus;
             if GetSecs-blockOnset > pms.blockDuration
-                if p==pms.numBlocks
+                if p==1
+                    getInstructions(5,pms,wPtr);
+                elseif p==numBlocks
                     DrawFormattedText(wPtr,sprintf('End of the experiment. Please press space.'),'center','center',[0 0 0]);
                 else 
-                    DrawFormattedText(wPtr,sprintf('End of block %d. You can now have a break. Press space when you are ready to calibrate your gaze and start the new block.',p ),'center','center',[0 0 0]);
+                    DrawFormattedText(wPtr,sprintf('End of this block. You can now have a break.\nPress space when you are ready to calibrate your gaze and start the new block.'),'center','center',[0 0 0]);
                 end
                 Screen('Flip',wPtr);
                 RestrictKeysForKbCheck(32);
