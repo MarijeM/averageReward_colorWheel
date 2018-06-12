@@ -24,9 +24,9 @@ trial = [];
 
 %loop over block and counterbalance block order. 50/50 block always first
 if pms.blockCB == 0
-    blockOrder = [1 2 3]'; %50 50, Ignore, Update
+    blockOrder = [1 2 3]; %50 50, Ignore, Update
 elseif pms.blockCB == 2
-    blockOrder = [1 3 2]'; %50 50, Update, Ignore
+    blockOrder = [1 3 2]; %50 50, Update, Ignore
 end
 
 % the square locations are created as fraction of rect (screen size), 

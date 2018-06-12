@@ -177,7 +177,7 @@ end
 Screen('FillOval',wPtr,pms.background,insideRect);
 
 if meanScore>passingScore
-  DrawFormattedText(wPtr, 'We are sorry, but you did not pass the color sensitivity test. Would you like to do it again?','center','center',[],wrptx);
+  DrawFormattedText(wPtr, 'We are sorry, but you did not pass the color sensitivity test. Would you like to do it again?','center','center',[],pms.wrapAt);
   Screen('Flip',wPtr);
   WaitSecs(5);
   hooray = 0;

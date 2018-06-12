@@ -1,4 +1,4 @@
-function getInstructions(level,pms,wPtr,bonus)
+function getInstructions(level,pms,wPtr,reward)
 % % This function provides the instructions for the
 % % color wheel memory task based on which phase of the experiment we are
 % % (practice, begining, end). If level is 1 then it provides the detailed
@@ -21,7 +21,7 @@ HideCursor;
 %% Text for level 1. Every cell is a different screen.
 
 
-if level==1
+if level==1 %intro + instruction color vision 
     Instruction{1} = 'Welcome to our color wheel memory task.\n\n You can walk through the instructions by using the left and right arrow keys.\n Press the right arrow to start...';
     Instruction{2} = 'Before we start we need to check your color sensitivity. \n\n You will see a colored square in the middle of the screen.\n\n You should find the corresponding color on a color wheel around the square!'; 
     Instruction{3} = 'Responding works like this:\n\nFirst you determine the correct color on the color wheel.\nOnce you have decided on the color, you move the arrow to that color on the color wheel as fast as possible, but still try to be as accurate as possible. You don''t have to click on the wheel, you only need to move your mouse towards it. Once you reach a particular color on the wheel, that color is taken as your answer.\nPlease note that in order to move the mouse towards the color wheel as quickly as possible, you should first decide on the color before moving the mouse.\n\n A line appears which indicates your response. A second line indicates the correct color.\n\n\n\n\nPress space to start.';
@@ -60,48 +60,45 @@ elseif level==2
     imageProbe=Screen('MakeTexture',wPtr,imgProbe);
     Instruction{20} = 'Is everything clear?\n\n It is very important that you understand this part well and we realize that it might be confusing in the beginning.\n You will now do some practice trials.';
     Instruction{21} = 'Please keep your hand on the mouse.';
-
-elseif level==5
-    
-    Instruction{1} = 'You finished the first part of the task!\n\n Press the right arrow to continue with the next part.';
-    Instruction{2}=sprintf('The next part is divided into %d blocks.',pms.numBlocks-1);
-    if pms.blockCB==0
-        Instruction{3}='During the first block you will mostly get Ignore trials.\n\nDuring the second block you will mostly get Update trials.';
-    elseif pms.blockCB==2
-        Instruction{3}='During the first block you will mostly get Update trials.\n\nDuring the second block you will mostly get Ignore trials.';
-    end
-    Instruction{4}='Everything else is the same as during the first part of the task';
-    Instruction{5} = 'Good luck!';
     
 elseif level==3
     
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
     Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
-%     Instruction{2}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break and continue with the task when you are ready.',pms.numBlocks);
-%     Instruction{3}='Each block lasts 20 minutes, and you will complete as many trials as you can within those 20 minutes.';
     Instruction{3}='On each trial you can win points.';
     Instruction{4}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many points you can win on that trial.';
     imgReward=importdata('Rewardcue.png');
     imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n At the same time, we will track your gaze.';
-    Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You have to fixate on the points for 1 second, after which you are asked to press the space bar to start the trial.';
-    Instruction{7}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you stare at the points for much more than 1 second and you are not asked to press space, press the left Ctrl key, and the points will turn green to indicate that re-calibration is needed.';
-    Instruction{8}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you press the left Ctrl key, keep your eyes locked on the points until it turns black again, indicating that it has been re-calibrated.';
-    Instruction{9}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You are then asked to press the space bar to start the trial as usual.';
-    Instruction{10}='If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
-    Instruction{11}='Please look at the screen while doing the task. If you do not look at the colors, the trial will abort and you cannot win any points.';
-    Instruction{12}=sprintf('This part of the task lasts %d minutes, and you will complete as many trials as you can within those %d minutes.', pms.blockDuration/60, pms.blockDuration/60);
-    Instruction{13}='Note that the faster you are, the more trials you can do, and the more money you can earn.';
-    Instruction{14}='Please take a moment to tell your experimenter what is going to happen in this task.';
-    Instruction{15} = 'You will now get a few examples to practice.\nPlease keep your hand on the mouse.';
+%     Instruction{x}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n At the same time, we will track your gaze.';
+    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You are then asked to press the space bar to start the trial.';
+%     Instruction{x}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you stare at the points for much more than 1 second and you are not asked to press space, press the left Ctrl key, and the points will turn green to indicate that re-calibration is needed.';
+%     Instruction{x}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n If you press the left Ctrl key, keep your eyes locked on the points until it turns black again, indicating that it has been re-calibrated.';
+%     Instruction{x}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n You are then asked to press the space bar to start the trial as usual.';
+    Instruction{6}='If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
+    Instruction{7}='Please look at the screen while doing the task.';
+    Instruction{8}=sprintf('We will split the task in %d blocks. \n\n After each block you can take a break and continue with the task when you are ready.',pms.numBlocks);
+    Instruction{9}=sprintf('Each block lasts %d minutes, and you will complete as many trials as you can within those %d minutes.', pms.blockDuration/60, pms.blockDuration/60);
+    Instruction{10}='Note that the faster you are, the more trials you can do, and the more money you can earn.';
+    Instruction{11}='Please take a moment to tell your experimenter what is going to happen in this task.';
+    Instruction{12} = 'You will now get a few examples to practice.\nPlease keep your hand on the mouse.';
 
 elseif level==4
-    Instruction{1} = 'You finished practicing.\n\n You will now start the task.';
+    Instruction{1} = 'You finished practicing.\n\n You will now start the task.\n\nPress the right arrow.';
     Instruction{2} = 'Good luck!';
     
-
+elseif level==5
+    
+    Instruction{1} = 'You finished the first block of the task!\n\n Press the right arrow to continue with the next blocks.';
+    if pms.blockCB==0
+        Instruction{2}='During the first block you will mostly get Ignore trials.\n\nDuring the second block you will mostly get Update trials.\n\nPress the right arrow.';
+    elseif pms.blockCB==2
+        Instruction{2}='During the first block you will mostly get Update trials.\n\nDuring the second block you will mostly get Ignore trials.\n\nPress the right arrow.';
+    end
+    Instruction{3}='Everything else is the same as during the first part of the task.\n\nPress the right arrow.';
+    Instruction{4} = 'Good luck!';
+    
 elseif level==6
-    Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', bonus/2000));
+    Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', reward));
 
 end %level
 
@@ -140,19 +137,19 @@ for i=1:100
             DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
         end
     else   
-         if level==3 && (counter==4 || counter==5 ||counter==8)
+         if level==3 && (counter==4)
              Screen('Textsize', wPtr, 34);
              Screen('Textfont', wPtr, 'Times New Roman');
              DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
-         elseif level==3 && (counter==6 || counter==9)
+         elseif level==3 && (counter==5)
              Screen('Textsize', wPtr, 34);
              Screen('Textfont', wPtr, 'Times New Roman');
              DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
              DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, [0 0 0]);
-         elseif level==3 && counter==7
-             Screen('Textsize', wPtr, 34);
-             Screen('Textfont', wPtr, 'Times New Roman');
-             DrawFormattedText(wPtr, '50', 'center', 'center', [10 150 10]);%green reward cue
+%          elseif level==3 && counter==7
+%              Screen('Textsize', wPtr, 34);
+%              Screen('Textfont', wPtr, 'Times New Roman');
+%              DrawFormattedText(wPtr, '50', 'center', 'center', [10 150 10]);%green reward cue
          end
     Screen('TextSize',wPtr,pms.textSize); %change back to normal
     Screen('TextFont',wPtr,pms.textFont);     
@@ -161,24 +158,29 @@ for i=1:100
     Screen('flip',wPtr);
 
   
-       
+        responded = 0;   
     if level==2 && counter==length(Instruction)
-        WaitSecs(3);
+        WaitSecs(2);
         Screen('flip',wPtr);
         WaitSecs(1);
         break;
     elseif level==3 && counter==length(Instruction)-1
         GetClicks();
+        responded = 1;
         Screen('flip',wPtr);
         WaitSecs(2);
+        continue
     elseif level==3 && counter==length(Instruction)
-        WaitSecs(5);
+        WaitSecs(2);
         Screen('flip',wPtr);
         WaitSecs(2);
         break;  
     elseif level==4 && counter==length(Instruction)
-        WaitSecs(5);
-        break;        
+        WaitSecs(2);
+        break; 
+    elseif level==5 && counter==length(Instruction)
+        WaitSecs(2);
+        break;    
     elseif counter==length(Instruction)
         KbWait();
         Screen('flip',wPtr);
@@ -189,7 +191,6 @@ for i=1:100
     end
     
 %record the keyboard click
-    responded = 0;
     while responded == 0
         [keyIsDown,~,KeyCode] = KbCheck;
         if keyIsDown==1

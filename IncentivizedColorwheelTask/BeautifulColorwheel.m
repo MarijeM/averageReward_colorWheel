@@ -37,9 +37,7 @@ try
     pms                 = varargin{3};
     [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);
     
-    % Make sure that people with high and low DA are equally distributed
-    % over block order
-    CBblockOrder(subNo);   
+
 
     %% set experiment parameters
     pms.numTrials           = 112; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
@@ -70,6 +68,7 @@ try
     pms.allowedResps.drift = 'c';
     pms.allowedResps.driftOK = 'd';
     pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate
+    pms.offerDuration = 0.75 % in case of no eyetracking
     pms.diagTol = 100; % diagonal pixels of tolerance for fixation
     % timings
     pms.maxRT               = 4; % max RT
@@ -90,7 +89,7 @@ try
     pms.offerdelay          = 0.5;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
     pms.minAcc              = 10; % maximum deviance to win reward
-    pms.blockDuration       = 3*60; %duration in seconds of one block
+    pms.blockDuration       = 0.5*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
@@ -115,19 +114,20 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-%     if varargin{end}==1 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
+    if varargin{end}==1 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
 %         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
-%         pms.wPtr = wPtr;
-%         pms.rect = rect;
-    if practice ~= 1
+        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
+        pms.wPtr = wPtr;
+        pms.rect = rect; 
+    elseif practice ~= 1
         wPtr = pms.wPtr;
         rect = pms.rect;
     elseif practice == 1
-        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;
         pms.rect = rect;
     end 
-%     [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
     pms.xCenter=rect(3)/2;
     pms.yCenter=rect(4)/2;     
     Screen('BlendFunction',wPtr,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -167,19 +167,19 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==1
-       getInstructions(1,pms,wPtr); 
+       getInstructions(1,pms,wPtr); %intro + instruction color vision
        hooray = 0; 
        while hooray==0
         [hooray,median_rtMovement]=colorVision(pms,wPtr,rect)
         pms.median_rtMovement = median_rtMovement;
        end
-       getInstructions(2,pms,wPtr);
-       [trial]= trialstruct(pms,rect,1,0); 
+       getInstructions(2,pms,wPtr); % instruction regular color wheel
+       [trial]= trialstruct(pms,rect,1,0,0); 
     elseif practice==2
        getInstructions(3,pms,wPtr);
-       [trial]= trialstruct(pms,rect,1,1);  
-       getInstructions(4,pms,wPtr);
+       [trial]= trialstruct(pms,rect,1,0,1);  
     elseif practice==0
+       getInstructions(4,pms,wPtr);
        [trial]=defstruct(pms,rect); 
     end
 
@@ -187,9 +187,9 @@ try
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
     if practice == 0
-        [data, T,bonus,pms,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+        [data, T,reward,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
     else 
-        [data, T,bonus,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+        [data, T,reward,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
     end
     
     %% Save the data
@@ -199,7 +199,7 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(5,pms,wPtr,bonus);  
+       getInstructions(6,pms,wPtr,reward);  
        clear Screen
        Screen('CloseAll');
        ShowCursor; % display mouse cursor again

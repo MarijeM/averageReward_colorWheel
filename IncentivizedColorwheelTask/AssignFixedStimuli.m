@@ -143,11 +143,11 @@ valid(find(cues==0 & cond==0 | cues==2 & cond==2)) = 1;
 
     a = reshape(Stimuli, 4, size(Stimuli,1)/4);
     %neutral blocks
-    block1 = [a(:,[1:16])]';
+    block1 = [a(:,1:30)]; block1 = block1(:);
     %majority ignore blocks
-    block2 = [a([1,3],[17:40]),a([2,4],[17:24])]';
+    block2 = [a([1,3],[1:40]),a([2,4],[1:20])]; block2 = block2(:);
     %majority update blocks
-    block3 = [a([1,3],[41:48]),a([2,4],[25:48])]';
+    block3 = [a([1,3],[1:20]),a([2,4],[1:40])]; block3 = block3(:);
     
     blocks = struct('block1', block1, 'block2', block2, 'block3', block3);
 

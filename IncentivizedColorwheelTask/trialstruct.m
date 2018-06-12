@@ -1,4 +1,4 @@
-function[trial]=trialstruct(pms,rect,practice,cues)
+function[trial]=trialstruct(pms,rect,practice,cues, rewards)
 
    
 % in the case of practice, the trials are not randomized and we may define maximum setsize in pms
@@ -17,6 +17,19 @@ if cues==1;
 
     valid = [repmat(1, pms.numTrials*0.75,1); repmat(0, pms.numTrials*0.25,1)];
 end
+
+%% add reward on offer
+if rewards == 1
+    offer = round(50 + randn(pms.numTrials,1)*10+0);
+    if any(offer < 35)
+        reset = find(offer < 35);
+        offer(reset) = 35;
+    end
+    if any(offer > 65)
+        reset = find(offer > 65);
+        offer(reset) = 65;
+    end
+end 
 
 %% 3)make location matrix
 rectsize=[0 0 100 100];
@@ -44,6 +57,9 @@ for i=1:pms.numBlocks
             trial(t,i).cue=cue(t,i); 
             trial(t,i).valid=valid(t,i); 
         end
+        if rewards==1
+            trial(t,i).offer=offer(t,i); 
+        end 
     end                                  
 end
 
