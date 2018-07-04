@@ -37,7 +37,10 @@ try
     pms                 = varargin{3};
     [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);
     
-
+    data    = []; 
+    trial   = []; 
+    T       = []; 
+    bonus   = []; 
 
     %% set experiment parameters
     pms.numTrials           = 112; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
@@ -88,8 +91,8 @@ try
     pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 
     pms.offerdelay          = 0.5;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
-    pms.minAcc              = 10; % maximum deviance to win reward
-    pms.blockDuration       = 0.5*60; %duration in seconds of one block
+    pms.minAcc              = 20; % maximum deviance to win reward
+    pms.blockDuration       = 12*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
@@ -114,7 +117,7 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-    if varargin{end}==1 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
+    if nargin==4 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
 %         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;
@@ -143,19 +146,19 @@ try
     dataHeader.logdir           = cd; %adapt logdir (MF: e.g.: fullfile(cd, 'log'))
     
     % initialize data set
-    data.setsize               = []; %trial(:,:).setSize;
-    data.trialNum              = []; %trial(:,:).number;
-    data.trialtype             = []; %trial(:,:).trialType;
-    data.location              = []; %trial(:,:).locations;
-    data.colors                = []; %trial(:,:).colors;
-    data.respCoord             = [];
-    data.onset                 = [];
-    data.rt                    = [];
-    data.probeLocation         = [];
-    data.stdev                 = [];
-    data.thetaCorrect          = [];
-    data.respDif               = [];
-    data.reward                = []; 
+    data.setsize               = NaN; %trial(:,:).setSize;
+    data.trialNum              = NaN; %trial(:,:).number;
+    data.trialtype             = NaN; %trial(:,:).trialType;
+    data.location              = NaN; %trial(:,:).locations;
+    data.colors                = NaN; %trial(:,:).colors;
+    data.respCoord             = NaN;
+    data.onset                 = NaN;
+    data.rt                    = NaN;
+    data.probeLocation         = NaN;
+    data.stdev                 = NaN;
+    data.thetaCorrect          = NaN;
+    data.respDif               = NaN;
+    data.reward                = NaN; 
     
     % baseline for event onset timestamps
     exptOnset = GetSecs;
@@ -187,9 +190,9 @@ try
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
     if practice == 0
-        [data, T,reward,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+        [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
     else 
-        [data, T,reward,pms] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+        [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
     end
     
     %% Save the data
@@ -199,7 +202,7 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(6,pms,wPtr,reward);  
+       getInstructions(6,pms,wPtr,money);  
        clear Screen
        Screen('CloseAll');
        ShowCursor; % display mouse cursor again

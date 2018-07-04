@@ -1,4 +1,4 @@
-function getInstructions(level,pms,wPtr,reward)
+function getInstructions(level,pms,wPtr,money)
 % % This function provides the instructions for the
 % % color wheel memory task based on which phase of the experiment we are
 % % (practice, begining, end). If level is 1 then it provides the detailed
@@ -98,7 +98,7 @@ elseif level==5
     Instruction{4} = 'Good luck!';
     
 elseif level==6
-    Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', reward));
+    Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', money));
 
 end %level
 

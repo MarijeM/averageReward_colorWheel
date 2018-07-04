@@ -1,4 +1,4 @@
-function [data,T,reward,pms, gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect)
+function [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect)
 %this function shows the stimuli and collects the responses for the  INCENTIVIZED colorwheel
 %memory task.
 % data:     struct with fields:respCoord (where the ppt clicked), rt, probeLocation (square that was probed)
@@ -11,8 +11,13 @@ function [data,T,reward,pms, gazedata] = showTrial(trial,pms,practice,dataFilena
 % practice: status of task, output of [subNo,dataFilename,dataFilenamePrelim,practice,manipulation]=getInfo
 % dataFilenamePrelim: name for log file between blogs provided by getInfo.m
 
+data    = [];
+T       = [];
+money   = [];
+gazedata= [];
+
 % make sure there is a maximum time for moving the mouse
-if ~exist('pms.median_rtMovement', 'var')
+if ~isfield(pms,'median_rtMovement')
     pms.median_rtMovement = 0.8;
 end 
 
@@ -157,9 +162,10 @@ for p=1:numBlocks
                     Screen('Textfont', wPtr, 'Times New Roman');
                     DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);
                     DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, cue_color);
-                    Screen('Flip',wPtr);
-                    KbWait();
+                    T.space_on(g,p) = Screen('Flip',wPtr);
+                    T.space_off(g,p) = KbWait();
                     T.offer_off(g,p) = Screen('Flip',wPtr);
+                    rtSpace = T.space_off(g,p) - T.space_on(g,p); 
                     WaitSecs(pms.offerdelay); 
                 end 
 %                 valid = valid +1;
@@ -475,6 +481,9 @@ for p=1:numBlocks
                 data(g,p).rtDecision=rtDecision;
                 data(g,p).rtMovement=rtMovement;
                 data(g,p).rt=rtTotal;
+                if exist('rtSpace', 'var')
+                    data(g,p).rtSpace=rtSpace;
+                end
                 data(g,p).probeLocation=[trial(g,p).locations(1,1) trial(g,p).locations(1,2)];
                 data(g,p).probeColorCorrect=trial(g,p).probeColorCorrect;
                 data(g,p).lureColor=trial(g,p).lureColor;
@@ -504,7 +513,7 @@ for p=1:numBlocks
                     end
                     bonus = bonus + data(g,p).reward;
                     data(g,p).bonus = bonus;
-                    reward = bonus / 2000;
+                    money = bonus / 2000;
                     data(g,p).encColLoc1=trial(g,p).encColLoc1;
                     data(g,p).encColLoc2=trial(g,p).encColLoc2;
                     data(g,p).encColLoc3=trial(g,p).encColLoc3;

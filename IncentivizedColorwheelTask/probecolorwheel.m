@@ -33,7 +33,7 @@ function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack
 % 
 % drawFixationCross displays the fixation cross in the center of the screen.
 
-
+itrack = NaN; %defined here to be a NaN, in case it is not called and not specified below.
 %center coordinates
 centerX         = rect(3)/2;
 centerY         = rect(4)/2;

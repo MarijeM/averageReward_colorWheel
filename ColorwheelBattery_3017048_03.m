@@ -43,20 +43,20 @@ else
 end
 
 %% incentivized colorwheel task (when debugging and wanting to run only 1 phase, see next section and skip this one)
-% cd(pms.inccwdir);
-% disp('TASK: Color Wheel');          % display which task starts.
-% WaitSecs(2); %show message for 2 sec
-% [~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
-% BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
-% BeautifulColorwheel(subNo,0,pms); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
-% 
-% cd(pms.rootdir)
+cd(pms.inccwdir);
+disp('TASK: Color Wheel');          % display which task starts.
+WaitSecs(2); %show message for 2 sec
+[~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
+BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
+BeautifulColorwheel(subNo,0,pms); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
+
+cd(pms.rootdir)
 
 
 %% debugging: either practice phase 1, 2 or 0, without needing the previous ones; just comment out the phase you want to debug
-cd(pms.inccwdir);
+% cd(pms.inccwdir);
 % [~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms, 1); %practice=1 
 % BeautifulColorwheel(subNo,2,pms, 1); %practice=2: practice with rewards
-BeautifulColorwheel(subNo,0,pms, 1); %practice=0
-
-cd(pms.rootdir)
+% BeautifulColorwheel(subNo,0,pms, 1); %practice=0
+% 
+% cd(pms.rootdir)
