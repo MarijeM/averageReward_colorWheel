@@ -7,6 +7,7 @@
 
 clear; 
 clc;
+rng('shuffle');
 
 subNo= input('Subject ID: '); %request user input: subject ID
 checked=input(sprintf('participant number is %d',subNo)); %returns answer
@@ -46,17 +47,18 @@ end
 cd(pms.inccwdir);
 disp('TASK: Color Wheel');          % display which task starts.
 WaitSecs(2); %show message for 2 sec
-[~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
-BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
-BeautifulColorwheel(subNo,0,pms); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
+[dataPractice,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
+[dataPracticeRewards,~,~,~,~] = BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
+dataPr = [dataPractice; dataPracticeRewards];
+BeautifulColorwheel(subNo,0,pms,dataPr); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
 
 cd(pms.rootdir)
 
 
 %% debugging: either practice phase 1, 2 or 0, without needing the previous ones; just comment out the phase you want to debug
 % cd(pms.inccwdir);
-% [~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms, 1); %practice=1 
-% BeautifulColorwheel(subNo,2,pms, 1); %practice=2: practice with rewards
-% BeautifulColorwheel(subNo,0,pms, 1); %practice=0
+% [~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms,[], 1); %practice=1 
+% BeautifulColorwheel(subNo,2,pms, [],1); %practice=2: practice with rewards
+% BeautifulColorwheel(subNo,0,pms,[], 1); %practice=0
 % 
 % cd(pms.rootdir)

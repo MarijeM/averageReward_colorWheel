@@ -1,4 +1,4 @@
-function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
+function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,condition, varargin)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
@@ -182,8 +182,16 @@ correct = 0;
 if response==1
     %during practice a second line appears indicating the correct response. The line is
     %drawn as a small arc of 0.4 degrees
-    if abs(respDif) <=pms.minAcc
-        correct = 1;
+    if practice==0
+        if condition==0 && abs(respDif) <=pms.minAcc_I
+            correct = 1;
+        elseif condition==2 && abs(respDif) <=pms.minAcc_U
+            correct = 1;
+        end
+    elseif practice~=0
+        if abs(respDif) <=pms.minAcc_practice
+            correct = 1;
+        end   
     end
     if practice==1 
         for ind=1:length(colors)
@@ -197,7 +205,7 @@ if response==1
         Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
         
         %feedback if they are +-10 degrees from target color
-        if abs(respDif) <=pms.minAcc
+        if abs(respDif) <=pms.minAcc_practice
             Screen('TextSize',wPtr,15);
             message = sprintf('Good Job! you deviated only %d degrees',abs(round(respDif)));
             DrawFormattedText(wPtr, message, 'center', 'center', messageColor);
@@ -214,7 +222,9 @@ elseif movement==1 && mod(g,10)==0 %on the faster trials, participants response 
     rtMovement  = NaN;
     rtTotal     = NaN;
     [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 
-    if abs(respDif) <=pms.minAcc
+    if condition==0 && abs(respDif) <=pms.minAcc_I
+        correct = 1;
+    elseif condition==2 && abs(respDif) <=pms.minAcc_U
         correct = 1;
     end 
     % draw the color wheel + response 
