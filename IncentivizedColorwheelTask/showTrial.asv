@@ -66,35 +66,27 @@ for p=1:numBlocks
         WaitSecs(2); 
         if p==2
             if pms.blockCB==0
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE\n\n\n\n'),'center','center',[0 0 0]);
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE'),'center','center',[0 0 0]);
                 Screen('Flip',wPtr);
                 WaitSecs(3);
                 DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE\n\n\n\nPress space to start'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
                 KbWait();
             elseif pms.blockCB==2
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE\n\n\n\n'),'center','center',[0 0 0]);
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE'),'center','center',[0 0 0]);
                 Screen('Flip',wPtr);
                 WaitSecs(3);
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE\n\n\n\nPress space to start'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPD\n\n\n\nPress space to start'),'center','center',[0 0 0]);
                 KbWait();
             end 
         elseif p==3
            if pms.blockCB==0
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE\n\n\n\n'),'center','center',[0 0 0]);
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE'),'center','center',[0 0 0]);
                 Screen('Flip',wPtr);
                 WaitSecs(3);
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE\n\n\n\nPress space to start'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                KbWait();
            elseif pms.blockCB==2
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE\n\n\n\n'),'center','center',[0 0 0]);
+                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE'),'center','center',[0 0 0]);
                 Screen('Flip',wPtr);
                 WaitSecs(3);
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE\n\n\n\nPress space to start'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                KbWait();
            end  
         end
     end 

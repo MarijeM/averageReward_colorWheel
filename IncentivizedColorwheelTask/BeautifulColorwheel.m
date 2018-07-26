@@ -35,6 +35,9 @@ try
     subNo               = varargin{1};
     practice            = varargin{2};
     pms                 = varargin{3};
+    if nargin>3
+        dataPr          = varargin{4};
+    end 
     [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);
     
     data    = []; 
@@ -49,7 +52,7 @@ try
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
     pms.numTrialsPr         = 8;  
     pms.numBlocksPr         = 1; 
-    pms.maxSetsize          = 2; %maximum number of squares used
+    pms.maxSetsize          = 3; %maximum number of squares used
     pms.colorTrials         = 12;    
     %colors
     pms.numWheelColors      = 512;
@@ -64,14 +67,14 @@ try
     pms.textStyle           = 1; 
     pms.ovalColor           = [0 0 0];
     pms.subNo               = subNo;
-    pms.matlabVersion       = 'R2016a';
+    pms.matlabVersion       = 'R2017a';
     %eyelink parameters
     pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated (changes into green)
 %     pms.allowedResps.drift = 'left_control';
     pms.allowedResps.drift = 'c';
     pms.allowedResps.driftOK = 'd';
     pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate
-    pms.offerDuration = 0.75 % in case of no eyetracking
+    pms.offerDuration = 0.75; % in case of no eyetracking
     pms.diagTol = 100; % diagonal pixels of tolerance for fixation
     % timings
     pms.maxRT               = 4; % max RT
@@ -91,13 +94,31 @@ try
     pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 
     pms.offerdelay          = 0.5;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
-    pms.minAcc              = 20; % maximum deviance to win reward
+    if practice==0
+        dataTable = struct2table(dataPr);
+        dataMatrix = dataTable(:,[10,17]);
+        dataMatrix = [dataMatrix.respDif,dataMatrix.type]
+        pms.dataMatrix = dataMatrix;
+        pms.minAcc_I              = prctile(abs(dataMatrix(dataMatrix(:,2)==0,1)),85); % maximum deviance to win reward, 85 percentile of practice trials
+        pms.minAcc_U              = prctile(abs(dataMatrix(dataMatrix(:,2)==2,1)),85);
+        if isfield(pms,'minAcc_I') == 0 %if debugging, possible that minacc cannot be calculated, since prior data does not exist
+             pms.minAcc_I            = 100; % maximum deviance to win reward
+             pms.minAcc_U            = 60; 
+        end 
+    end
+
+    pms.minAcc_practice     = 15;    
     pms.blockDuration       = 12*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
         pms.incColordir     = pwd;
     end
+    
+    % initialize the random number generator
+    randSeed = sum(100*clock);
+    
+    
     %% display and screen
    
     % bit Added to address problem with high precision timestamping related
@@ -117,7 +138,7 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-    if nargin==4 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
+    if nargin==5 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
 %         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;

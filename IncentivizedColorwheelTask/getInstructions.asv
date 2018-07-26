@@ -91,11 +91,11 @@ elseif level==5
     
     Instruction{1} = 'You finished the first block of the task!\n\n Press the right arrow to continue with the next blocks.';
     if pms.blockCB==0
-        Instruction{2}='During the coming block you will mostly get Ignore trials.\n\nDuring the block after you will mostly get Update trials.\n\nPress the right arrow.';
+        Instruction{2}='During the next block you will mostly get Ignore trials.\n\nDuring the second block you will mostly get Update trials.\n\nPress the right arrow.';
     elseif pms.blockCB==2
-        Instruction{2}='During the coming block you will mostly get Update trials.\n\nDuring the block after you will mostly get Ignore trials.\n\nPress the right arrow.';
+        Instruction{2}='During the first block you will mostly get Update trials.\n\nDuring the second block you will mostly get Ignore trials.\n\nPress the right arrow.';
     end
-    Instruction{3}='Everything else is the same as during the first block of the task.\n\nPress the right arrow.';
+    Instruction{3}='Everything else is the same as during the first part of the task.\n\nPress the right arrow.';
     Instruction{4} = 'Good luck!';
     
 elseif level==6

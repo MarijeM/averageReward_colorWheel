@@ -1,4 +1,4 @@
-function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,varargin)
+function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,condition, varargin)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
@@ -116,7 +116,9 @@ SetMouse(centerX,centerY,wPtr);
 movement = 0;
 response = 0;
 if mod(g,10)==0 %if devisible by 10
-   pms.median_rtMovement = pms.median_rtMovement-0.1; % in 10% of cases, every 10th trial, participants have 100ms less to reach the wheel, to promote fast responding
+   median_rtMovement = pms.median_rtMovement-0.1; % in 10% of cases, every 10th trial, participants have 100ms less to reach the wheel, to promote fast responding
+else 
+   median_rtMovement = pms.median_rtMovement; 
 end
 if practice == 0
 %     [itrack,sampleTime] = sampleGaze(driftShift,probeOnset,[],1)
@@ -136,7 +138,7 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
         startResponse = GetSecs;
         rtDecision  = startResponse - probeOnset;
         movement = 1;
-        while response == 0 && GetSecs-startResponse < pms.median_rtMovement %while they did not reach the color wheel, but still within max movement time
+        while response == 0 && GetSecs-startResponse < median_rtMovement %while they did not reach the color wheel, but still within max movement time
             [x,y,~]     = GetMouse(wPtr); %constantly read mouse position
             radius      = sqrt((x-centerX)^2+(y-centerY)^2);                
             %track gaze
@@ -182,8 +184,16 @@ correct = 0;
 if response==1
     %during practice a second line appears indicating the correct response. The line is
     %drawn as a small arc of 0.4 degrees
-    if abs(respDif) <=pms.minAcc
-        correct = 1;
+    if practice==0
+        if condition==0 && abs(respDif) <=pms.minAcc_I
+            correct = 1;
+        elseif condition==2 && abs(respDif) <=pms.minAcc_U
+            correct = 1;
+        end
+    elseif practice~=0
+        if abs(respDif) <=pms.minAcc_practice
+            correct = 1;
+        end   
     end
     if practice==1 
         for ind=1:length(colors)
@@ -197,7 +207,7 @@ if response==1
         Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
         
         %feedback if they are +-10 degrees from target color
-        if abs(respDif) <=pms.minAcc
+        if abs(respDif) <=pms.minAcc_practice
             Screen('TextSize',wPtr,15);
             message = sprintf('Good Job! you deviated only %d degrees',abs(round(respDif)));
             DrawFormattedText(wPtr, message, 'center', 'center', messageColor);
@@ -214,7 +224,9 @@ elseif movement==1 && mod(g,10)==0 %on the faster trials, participants response 
     rtMovement  = NaN;
     rtTotal     = NaN;
     [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 
-    if abs(respDif) <=pms.minAcc
+    if condition==0 && abs(respDif) <=pms.minAcc_I
+        correct = 1;
+    elseif condition==2 && abs(respDif) <=pms.minAcc_U
         correct = 1;
     end 
     % draw the color wheel + response 
