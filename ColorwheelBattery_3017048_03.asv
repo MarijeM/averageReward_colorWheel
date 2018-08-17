@@ -15,7 +15,7 @@ checked=input(sprintf('participant number is %d',subNo)); %returns answer
 
 % ask for counterbalancing: 0 is neutral, ignore, update; 2 is neutral,
 % update, ignore
-pms.blockCB = input('Which block first?\n\nPress 0 for Ignore\nPress 2 for Update:   '); %request user input: block order
+pms.blockCB= input('Which block first?\n\nPress 0 for Ignore\nPress 2 for Update\n\n'); %request user input: block order
 if pms.blockCB == 0
     firstBlock = 'Ignore';
 elseif pms.blockCB == 2
@@ -24,13 +24,13 @@ end
 checked=input(sprintf('Block order: first %s',firstBlock)); %returns answer
 
 % ask for cut off deviance for reward
-pms.cutoff = input('Cut off?\n\nPress 0 for fixed\nPress 1 for individual:   '); 
-if pms.cutoff == 0
-    cutoff = 'Fixed';
-elseif pms.cutoff == 1
-    cutoff = 'Individual';
+cutoff = input('Which block first?\n\nPress 0 for Ignore\nPress 2 for Update\n\n'); 
+if pms.blockCB == 0
+    firstBlock = 'Ignore';
+elseif pms.blockCB == 2
+    firstBlock = 'Update';
 end 
-checked=input(sprintf('Cutoff is %s',cutoff)); %returns answer
+checked=input(sprintf('participant number is %d',subNo)); %returns answer
 
 %% create directories.
 pms.rootdir         = pwd; %current directory

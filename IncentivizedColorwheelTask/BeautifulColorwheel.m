@@ -69,13 +69,13 @@ try
     pms.subNo               = subNo;
     pms.matlabVersion       = 'R2017a';
     %eyelink parameters
-    pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated (changes into green)
+%     pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated (changes into green)
 %     pms.allowedResps.drift = 'left_control';
-    pms.allowedResps.drift = 'c';
-    pms.allowedResps.driftOK = 'd';
-    pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate
+%     pms.allowedResps.drift = 'c';
+%     pms.allowedResps.driftOK = 'd';
+%     pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate
     pms.offerDuration = 0.75; % in case of no eyetracking
-    pms.diagTol = 100; % diagonal pixels of tolerance for fixation
+%     pms.diagTol = 100; % diagonal pixels of tolerance for fixation
     % timings
     pms.maxRT               = 4; % max RT
     pms.cueduration         = 1.0;
@@ -94,7 +94,7 @@ try
     pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 
     pms.offerdelay          = 0.5;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
-    if practice==0
+    if practice==0 & pms.cutoff==1
         dataTable = struct2table(dataPr);
         dataMatrix = dataTable(:,[10,17]);
         dataMatrix = [dataMatrix.respDif,dataMatrix.type]
@@ -107,7 +107,7 @@ try
         end 
     end
 
-    pms.minAcc_practice     = 15;    
+    pms.minAcc              = 15;    
     pms.blockDuration       = 12*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
