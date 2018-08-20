@@ -30,9 +30,9 @@ elseif practice == 0
     numBlocks   = pms.numBlocks; 
 end
 
-Screen('TextSize',wPtr,16);
-Screen('TextStyle',wPtr,1);
-Screen('TextFont',wPtr,'Courier New');
+Screen('TextSize',wPtr,pms.textSize);
+Screen('TextStyle',wPtr,pms.textStyle);
+Screen('TextFont',wPtr,pms.textFont);
 
 
 EncSymbol       = 'M';
@@ -61,7 +61,11 @@ for p=1:numBlocks
 %         pms.el = EyelinkSetup(1,wPtr);
 %         Eyelink('StartRecording')
 %         Screen('FillRect', wPtr, pms.background, rect);
-        DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n Please keep your hands on the mouse and the space bar.'), 'center', 'center',[0 0 0]);
+        if pms.spaceBar==1
+            DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n Please keep your hands on the mouse and the space bar.'), 'center', 'center',[0 0 0]);
+        elseif pms.spaceBar==0
+            DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n Please keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
+        end 
         Screen('Flip',wPtr);
         WaitSecs(2); 
         if p==2
@@ -166,22 +170,30 @@ for p=1:numBlocks
 %                             DrawFormattedText(wPtr, 'Please look at the center of the screen.', 'center', 'center', pms.driftCueCol);
 %                             Screen('Flip',wPtr);
 %                         end
-%                     end
-                    
-                    %let them press space to continue (as manipulation check to hopefully see effect of average reward on vigor)
-                    WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown     
-                    Screen('Textsize', wPtr, 34);
-                    Screen('Textfont', wPtr, 'Times New Roman');
-                    DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);
-                    DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, cue_color);
-                    T.space_on(g,p) = Screen('Flip',wPtr);
-                    T.space_off(g,p) = KbWait();
-                    T.offer_off(g,p) = Screen('Flip',wPtr);
-                    rtSpace = T.space_off(g,p) - T.space_on(g,p); 
-                    WaitSecs(pms.offerdelay); 
+%                     end 
+                    if pms.spaceBar==1
+                        %let them press space to continue (as manipulation check to hopefully see effect of average reward on vigor)
+                        WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
+                        Screen('Textsize', wPtr, 34);
+                        Screen('Textfont', wPtr, 'Times New Roman');
+                        DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);
+                        DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, cue_color);
+                        T.space_on(g,p) = Screen('Flip',wPtr);
+                        T.space_off(g,p) = KbWait();
+                        T.offer_off(g,p) = Screen('Flip',wPtr);
+                        rtSpace = T.space_off(g,p) - T.space_on(g,p); 
+                        WaitSecs(pms.offerdelay); 
+                    elseif pms.spaceBar==0
+                        WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
+                        T.space_on(g,p) = NaN;
+                        T.space_off(g,p) = NaN;
+                        T.offer_off(g,p) = Screen('Flip',wPtr);
+                        rtSpace = NaN; 
+                        WaitSecs(pms.offerdelay); 
+                    end 
                 end 
 %                 valid = valid +1;
-            elseif phase==2; %cue update or ignore
+            elseif phase==2 %cue update or ignore
 %                 if practice~=1
 %                    Screen('Textsize', wPtr, 34);
 %                    Screen('Textfont', wPtr, 'Times New Roman');
@@ -200,7 +212,7 @@ for p=1:numBlocks
             elseif phase==3    % encoding phase
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
-                        switch trial(g,p).setSize;  %switch between set sizes
+                        switch trial(g,p).setSize  %switch between set sizes
                             case 1                 % setsize 1
                                 rectOne     = CenterRectOnPoint(rectOne,trial(g,p).locations(1,1),trial(g,p).locations(1,2));
                                 colorEnc    = trial(g,p).colors(1,:);
@@ -495,7 +507,7 @@ for p=1:numBlocks
                 data(g,p).rt=rtTotal;
                 if exist('rtSpace', 'var')
                     data(g,p).rtSpace=rtSpace;
-                else ~exist('rtSpace', 'var')
+                elseif ~exist('rtSpace', 'var')
                     data(g,p).rtSpace=NaN;
                 end
                 data(g,p).probeLocation=[trial(g,p).locations(1,1) trial(g,p).locations(1,2)];

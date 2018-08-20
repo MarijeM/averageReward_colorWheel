@@ -97,7 +97,7 @@ elseif level==31 % when no space bar press after reward cue
     Instruction{8}=sprintf('Each block lasts %d minutes, and you will complete as many trials as you can within those %d minutes.', pms.blockDuration/60, pms.blockDuration/60);
     Instruction{9}= 'Note that the faster you are, the more trials you can do, and the more money you can earn.';
     Instruction{10}= 'Please take a moment to tell your experimenter what is going to happen in this task.';
-    Instruction{11} = 'You will now start the task.';
+    Instruction{11} = 'You will now start the task.\n\nPress the right arrow.';
     
 elseif level==4
     Instruction{1} = 'You finished practicing.\n\n You will now start the task.\n\nPress the right arrow.';
@@ -168,9 +168,8 @@ for i=1:100
 %              Screen('Textfont', wPtr, 'Times New Roman');
 %              DrawFormattedText(wPtr, '50', 'center', 'center', [10 150 10]);%green reward cue
          end 
-    Screen('TextSize',wPtr,pms.textSize); %change back to normal
-    Screen('TextStyle',wPtr,pms.textStyle);
-    Screen('TextFont',wPtr,pms.textFont);   
+    Screen('Textsize', wPtr, 22); % change back to normal
+    Screen('Textfont', wPtr, 'Times New Roman');     
     DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing)
     end %level
     Screen('flip',wPtr);

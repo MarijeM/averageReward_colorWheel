@@ -156,7 +156,7 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
 
                 rtMovement  = RT - startResponse;
                 rtTotal     = RT - probeOnset;
-                response    = 1
+                response    = 1;
                 HideCursor;
 
                 [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 

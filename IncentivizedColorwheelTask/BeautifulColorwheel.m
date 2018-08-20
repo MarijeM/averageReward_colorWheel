@@ -50,7 +50,11 @@ try
     pms.numBlocks           = 3;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
-    pms.numTrialsPr         = 8;  
+    if pms.spaceBar==1
+        pms.numTrialsPr         = 8;  
+    elseif pms.spaceBar==0
+        pms.numTrialsPr         = 16;  
+    end 
     pms.numBlocksPr         = 1; 
     pms.maxSetsize          = 3; %maximum number of squares used
     pms.colorTrials         = 12;    
@@ -94,10 +98,10 @@ try
     pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 
     pms.offerdelay          = 0.5;
     pms.rewardduration      = 0.75; %duration of "you win xx" 
-    if practice==0 & pms.cutoff==1
+    if practice==0 && pms.cutoff==1
         dataTable = struct2table(dataPr);
         dataMatrix = dataTable(:,[10,17]);
-        dataMatrix = [dataMatrix.respDif,dataMatrix.type]
+        dataMatrix = [dataMatrix.respDif,dataMatrix.type];
         pms.dataMatrix = dataMatrix;
         pms.minAcc_I              = prctile(abs(dataMatrix(dataMatrix(:,2)==0,1)),85); % maximum deviance to win reward, 85 percentile of practice trials
         pms.minAcc_U              = prctile(abs(dataMatrix(dataMatrix(:,2)==2,1)),85);
@@ -194,16 +198,20 @@ try
        getInstructions(1,pms,wPtr); %intro + instruction color vision
        hooray = 0; 
        while hooray==0
-        [hooray,median_rtMovement]=colorVision(pms,wPtr,rect)
+        [hooray,median_rtMovement]=colorVision(pms,wPtr,rect);
         pms.median_rtMovement = median_rtMovement;
        end
        getInstructions(2,pms,wPtr); % instruction regular color wheel
-       [trial]= trialstruct(pms,rect,1,0,0); 
+       [trial]= trialstruct(pms,rect,1,0,0);           
     elseif practice==2
        getInstructions(3,pms,wPtr);
        [trial]= trialstruct(pms,rect,1,0,1);  
     elseif practice==0
-       getInstructions(4,pms,wPtr);
+       if pms.spaceBar==0
+           getInstructions(31,pms,wPtr);
+       elseif pms.spaceBar==1
+           getInstructions(4,pms,wPtr);
+       end    
        [trial]=defstruct(pms,rect); 
     end
 

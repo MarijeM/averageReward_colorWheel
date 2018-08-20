@@ -15,7 +15,7 @@ checked=input(sprintf('participant number is %d',subNo)); %returns answer
 
 % ask for counterbalancing: 0 is neutral, ignore, update; 2 is neutral,
 % update, ignore
-pms.blockCB = input('Which block first?\n\nPress 0 for Ignore\nPress 2 for Update:   '); %request user input: block order
+pms.blockCB = input('\n\nWhich block first?\n\nPress 0 for Ignore\nPress 2 for Update:   '); %request user input: block order
 if pms.blockCB == 0
     firstBlock = 'Ignore';
 elseif pms.blockCB == 2
@@ -24,13 +24,22 @@ end
 checked=input(sprintf('Block order: first %s',firstBlock)); %returns answer
 
 % ask for cut off deviance for reward
-pms.cutoff = input('Cut off?\n\nPress 0 for fixed\nPress 1 for individual:   '); 
+pms.cutoff = input('\n\nCut off?\n\nPress 0 for fixed\nPress 1 for individual:   '); 
 if pms.cutoff == 0
     cutoff = 'Fixed';
 elseif pms.cutoff == 1
     cutoff = 'Individual';
 end 
 checked=input(sprintf('Cutoff is %s',cutoff)); %returns answer
+
+% ask if participants have to hit space bar after seeing the reward
+pms.spaceBar = input('\n\nSpace bar?\n\nPress 0 for no\nPress 1 for yes:   '); 
+if pms.spaceBar == 0
+    spaceBar = 'OFF';
+elseif pms.spaceBar == 1
+    spaceBar = 'ON';
+end 
+checked=input(sprintf('spaceBar is %s',spaceBar)); %returns answer
 
 %% create directories.
 pms.rootdir         = pwd; %current directory
@@ -60,8 +69,12 @@ cd(pms.inccwdir);
 disp('TASK: Color Wheel');          % display which task starts.
 WaitSecs(2); %show message for 2 sec
 [dataPractice,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
-[dataPracticeRewards,~,~,~,~] = BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
-dataPr = [dataPractice; dataPracticeRewards];
+if pms.spaceBar==1
+    [dataPracticeRewards,~,~,~,~] = BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
+    dataPr = [dataPractice; dataPracticeRewards];
+elseif pms.spaceBar==0
+    dataPr = [dataPractice];
+end 
 BeautifulColorwheel(subNo,0,pms,dataPr); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
 
 cd(pms.rootdir)

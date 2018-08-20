@@ -42,9 +42,9 @@ for r=1:length(locationmatrix)
 end
 
 block = 1;
-for b = blockOrder;
+for b = blockOrder
     field = sprintf('block%d', b);
-    trials = blocks.(field)
+    trials = blocks.(field);
 
     for j=1:pms.numTrials %create new fields in trial-struct
         trials(j,1).colors=[];

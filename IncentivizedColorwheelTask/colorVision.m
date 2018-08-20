@@ -108,7 +108,7 @@ for N=1:numTrials
                     rtDecision  = startResponse - probeOnset;
                     rtMovement  = RT - startResponse;
                     rtTotal     = RT - probeOnset;
-                    response    = 1
+                    response    = 1;
                     HideCursor;
 
                     lureColor=probePie(2,:); %don't need it here
