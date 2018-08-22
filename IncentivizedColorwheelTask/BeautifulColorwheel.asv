@@ -96,17 +96,9 @@ try
         pms.delay2DurationUpd   = 1.5;
         pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial     
     elseif pms.slow==1
-        pms.encDuration         = 2;    % encoding
-        pms.delay1DurationPr    = 0.5; % delay 1 during practice
-        pms.delay1Duration      = 0.5;      
-        pms.interfDurationPr    = 2; % interfering stim during practice
-        pms.interfDuration      = 2;
-        pms.delay2DurationIgnPr = 0.5; %delay 2 during practice
-        pms.delay2DurationUpdPr = 4.5;
-        pms.delay2DurationIgn   = 0.5;
-        pms.delay2DurationUpd   = 3;
-        pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial         
-    end   
+        
+    end
+    
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 1;
     pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 

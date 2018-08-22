@@ -41,6 +41,15 @@ elseif pms.spaceBar == 1
 end 
 checked=input(sprintf('spaceBar is %s',spaceBar)); %returns answer
 
+% ask if fast or slow paradigm
+pms.slow = input('\n\nFast or slow paradigm?\n\nPress 0 for fast\nPress 1 for slow:   '); 
+if pms.slow == 0
+    pace = 'fast';
+elseif pms.slow == 1
+    pace = 'slow';
+end 
+checked=input(sprintf('Pace is %s',pace)); %returns answer
+
 %% create directories.
 pms.rootdir         = pwd; %current directory
 pms.logdir          = fullfile(pms.rootdir,'Log'); %create new folder in current directory: ...\log
