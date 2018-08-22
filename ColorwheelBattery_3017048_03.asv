@@ -64,8 +64,8 @@ elseif pms.points == 1
 end 
 checked=input(sprintf('%s points',points)); %returns answer
 
-pms.cutoff==0;
-pms.spaceBar==0;
+pms.cutoff = 0;
+pms.spaceBar = 0;
 if pms.points==1
     if pms.instructions==1
         % ask for cut off deviance for reward
@@ -87,6 +87,7 @@ if pms.points==1
     checked=input(sprintf('spaceBar is %s',spaceBar)); %returns answer
 end
 
+%
 
 %% create directories.
 pms.rootdir         = pwd; %current directory

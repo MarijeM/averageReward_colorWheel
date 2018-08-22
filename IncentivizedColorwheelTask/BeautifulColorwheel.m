@@ -46,7 +46,7 @@ try
     bonus   = []; 
 
     %% set experiment parameters
-    pms.numTrials           = 112; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
+    pms.numTrials           = 120; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
     pms.numBlocks           = 3;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
@@ -71,7 +71,7 @@ try
     pms.textStyle           = 1; 
     pms.ovalColor           = [0 0 0];
     pms.subNo               = subNo;
-    pms.matlabVersion       = 'R2017a';
+    pms.matlabVersion       = 'R2016a';
     %eyelink parameters
 %     pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated (changes into green)
 %     pms.allowedResps.drift = 'left_control';
@@ -216,10 +216,18 @@ try
            end
        end
        getInstructions(2,pms,wPtr); % instruction regular color wheel
-       [trial]= trialstruct(pms,rect,1,0,0);           
+       if pms.shape==0 %squares
+           [trial]= trialstruct(pms,rect,1,0,0);  
+       elseif pms.shape==1 %circles
+           [trial]= trialstruct_circles(pms,rect,1,0,0);  
+       end 
     elseif practice==2
        getInstructions(3,pms,wPtr);
-       [trial]= trialstruct(pms,rect,1,0,1);  
+       if pms.shape==0 %squares
+           [trial]= trialstruct(pms,rect,1,0,1);  
+       elseif pms.shape==1 %circles
+           [trial]= trialstruct_circles(pms,rect,1,0,1);  
+       end   
     elseif practice==0
         if pms.points==1
            if pms.spaceBar==0
@@ -230,7 +238,12 @@ try
         elseif pms.points==0
             getInstructions(32,pms,wPtr);
         end
-       [trial]=defstruct(pms,rect); 
+       [trial]=defstruct(pms,rect);
+       if pms.shape==0 %squares
+           [trial]=defstruct_circles(pms,rect);
+       elseif pms.shape==1 %circles
+           [trial]=defstruct_circles(pms,rect);
+       end   
     end
 
     WaitSecs(1); % initial interval (blank screen)

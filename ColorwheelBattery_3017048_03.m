@@ -87,6 +87,15 @@ if pms.points==1
     checked=input(sprintf('spaceBar is %s',spaceBar)); %returns answer
 end
 
+% ask if circles or squares
+pms.shape = input('\n\nShape of stimuli?\n\nPress 0 for squares\nPress 1 for concentric circles:   '); 
+if pms.shape == 0
+    shape = 'squares';
+elseif pms.spate == 1
+    shape = 'concentric circles';
+end 
+checked=input(sprintf('Shape of stimuli is %s',shape)); %returns answer
+
 
 %% create directories.
 pms.rootdir         = pwd; %current directory
