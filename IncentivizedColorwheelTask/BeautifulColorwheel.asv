@@ -207,11 +207,13 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==1
-       getInstructions(1,pms,wPtr); %intro + instruction color vision
-       hooray = 0; 
-       while hooray==0
-        [hooray,median_rtMovement]=colorVision(pms,wPtr,rect);
-        pms.median_rtMovement = median_rtMovement;
+       if pms.CV==1
+            getInstructions(1,pms,wPtr); %intro + instruction color vision
+           hooray = 0; 
+           while hooray==0
+            [hooray,median_rtMovement]=colorVision(pms,wPtr,rect);
+            pms.median_rtMovement = median_rtMovement;
+           end
        end
        getInstructions(2,pms,wPtr); % instruction regular color wheel
        [trial]= trialstruct(pms,rect,1,0,0);           
@@ -219,11 +221,14 @@ try
        getInstructions(3,pms,wPtr);
        [trial]= trialstruct(pms,rect,1,0,1);  
     elseif practice==0
-       if pms.spaceBar==0
-           getInstructions(31,pms,wPtr);
-       elseif pms.spaceBar==1
-           getInstructions(4,pms,wPtr);
-       end    
+        if pms.points==1
+           if pms.spaceBar==0
+               getInstructions(31,pms,wPtr);
+           elseif pms.spaceBar==1
+               getInstructions(4,pms,wPtr);
+           end  
+        elseif pms.points==0
+            
        [trial]=defstruct(pms,rect); 
     end
 

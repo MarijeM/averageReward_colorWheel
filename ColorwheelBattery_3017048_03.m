@@ -55,23 +55,37 @@ else
     pms.CV = 0;
 end
 
-% ask for cut off deviance for reward
-pms.cutoff = input('\n\nCut off?\n\nPress 0 for fixed\nPress 1 for individual:   '); 
-if pms.cutoff == 0
-    cutoff = 'Fixed';
-elseif pms.cutoff == 1
-    cutoff = 'Individual';
+% ask if with or without reward points
+pms.points = input('\n\nWith points?\n\nPress 0 for without\nPress 1 for with:   '); 
+if pms.points == 0
+    points = 'Without';
+elseif pms.points == 1
+    points = 'With';
 end 
-checked=input(sprintf('Cutoff is %s',cutoff)); %returns answer
+checked=input(sprintf('%s points',points)); %returns answer
 
-% ask if participants have to hit space bar after seeing the reward
-pms.spaceBar = input('\n\nSpace bar?\n\nPress 0 for no\nPress 1 for yes:   '); 
-if pms.spaceBar == 0
-    spaceBar = 'OFF';
-elseif pms.spaceBar == 1
-    spaceBar = 'ON';
-end 
-checked=input(sprintf('spaceBar is %s',spaceBar)); %returns answer
+pms.cutoff = 0;
+pms.spaceBar = 0;
+if pms.points==1
+    if pms.instructions==1
+        % ask for cut off deviance for reward
+        pms.cutoff = input('\n\nCut off?\n\nPress 0 for fixed\nPress 1 for individual:   '); 
+        if pms.cutoff == 0
+            cutoff = 'Fixed';
+        elseif pms.cutoff == 1
+            cutoff = 'Individual';
+        end 
+        checked=input(sprintf('Cutoff is %s',cutoff)); %returns answer
+    end    
+    % ask if participants have to hit space bar after seeing the reward
+    pms.spaceBar = input('\n\nSpace bar?\n\nPress 0 for no\nPress 1 for yes:   '); 
+    if pms.spaceBar == 0
+        spaceBar = 'OFF';
+    elseif pms.spaceBar == 1
+        spaceBar = 'ON';
+    end 
+    checked=input(sprintf('spaceBar is %s',spaceBar)); %returns answer
+end
 
 
 %% create directories.

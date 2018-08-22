@@ -194,13 +194,8 @@ for p=1:numBlocks
                 end 
 %                 valid = valid +1;
             elseif phase==1 && pms.points==0
-                if practice~=1
-                    T.offer_on(g,p) = NaN;
-                    T.space_on(g,p) = NaN;
-                    T.space_off(g,p) = NaN;
-                    T.offer_off(g,p) = NaN;
-                    rtSpace = NaN; 
-                end
+                
+                
             elseif phase==2 %cue update or ignore
 %                 if practice~=1
 %                    Screen('Textsize', wPtr, 34);
@@ -506,7 +501,7 @@ for p=1:numBlocks
                    drawFixationCross(wPtr,rect);
                    Screen('Flip',wPtr); 
                    T.feedback_off(g,p) = GetSecs;
-               elseif practice~=1 && pms.points==0
+               elseif practice~=1 && pms.points==1
                    drawFixationCross(wPtr,rect);
                    Screen('Flip',wPtr); 
                    T.feedback_on(g,p) = GetSecs;

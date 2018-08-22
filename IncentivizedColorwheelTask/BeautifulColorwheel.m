@@ -126,7 +126,7 @@ try
     end
 
     pms.minAcc              = 15;    
-    pms.blockDuration       = 12*60; %duration in seconds of one block
+    pms.blockDuration       = 1*60; %duration in seconds of one block
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
@@ -221,11 +221,15 @@ try
        getInstructions(3,pms,wPtr);
        [trial]= trialstruct(pms,rect,1,0,1);  
     elseif practice==0
-       if pms.spaceBar==0
-           getInstructions(31,pms,wPtr);
-       elseif pms.spaceBar==1
-           getInstructions(4,pms,wPtr);
-       end    
+        if pms.points==1
+           if pms.spaceBar==0
+               getInstructions(31,pms,wPtr);
+           elseif pms.spaceBar==1
+               getInstructions(4,pms,wPtr);
+           end  
+        elseif pms.points==0
+            getInstructions(32,pms,wPtr);
+        end
        [trial]=defstruct(pms,rect); 
     end
 

@@ -99,6 +99,15 @@ elseif level==31 % when no space bar press after reward cue
     Instruction{10}= 'Please take a moment to tell your experimenter what is going to happen in this task.';
     Instruction{11} = 'You will now start the task.';
     
+elseif level==32 % when no rewards
+    Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
+    Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
+    Instruction{3}= 'Please look at the screen while doing the task.';
+    Instruction{4}=sprintf('We will split the task in %d blocks. \n\n After each block you can take a break and continue with the task when you are ready.',pms.numBlocks);
+    Instruction{5}=sprintf('Each block lasts %d minutes, and you will complete as many trials as you can within those %d minutes.', pms.blockDuration/60, pms.blockDuration/60);
+    Instruction{6}= 'Please take a moment to tell your experimenter what is going to happen in this task.';
+    Instruction{7} = 'You will now start the task.';    
+    
 elseif level==4
     Instruction{1} = 'You finished practicing.\n\n You will now start the task.\n\nPress the right arrow.';
     Instruction{2} = 'Good luck!';
@@ -114,9 +123,10 @@ elseif level==5
     Instruction{3}='Everything else is the same as during the first block of the task.\n\nPress the right arrow.';
     Instruction{4} = 'Good luck!';
     
-elseif level==6
+elseif level==6 && pms.points==1
     Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', money));
-
+elseif level==6 && pms.points==0
+    Instruction{1}='This is the end of the color wheel memory task!\n\n Please contact the researcher.';
 end %level
 
 counter=1;
@@ -182,7 +192,7 @@ for i=1:100
         Screen('flip',wPtr);
         WaitSecs(1);
         break;
-    elseif (level==3 || level==31) && counter==length(Instruction)-1
+    elseif (level==3 || level==31 || level==32) && counter==length(Instruction)-1
         GetClicks();
         responded = 1;
         Screen('flip',wPtr);
