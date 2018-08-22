@@ -37,7 +37,7 @@ try
     pms                 = varargin{3};
     if nargin>3
         dataPr          = varargin{4};
-    end 
+    end
     [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);
     
     data    = []; 
@@ -156,8 +156,7 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-    if nargin==5 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
-%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+    if pms.instructions==0 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;
         pms.rect = rect; 
@@ -165,7 +164,6 @@ try
         wPtr = pms.wPtr;
         rect = pms.rect;
     elseif practice == 1
-%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;
         pms.rect = rect;
@@ -209,11 +207,13 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==1
-       getInstructions(1,pms,wPtr); %intro + instruction color vision
-       hooray = 0; 
-       while hooray==0
-        [hooray,median_rtMovement]=colorVision(pms,wPtr,rect);
-        pms.median_rtMovement = median_rtMovement;
+       if pms.CV==1
+            getInstructions(1,pms,wPtr); %intro + instruction color vision
+           hooray = 0; 
+           while hooray==0
+            [hooray,median_rtMovement]=colorVision(pms,wPtr,rect);
+            pms.median_rtMovement = median_rtMovement;
+           end
        end
        getInstructions(2,pms,wPtr); % instruction regular color wheel
        [trial]= trialstruct(pms,rect,1,0,0);           

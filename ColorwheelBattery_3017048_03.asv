@@ -23,38 +23,6 @@ elseif pms.blockCB == 2
 end 
 checked=input(sprintf('Block order: first %s',firstBlock)); %returns answer
 
-% ask if fast or slow paradigm
-pms.slow = input('\n\nFast or slow paradigm?\n\nPress 0 for fast\nPress 1 for slow:   '); 
-if pms.slow == 0
-    pace = 'fast';
-elseif pms.slow == 1
-    pace = 'slow';
-end 
-checked=input(sprintf('Pace is %s',pace)); %returns answer
-
-% Show instructions and practice?
-pms.instructions = input('\n\nShow instructions and practice or not?\n\nPress 0 for no\nPress 1 for yes:   '); 
-if pms.instructions== 0
-    Ins = 'Do not show instructions';
-    pms.cutoff = 0;
-elseif pms.instructions == 1
-    Ins = 'Show instructions';
-end 
-checked=input(sprintf('%s',Ins)); %returns answer
-
-if pms.instructions==1
-    % Do color vision test?
-    pms.CV = input('\n\nDo color vision test or not?\n\nPress 0 for no\nPress 1 for yes:   '); 
-    if pms.CV== 0
-        CV = 'No color vision test';
-    elseif pms.CV == 1
-        CV = 'Do color vision test';
-    end 
-    checked=input(sprintf('%s',CV)); %returns answer
-else
-    pms.CV = 0;
-end
-
 % ask for cut off deviance for reward
 pms.cutoff = input('\n\nCut off?\n\nPress 0 for fixed\nPress 1 for individual:   '); 
 if pms.cutoff == 0
@@ -73,6 +41,32 @@ elseif pms.spaceBar == 1
 end 
 checked=input(sprintf('spaceBar is %s',spaceBar)); %returns answer
 
+% ask if fast or slow paradigm
+pms.slow = input('\n\nFast or slow paradigm?\n\nPress 0 for fast\nPress 1 for slow:   '); 
+if pms.slow == 0
+    pace = 'fast';
+elseif pms.slow == 1
+    pace = 'slow';
+end 
+checked=input(sprintf('Pace is %s',pace)); %returns answer
+
+% Do color vision test?
+pms.CV = input('\n\nDo color vision test or not?\n\nPress 0 for no\nPress 1 for yes:   '); 
+if pms.CV== 0
+    CV = 'No color vision test';
+elseif pms.CV == 1
+    CV = 'Do color vision test';
+end 
+checked=input(sprintf('%s',CV)); %returns answer
+
+% Show instructions and practice?
+pms.instructions = input('\n\nShow instructions and practice or not?\n\nPress 0 for no\nPress 1 for yes:   '); 
+if pms.instructions== 0
+    Ins = 'Do not show instructions';
+elseif pms.instructions == 1
+    Ins = 'Show instructions';
+end 
+checked=input(sprintf('%s',Ins)); %returns answer
 
 %% create directories.
 pms.rootdir         = pwd; %current directory
@@ -83,8 +77,8 @@ if ~exist(pms.logdir,'dir') %if subject x does not exist
     mkdir(pms.rootdir,'Log'); %make directory
 end
 
-%% colorwheel task
-
+%% incentivized colorwheel task
+%incentivized colorwheel directory (= colorwheel including reward)
 pms.incColordir=fullfile(pms.logdir,'IncentivizedColorwheel'); %...\log\colorwheel
 if ~exist(pms.incColordir,'dir')
     mkdir(pms.logdir,'IncentivizedColorwheel'); 
@@ -101,19 +95,17 @@ end
 cd(pms.inccwdir);
 disp('TASK: Color Wheel');          % display which task starts.
 WaitSecs(2); %show message for 2 sec
-if pms.instructions==1
-    [dataPractice,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
-    if pms.spaceBar==1
-        [dataPracticeRewards,~,~,~,~] = BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
-        dataPr = [dataPractice; dataPracticeRewards];
-    elseif pms.spaceBar==0
-        dataPr = [dataPractice];
-    end
-    BeautifulColorwheel(subNo,0,pms,dataPr); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
-else
-    BeautifulColorwheel(subNo,0,pms); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
+if pms.CV==1 | pms.
+
+[dataPractice,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
+if pms.spaceBar==1
+    [dataPracticeRewards,~,~,~,~] = BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
+    dataPr = [dataPractice; dataPracticeRewards];
+elseif pms.spaceBar==0
+    dataPr = [dataPractice];
 end
 
+BeautifulColorwheel(subNo,0,pms,dataPr); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
 
 cd(pms.rootdir)
 

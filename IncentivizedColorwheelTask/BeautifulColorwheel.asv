@@ -37,7 +37,7 @@ try
     pms                 = varargin{3};
     if nargin>3
         dataPr          = varargin{4};
-    end 
+    end
     [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);
     
     data    = []; 
@@ -96,9 +96,17 @@ try
         pms.delay2DurationUpd   = 1.5;
         pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial     
     elseif pms.slow==1
-        
-    end
-    
+        pms.encDuration         = 2;    % encoding
+        pms.delay1DurationPr    = 0.5; % delay 1 during practice
+        pms.delay1Duration      = 0.5;      
+        pms.interfDurationPr    = 2; % interfering stim during practice
+        pms.interfDuration      = 2;
+        pms.delay2DurationIgnPr = 0.5; %delay 2 during practice
+        pms.delay2DurationUpdPr = 4.5;
+        pms.delay2DurationIgn   = 0.5;
+        pms.delay2DurationUpd   = 3;
+        pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial         
+    end   
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
     pms.feedbackDurationPr  = 1;
     pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 
@@ -148,8 +156,7 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-    if nargin==5 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
-%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+    if pms.instructions==0 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;
         pms.rect = rect; 
@@ -157,7 +164,6 @@ try
         wPtr = pms.wPtr;
         rect = pms.rect;
     elseif practice == 1
-%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;
         pms.rect = rect;
