@@ -238,9 +238,8 @@ try
         elseif pms.points==0
             getInstructions(32,pms,wPtr);
         end
-       [trial]=defstruct(pms,rect);
        if pms.shape==0 %squares
-           [trial]=defstruct_circles(pms,rect);
+           [trial]=defstruct(pms,rect);
        elseif pms.shape==1 %circles
            [trial]=defstruct_circles(pms,rect);
        end   
@@ -249,10 +248,10 @@ try
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    if practice == 0
+    if pms.shape==0
         [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
-    else 
-        [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    elseif pms.shape==1 
+        [pms,data,T,money,gazedata] = showTrial_circles(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
     end
     
     %% Save the data

@@ -30,8 +30,7 @@ elseif pms.blockCB == 2
 end
 
 % locationmatrix
-locationmatrix = [rect(3)*0.5, rect(4)*0.5]; % circles will be centered in middle of screen
-locationmatrix = repmat(locationmatrix,4,1);
+sizematrix = [0 0 80 80; 0 0 120 120; 0 0 160 160; 0 0 200 200]; % circles will be centered in middle of screen
 
 [~,pie]=sampledColorMatrix(pms);
 
@@ -42,7 +41,7 @@ for b = blockOrder
 
     for j=1:length(trials) %create new fields in trial-struct
         trials(j,1).colors=[];
-        trials(j,1).locations=[];
+        trials(j,1).size=[];
         trials(j,1).probeColorCorrect=[];
         trials(j,1).block=block;
     end
@@ -61,16 +60,16 @@ for b = blockOrder
         for j=1:numel(trials(x,1).locNums) %for 1: max number of locations
             for m=trials(x,1).locNums % for each location per trials
                 if trials(x,1).locNums(j)==m % if specific position of locations equals the location
-                    trials(x,1).locations=[trials(x,1).locations;locationmatrix(m,:)]; %add its coordinates to locations (same coordinate for each position: middle of screen)
+                    trials(x,1).size=[trials(x,1).size;sizematrix(m,:)]; %add its coordinates to locations (same coordinate for each position: middle of screen)
                   
                     if m==trials(x,1).probelocation %if this is the probed square
-                        trials(x,1).probeLoc=trials(x,1).locations(j,:); 
+                        trials(x,1).probeSize=trials(x,1).size(j,:); 
                     end
                 end
             end 
         end
  
- %% to make analysis easier, create fields with the color of every square location per Stimuli
+ %% to make analysis easier, create fields with the color of every circle position per Stimuli
 %  Stimuli.encColLoc1:4 represents the color of the square in location 1:4.
 %  1 is innermost, 4 is outermost
 
@@ -128,6 +127,26 @@ for b = blockOrder
         trials(x,1).offer = offers(x);
     end 
 
+    %% quick fix to have first 8 trials of majority update update and first 8 trials of majority ignore ignore
+    for x = 1:8
+        if b==2
+           trials(x,1).type = 0; 
+        elseif b==3
+           trials(x,1).type = 2; 
+        end
+        
+        if trials(x,1).type==trials(x,1).cue
+           trials(x,1).valid = 1;
+        elseif trials(x,1).type~=trials(x,1).cue
+           trials(x,1).valid = 0;
+        end 
+       
+        if trials(x,1).type==0
+            trials(x,1).probecolor = trials(x,1).cols(1);
+        elseif trials(x,1).type==2
+            trials(x,1).probecolor = trials(x,1).cols(pms.maxSetsize+1);
+        end 
+    end 
        
     %% combine blocks  
     trial = [trial, trials];
