@@ -133,6 +133,28 @@ for b = blockOrder
     for x = 1:length(offers)
         trials(x,1).offer = offers(x);
     end 
+      
+    %% quick fix to have first 8 trials of majority update update and first 8 trials of majority ignore ignore
+    for x = 1:8
+        if b==2
+           trials(x,1).type = 0; 
+        elseif b==3
+           trials(x,1).type = 2; 
+        end
+        
+        if trials(x,1).type==trials(x,1).cue
+           trials(x,1).valid = 1;
+        elseif trials(x,1).type~=trials(x,1).cue
+           trials(x,1).valid = 0;
+        end 
+       
+        if trials(x,1).type==0
+            trials(x,1).probecolor = trials(x,1).cols(1);
+        elseif trials(x,1).type==2
+            trials(x,1).probecolor = trials(x,1).cols(pms.maxSetsize+1);
+        end 
+    end 
+    
        
     %% combine blocks  
     trial = [trial, trials];

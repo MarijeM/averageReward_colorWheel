@@ -127,6 +127,7 @@ for b = blockOrder
     for x = 1:length(offers)
         trials(x,1).offer = offers(x);
     end 
+
        
     %% combine blocks  
     trial = [trial, trials];
