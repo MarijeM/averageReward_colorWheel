@@ -181,7 +181,7 @@ for i=1:100
     Screen('TextSize',wPtr,pms.textSize); %change back to normal
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);   
-    DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing)
+    DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
     end %level
     Screen('flip',wPtr);
 
@@ -197,7 +197,7 @@ for i=1:100
         responded = 1;
         Screen('flip',wPtr);
         WaitSecs(2);
-        continue
+        continue;
     elseif (level==3 || level==31) && counter==length(Instruction)
         WaitSecs(2);
         Screen('flip',wPtr);

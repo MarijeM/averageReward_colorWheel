@@ -1,4 +1,4 @@
-function [trial]=defstruct(pms,rect)
+function [trial]=defstruct_circles(pms,rect)
 %%function that creates the Stimuli structure for the predefined stimuli. 
 % Stimuli.mat matrix is created in sampleStimuli.m. It contains locations and
 % colors numerically coded(colors 1:12, referring to pie of colorwheel; locations 1:4 for 4 locations).
@@ -18,7 +18,7 @@ function [trial]=defstruct(pms,rect)
 % matrix created in [Stimuli]=sampleStimuli and saved so that all participants
 % see same stimuli
  
-filename = sprintf('trialsPerBlock_%d.mat', pms.maxSetsize);        
+filename = sprintf('trialsPerBlock_circles_%d.mat', pms.maxSetsize);        
 load(filename); 
 trial = [];
 
@@ -29,24 +29,18 @@ elseif pms.blockCB == 2
     blockOrder = [1 3 2]; %50 50, Update, Ignore
 end
 
-% the square locations are created as fraction of rect (screen size), 
-% so that screen size differences are irrelevant. 
-xyindex=[0.4 0.6 0.6 0.4;0.37 0.37 0.6 0.6]'; %the locations go clockwise L->R       1  2
-locationmatrix=zeros(size(xyindex,1),size(xyindex,2));                                                                                %  4  3
-[~,pie]=sampledColorMatrix(pms);
-
 % locationmatrix
-for r=1:length(locationmatrix)
-    locationmatrix(r,1)=(rect(3)*xyindex(r,1));
-    locationmatrix(r,2)=(rect(4)*xyindex(r,2));
-end
+locationmatrix = [rect(3)*0.5, rect(4)*0.5]; % circles will be centered in middle of screen
+locationmatrix = repmat(locationmatrix,4,1);
+
+[~,pie]=sampledColorMatrix(pms);
 
 block = 1;
 for b = blockOrder
     field = sprintf('block%d', b);
     trials = blocks.(field);
 
-    for j=1:pms.numTrials %create new fields in trial-struct
+    for j=1:length(trials) %create new fields in trial-struct
         trials(j,1).colors=[];
         trials(j,1).locations=[];
         trials(j,1).probeColorCorrect=[];
@@ -54,7 +48,7 @@ for b = blockOrder
     end
 
 %% sample colors
-    for x=1:size(trials,1) %numtrialss (total)
+    for x=1:120 %numtrials (total)
         for n=1:numel(trials(x,1).cols) %1: max number of colors per Stimuli (colors per Stimuli are setSize*2)
             for k = trials(x,1).cols %for each color catergory per Stimuli eg k=[4 5 2 7]
                 if trials(x,1).cols(n)==k 
@@ -67,7 +61,7 @@ for b = blockOrder
         for j=1:numel(trials(x,1).locNums) %for 1: max number of locations
             for m=trials(x,1).locNums % for each location per trials
                 if trials(x,1).locNums(j)==m % if specific position of locations equals the location
-                    trials(x,1).locations=[trials(x,1).locations;locationmatrix(m,:)]; %add its coordinates to locations
+                    trials(x,1).locations=[trials(x,1).locations;locationmatrix(m,:)]; %add its coordinates to locations (same coordinate for each position: middle of screen)
                   
                     if m==trials(x,1).probelocation %if this is the probed square
                         trials(x,1).probeLoc=trials(x,1).locations(j,:); 
@@ -77,11 +71,11 @@ for b = blockOrder
         end
  
  %% to make analysis easier, create fields with the color of every square location per Stimuli
-%  Stimuli.encColLoc1:4 represents the color of the square in location 1:4. 1 is the location top left
-%  and they continue clockwise. If the location does not exist for this Stimuli, the field remains empty. 
+%  Stimuli.encColLoc1:4 represents the color of the square in location 1:4.
+%  1 is innermost, 4 is outermost
 
           for j=1:numel(trials(x,1).locNums) %for 1: max number of locations
-            for m=trials(x,1).locNums % for each location per trials
+            for m=trials(x,1).locNums % for each location per trial
                 if trials(x,1).locNums(j)==m % if specific position of locations equals the location      
                      switch m
                             case 1
@@ -133,27 +127,14 @@ for b = blockOrder
     for x = 1:length(offers)
         trials(x,1).offer = offers(x);
     end 
-      
+    
     %% quick fix to have first 8 trials of majority update update and first 8 trials of majority ignore ignore
-    for x = 1:8
-        if b==2
-           trials(x,1).type = 0; 
-        elseif b==3
-           trials(x,1).type = 2; 
-        end
-        
-        if trials(x,1).type==trials(x,1).cue
-           trials(x,1).valid = 1;
-        elseif trials(x,1).type~=trials(x,1).cue
-           trials(x,1).valid = 0;
-        end 
-       
-        if trials(x,1).type==0
-            trials(x,1).probecolor = trials(x,1).cols(1);
-        elseif trials(x,1).type==2
-            trials(x,1).probecolor = trials(x,1).cols(pms.maxSetsize+1);
-        end 
-    end 
+    if b==2
+       trials(1:8,1).type = 0; 
+    elseif b==3
+       trials(1:8,1).type = 2; 
+    end
+    
     
        
     %% combine blocks  
