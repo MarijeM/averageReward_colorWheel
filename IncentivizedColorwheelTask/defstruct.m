@@ -18,10 +18,6 @@ function [trial]=defstruct(pms,rect)
 % matrix created in [Stimuli]=sampleStimuli and saved so that all participants
 % see same stimuli
  
-filename = sprintf('trialsPerBlock_%d.mat', pms.maxSetsize);        
-load(filename); 
-trial = [];
-
 %loop over block and counterbalance block order. 50/50 block always first
 if pms.blockCB == 0
     blockOrder = [1 2 3]; %50 50, Ignore, Update
@@ -29,17 +25,29 @@ elseif pms.blockCB == 2
     blockOrder = [1 3 2]; %50 50, Update, Ignore
 end
 
-% the square locations are created as fraction of rect (screen size), 
-% so that screen size differences are irrelevant. 
-xyindex=[0.4 0.6 0.6 0.4;0.37 0.37 0.6 0.6]'; %the locations go clockwise L->R       1  2
-locationmatrix=zeros(size(xyindex,1),size(xyindex,2));                                                                                %  4  3
-[~,pie]=sampledColorMatrix(pms);
+if pms.shape==0 %squares
+    filename = sprintf('trialsPerBlock_%d.mat', pms.maxSetsize);        
+    load(filename); 
+    trial = [];                                                                              %  4  3
 
-% locationmatrix
-for r=1:length(locationmatrix)
-    locationmatrix(r,1)=(rect(3)*xyindex(r,1));
-    locationmatrix(r,2)=(rect(4)*xyindex(r,2));
+    % locationmatrix
+    % the square locations are created as fraction of rect (screen size), 
+    % so that screen size differences are irrelevant. 
+    xyindex=[0.4 0.6 0.6 0.4;0.37 0.37 0.6 0.6]'; %the locations go clockwise L->R       1  2
+    locationmatrix=zeros(size(xyindex,1),size(xyindex,2)); 
+    for r=1:length(locationmatrix)
+        locationmatrix(r,1)=(rect(3)*xyindex(r,1));
+        locationmatrix(r,2)=(rect(4)*xyindex(r,2));
+    end
+elseif pms.shape==1 %circles
+    filename = sprintf('trialsPerBlock_circles_%d.mat', pms.maxSetsize);        
+    load(filename); 
+    trial = [];
+    
+    locationmatrix = [0 0 rect(3)*0.04 rect(3)*0.04; 0 0 rect(3)*0.08 rect(3)*0.08; 0 0 rect(3)*0.12 rect(3)*0.12; 0 0 rect(3)*0.16 rect(3)*0.16]; % circles will be centered in middle of screen
 end
+
+[~,pie]=sampledColorMatrix(pms);
 
 block = 1;
 for b = blockOrder

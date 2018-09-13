@@ -216,18 +216,10 @@ try
            end
        end
        getInstructions(2,pms, rect,wPtr); % instruction regular color wheel
-       if pms.shape==0 %squares
-           [trial]= trialstruct(pms,rect,1,0,0);  
-       elseif pms.shape==1 %circles
-           [trial]= trialstruct_circles(pms,rect,1,0,0);  
-       end 
+       [trial]= trialstruct(pms,rect,1,0,0);  
     elseif practice==2
        getInstructions(3,pms, rect,wPtr);
-       if pms.shape==0 %squares
-           [trial]= trialstruct(pms,rect,rect,1,0,1);  
-       elseif pms.shape==1 %circles
-           [trial]= trialstruct_circles(pms,rect,1,0,1);  
-       end   
+       [trial]= trialstruct(pms,rect,rect,1,0,1);  
     elseif practice==0
         if pms.points==1
            if pms.spaceBar==0
@@ -238,21 +230,14 @@ try
         elseif pms.points==0
             getInstructions(32,pms,rect,wPtr);
         end
-       if pms.shape==0 %squares
-           [trial]=defstruct(pms,rect);
-       elseif pms.shape==1 %circles
-           [trial]=defstruct_circles(pms,rect);
-       end   
+        [trial]=defstruct(pms,rect);
     end
 
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    if pms.shape==0
-        [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
-    elseif pms.shape==1 
-        [pms,data,T,money,gazedata] = showTrial_circles(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
-    end
+    [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+
     
     %% Save the data
     save(fullfile(pms.subdirICW,dataFilename));
