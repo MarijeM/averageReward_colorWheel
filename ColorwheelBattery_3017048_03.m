@@ -65,18 +65,19 @@ end
 checked=input(sprintf('%s points',points)); %returns answer
 
 pms.cutoff = 0;
+if pms.instructions==1
+    % ask for cut off deviance for reward
+    pms.cutoff = input('\n\nCut off?\n\nPress 0 for fixed\nPress 1 for individual:   '); 
+    if pms.cutoff == 0
+        cutoff = 'Fixed';
+    elseif pms.cutoff == 1
+        cutoff = 'Individual';
+    end 
+    checked=input(sprintf('Cutoff is %s',cutoff)); %returns answer
+end
+
 pms.spaceBar = 0;
-if pms.points==1
-    if pms.instructions==1
-        % ask for cut off deviance for reward
-        pms.cutoff = input('\n\nCut off?\n\nPress 0 for fixed\nPress 1 for individual:   '); 
-        if pms.cutoff == 0
-            cutoff = 'Fixed';
-        elseif pms.cutoff == 1
-            cutoff = 'Individual';
-        end 
-        checked=input(sprintf('Cutoff is %s',cutoff)); %returns answer
-    end    
+if pms.points==1    
     % ask if participants have to hit space bar after seeing the reward
     pms.spaceBar = input('\n\nSpace bar?\n\nPress 0 for no\nPress 1 for yes:   '); 
     if pms.spaceBar == 0

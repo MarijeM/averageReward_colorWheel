@@ -1,4 +1,4 @@
-function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,condition, varargin)
+function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allCircles,probeCircle,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,condition, varargin)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
@@ -49,24 +49,14 @@ probeThickness  = 3;
 probeColor      = [0 0 0];
 
 %rects that form the colorwheel are proportional to screen size
-%circle size
-circleOne          = [0 0 80 80];
-circleTwo          = [0 0 120 120];
-circleThree        = [0 0 160 160];
-circleFour         = [0 0 200 200];
 %circle positions
-first       = CenterRectOnPoint(circleOne,pms.xCenter,pms.yCenter);
-second      = CenterRectOnPoint(circleTwo,pms.xCenter,pms.yCenter);
-third       = CenterRectOnPoint(circleThree,pms.xCenter,pms.yCenter);
-fourth      = CenterRectOnPoint(circleFour,pms.xCenter,pms.yCenter);
-
 insideRect      = [rect(1) rect(2) 0.67*rect(4) 0.67*rect(4)]; %the white oval coordinates
 outsideRect     = [rect(1) rect(2) 0.9*rect(4) 0.9*rect(4)]; %the wheel coordinates
 insideRectColor = pms.background;
 %center all rects 
 outsideRect     = CenterRectOnPoint(outsideRect,centerX, centerY);
 insideRect      = CenterRectOnPoint(insideRect,centerX,centerY);
-probeRect       = CenterRectOnPoint(probeRect,probeRectX,probeRectY);
+probeCircle     = CenterRectOnPoint(probeCircle,centerX,centerY);
 
 %define colors in RGB values
 colors          = hsv(pms.numWheelColors)*255;
@@ -111,11 +101,11 @@ end
 
 %ring created with inside circle
 Screen('FillOval',wPtr,insideRectColor,insideRect);
-%all rectangles
-Screen('FrameRect',wPtr,probeColor,allRects);
-%probed rectangle 
-Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
-drawFixationCross(wPtr,rect);
+%all stimuli circles
+Screen('FrameOval',wPtr,probeColor,allCircles);
+%probed circle
+Screen('FrameOval', wPtr, probeColor, probeCircle,probeThickness);
+
 
 probeOnset = Screen('Flip',wPtr);
 
@@ -177,9 +167,8 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
                 end
                 Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2); % draw line where they reached the wheel
                 Screen('FillOval',wPtr,pms.background,insideRect); % grey middle oval
-                Screen('FrameRect',wPtr,probeColor,allRects); % draw squares
-                Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness); %draw probed square
-                drawFixationCross(wPtr,rect);
+                Screen('FrameOval',wPtr,probeColor,allCircles); % draw squares
+                Screen('FrameOval', wPtr, probeColor, probeCircle,probeThickness); %draw probed square
                 Screen('Flip',wPtr);
                 WaitSecs(pms.feedbackDuration);  
             end 
@@ -213,17 +202,16 @@ if response==1
         Screen('FillArc',wPtr,lineColor,outsideRect,tau-lineThickness/2,lineThickness/2);
         Screen('FillArc',wPtr,lineColor,outsideRect,thetaCorrect-lineThickness/2,lineThickness/2);
         Screen('FillOval',wPtr,insideRectColor,insideRect);
-        Screen('FrameRect',wPtr,probeColor,allRects);
-        Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness);
+        Screen('FrameOval',wPtr,probeColor,allCircles);
+        Screen('FrameOval', wPtr, probeColor, probeCircle,probeThickness);
         
         %feedback if they are +-10 degrees from target color
         if abs(respDif) <=pms.minAcc
             Screen('TextSize',wPtr,15);
             message = sprintf('Good Job! you deviated only %d degrees',abs(round(respDif)));
-            DrawFormattedText(wPtr, message, 'center', 'center', messageColor);
+            DrawFormattedText(wPtr, message, 'center', rect(4)*0.6, messageColor);
         else
             %otherwise no feedback
-            drawFixationCross(wPtr,rect);
         end
         Screen('Flip',wPtr);
         WaitSecs(pms.feedbackDurationPr);
@@ -247,9 +235,8 @@ elseif movement==1 && mod(g,10)==0 %on the faster trials, participants response 
     end
     Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2); % draw line where they reached the wheel
     Screen('FillOval',wPtr,pms.background,insideRect); % grey middle oval
-    Screen('FrameRect',wPtr,probeColor,allRects); % draw squares
-    Screen('FrameRect', wPtr, probeColor, probeRect,probeThickness); %draw probed square
-    drawFixationCross(wPtr,rect);
+    Screen('FrameOval',wPtr,probeColor,allCircles); % draw squares
+    Screen('FrameOval', wPtr, probeColor, probeCircle,probeThickness); %draw probed square
     Screen('Flip',wPtr);
     WaitSecs(pms.feedbackDuration);  
 %if the participant started moving on time, but did not reach the wheel in time, movement is 1, but response is 0. 

@@ -586,7 +586,7 @@ for p=1:numBlocks
         if practice==0           
             if GetSecs-blockOnset > pms.blockDuration
                 if p==1
-                    getInstructions(5,pms,wPtr);
+                    getInstructions(5,pms, rect, wPtr);
 %                   Eyelink('Stoprecording')
 %                   pms.el = EyelinkSetup(0,pms);
                     break; %end numTrials loop and go to next block

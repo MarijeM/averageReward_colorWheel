@@ -30,7 +30,7 @@ elseif pms.blockCB == 2
 end
 
 % locationmatrix
-sizematrix = [0 0 80 80; 0 0 120 120; 0 0 160 160; 0 0 200 200]; % circles will be centered in middle of screen
+sizematrix = [0 0 rect(3)*0.04 rect(3)*0.04; 0 0 rect(3)*0.08 rect(3)*0.08; 0 0 rect(3)*0.12 rect(3)*0.12; 0 0 rect(3)*0.16 rect(3)*0.16]; % circles will be centered in middle of screen
 
 [~,pie]=sampledColorMatrix(pms);
 
@@ -41,7 +41,7 @@ for b = blockOrder
 
     for j=1:length(trials) %create new fields in trial-struct
         trials(j,1).colors=[];
-        trials(j,1).size=[];
+        trials(j,1).sizes=[];
         trials(j,1).probeColorCorrect=[];
         trials(j,1).block=block;
     end
@@ -60,10 +60,10 @@ for b = blockOrder
         for j=1:numel(trials(x,1).locNums) %for 1: max number of locations
             for m=trials(x,1).locNums % for each location per trials
                 if trials(x,1).locNums(j)==m % if specific position of locations equals the location
-                    trials(x,1).size=[trials(x,1).size;sizematrix(m,:)]; %add its coordinates to locations (same coordinate for each position: middle of screen)
+                    trials(x,1).sizes=[trials(x,1).sizes;sizematrix(m,:)]; %add its coordinates to locations (same coordinate for each position: middle of screen)
                   
                     if m==trials(x,1).probelocation %if this is the probed square
-                        trials(x,1).probeSize=trials(x,1).size(j,:); 
+                        trials(x,1).probeSize=trials(x,1).sizes(j,:); 
                     end
                 end
             end 

@@ -1,4 +1,4 @@
-function getInstructions(level,pms,wPtr,money)
+function getInstructions(level,pms,rect,wPtr,money)
 % % This function provides the instructions for the
 % % color wheel memory task based on which phase of the experiment we are
 % % (practice, begining, end). If level is 1 then it provides the detailed
@@ -32,7 +32,7 @@ elseif level==2 && pms.shape==0 %squares
     Instruction{1} = 'This task consists of multiple trials.';
     Instruction{2} = 'Every trial consists of 3 phases. First, you will have to memorize colors. Then, you see new colors that you might need to memorize. Finally you are tested on our color wheel!';
     Instruction{3} =sprintf('Phase 1: you will see colored squares and the letter "M" (memorize) on the screen.\n The squares will be shown for %.1f seconds.',pms.encDuration);
-    Instruction{4} = 'You always need to memorize the colors and the locations of the squares.';
+    Instruction{4} = 'You always need to memorize the colors and the locations of the circles.';
     imgEnc=imread(sprintf('encoding%d.png',pms.maxSetsize));
     imageEnc=Screen('MakeTexture',wPtr,imgEnc);
     Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Phase 1: memorize (M) colors and locations.';
@@ -73,7 +73,7 @@ elseif level==2 && pms.shape==1 %concentric circles
     Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Phase 1: memorize (M) colors and positions.';
     Instruction{6} = 'Phase 1:\n You always MEMORIZE the colors and positions of the circles.\n\n Phase 2:\n You will see other circles at the same positions.\n The new squares will also be accompanied by a letter in the middle of the screen. The letter can be I or U.';
     Instruction{7} = 'The letter is very important because it tells you what to do next.\n If the letter is I, you need to ignore the new circles\n and continue to keep in memory the ones from phase 1.';
-    imgIgnore=imread(sprintf('ignore%d.png',pms.max));
+    imgIgnore=imread(sprintf('ignore%d.png',pms.maxSetsize));
     imageIgnore=Screen('MakeTexture',wPtr,imgIgnore);
     Instruction{8}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Phase 2: Ignore these circles.'; 
     Instruction{9} = 'But if the letter is U, you need to remember ONLY the new circles presented in phase 2.';
@@ -142,7 +142,7 @@ elseif level==32 % when no rewards
     Instruction{4}=sprintf('We will split the task in %d blocks. \n\n After each block you can take a break and continue with the task when you are ready.',pms.numBlocks);
     Instruction{5}=sprintf('Each block lasts %d minutes, and you will complete as many trials as you can within those %d minutes.', pms.blockDuration/60, pms.blockDuration/60);
     Instruction{6}= 'Please take a moment to tell your experimenter what is going to happen in this task.';
-    Instruction{7} = 'You will now start the task.';    
+    Instruction{7} = 'You will now start the task.';
     
 elseif level==4
     Instruction{1} = 'You finished practicing.\n\n You will now start the task.\n\nPress the right arrow.';
@@ -195,7 +195,7 @@ for i=1:100
                 Screen('DrawTexture',wPtr,imageProbe);
         end
         if counter==12
-            DrawFormattedText(wPtr,Instruction{counter},'center',pms.yCenter-90,pms.textColor,pms.wrapAt,[],[],pms.spacing);
+            DrawFormattedText(wPtr,Instruction{counter},'center',rect(4)*0.4,pms.textColor,pms.wrapAt,[],[],pms.spacing);
         else
             DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
         end
@@ -208,7 +208,7 @@ for i=1:100
              Screen('Textsize', wPtr, 34);
              Screen('Textfont', wPtr, 'Times New Roman');
              DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
-             DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, [0 0 0]);
+             DrawFormattedText(wPtr, '[Press Space]', 'center', rect(4)*0.6, [0 0 0]);
 %          elseif level==3 && counter==7
 %              Screen('Textsize', wPtr, 34);
 %              Screen('Textfont', wPtr, 'Times New Roman');
@@ -234,7 +234,7 @@ for i=1:100
         Screen('flip',wPtr);
         WaitSecs(2);
         continue;
-    elseif (level==3 || level==31) && counter==length(Instruction)
+    elseif (level==3 || level==31 || level==32) && counter==length(Instruction)
         WaitSecs(2);
         Screen('flip',wPtr);
         WaitSecs(2);

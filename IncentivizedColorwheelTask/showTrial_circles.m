@@ -41,26 +41,12 @@ IgnSymbol       = 'I';
 
 
 
-M_color         = [200 200 200];
-U_color         = [200 200 200];
-I_color         = [200 200 200];
+M_color         = [0 0 0];
+U_color         = [0 0 0];
+I_color         = [0 0 0];
 cue_color       = [0 0 0]; %black
-%circle size
-circleOne          = [0 0 80 80];
-circleTwo          = [0 0 120 120];
-circleThree        = [0 0 160 160];
-circleFour         = [0 0 200 200];
-%circle positions
-first       = CenterRectOnPoint(circleOne,pms.xCenter,pms.yCenter);
-second      = CenterRectOnPoint(circleTwo,pms.xCenter,pms.yCenter);
-third       = CenterRectOnPoint(circleThree,pms.xCenter,pms.yCenter);
-fourth      = CenterRectOnPoint(circleFour,pms.xCenter,pms.yCenter);
-
-
 
 data            = struct();
-
-
 
 %% loop around trials and blocks for stimulus presentation
 
@@ -74,9 +60,9 @@ for p=1:numBlocks
 %         Eyelink('StartRecording')
 %         Screen('FillRect', wPtr, pms.background, rect);
         if pms.spaceBar==1
-            DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n Please keep your hands on the mouse and the space bar.'), 'center', 'center',[0 0 0]);
+            DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n\n Please keep your hands on the mouse and the space bar.'), 'center', 'center',[0 0 0]);
         elseif pms.spaceBar==0
-            DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n Please keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
+            DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n\n Please keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
         end 
         Screen('Flip',wPtr);
         WaitSecs(2); 
@@ -189,7 +175,7 @@ for p=1:numBlocks
                         Screen('Textsize', wPtr, 34);
                         Screen('Textfont', wPtr, 'Times New Roman');
                         DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);
-                        DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, cue_color);
+                        DrawFormattedText(wPtr, '[Press Space]', 'center', rect(4)*0.6, cue_color);
                         T.space_on(g,p) = Screen('Flip',wPtr);
                         T.space_off(g,p) = KbWait();
                         T.offer_off(g,p) = Screen('Flip',wPtr);
@@ -234,22 +220,40 @@ for p=1:numBlocks
                 Screen('Textfont', wPtr, 'Times New Roman');
                         switch trial(g,p).setSize  %switch between set sizes
                             case 1                 % setsize 1
-                                allCircles  = [first'];
-                                colorEnc    = (trial(g,p).colors((1),:))';
+                                circle(1,:)     = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                                % make sure that you start drawing the
+                                % largest circle, otherwise the smallest
+                                % won't be visible anymore
+                                [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                                allCircles          = circle(idx',:)';
+                                colorEnc            = trial(g,p).colors(idx',:);
                             case 2                 % setsize 2
-                                allCircles  = [second', first'];
-                                colorEnc    = (trial(g,p).colors((2,1),:))';
+                                circle(1,:)         = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                                circle(2,:)         = CenterRectOnPoint(trial(g,p).sizes(2,:),pms.xCenter,pms.yCenter);
+                                [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                                allCircles          = circle(idx',:)';
+                                colorEnc            = (trial(g,p).colors(idx',:))';
                             case 3                 % setsize 3
-                                allCircles  = [third',second', first'];
-                                colorEnc    = (trial(g,p).colors((3,2,1),:))';
+                                circle(1,:)         = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                                circle(2,:)         = CenterRectOnPoint(trial(g,p).sizes(2,:),pms.xCenter,pms.yCenter);
+                                circle(3,:)         = CenterRectOnPoint(trial(g,p).sizes(3,:),pms.xCenter,pms.yCenter);
+                                [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                                allCircles          = circle(idx',:)';
+                                colorEnc            = (trial(g,p).colors(idx',:))';
                             case 4                 % setsize 4
-                                allCircles  = [fourth', third',second', first'];
-                                colorEnc    = (trial(g,p).colors((4,3,2,1),:))';
+                                circle(1,:)         = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                                circle(2,:)         = CenterRectOnPoint(trial(g,p).sizes(2,:),pms.xCenter,pms.yCenter);
+                                circle(3,:)         = CenterRectOnPoint(trial(g,p).sizes(3,:),pms.xCenter,pms.yCenter);
+                                circle(4,:)         = CenterRectOnPoint(trial(g,p).sizes(4,:),pms.xCenter,pms.yCenter);
+                                [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                                allCircles          = circle(idx',:)';
+                                colorEnc            = (trial(g,p).colors(idx',:))';
                         end
-                        trial(g,p).colorEnc = colorEnc;
-                                
+%                         trial(g,p).colorEnc = colorEnc;
+                                                             
                         Screen('FillOval',wPtr,colorEnc,allCircles);
-                        DrawFormattedText(wPtr, EncSymbol, 'center', 'center', M_color);
+                        Screen('FrameOval',wPtr,M_color,allCircles);
+                        DrawFormattedText(wPtr, EncSymbol, 'center', pms.yCenter-35, M_color);
                         T.encoding_on(g,p) = Screen('Flip',wPtr);     
 
 %                         imageArray=Screen('GetImage',wPtr);                     
@@ -308,62 +312,63 @@ for p=1:numBlocks
 %                     continue; 
 %                 end 
                 Screen('Textsize', wPtr, 34);
-                Screen('Textfont', wPtr, 'Times New Roman');              
-                    switch trial(g,p).type
-                        case 0 %interference Ignore
-                            switch trial(g,p).setSize
-                                case 1
-                                    allCircles  = [first'];
-                                    colorInt    = trial(g,p).colors(2,:);
-                                case 2
-                                    allCircles  = [second', first'];
-                                    colorInt    = (trial(g,p).colors((4,3),:))';
-                                case 3
-                                    allCircles  = [third',second', first'];
-                                    colorInt    = (trial(g,p).colors((6,5,4),:))';      
-                                case 4
-                                    allCircles  = [fourth', third',second', first'];
-                                    colorInt    = (trial(g,p).colors((8,7,6,5),:))';
-                            end
-                        
-                            Screen('FillOval',wPtr,colorInt,allCircles);
-                            DrawFormattedText(wPtr, IgnSymbol, 'center', 'center', I_color);
-                            T.interference_on(g,p) = Screen('Flip',wPtr); 
+                Screen('Textfont', wPtr, 'Times New Roman');  
+                 switch trial(g,p).setSize  %switch between set sizes
+                    case 1                 % setsize 1
+                        circle(1,:)     = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                        % make sure that you start drawing the
+                        % largest circle, otherwise the smallest
+                        % won't be visible anymore
+                        [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                        allCircles          = circle(idx',:)';
+                        colorInt            = trial(g,p).colors((idx+1)',:);
+                    case 2                 % setsize 2
+                        circle(1,:)         = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                        circle(2,:)         = CenterRectOnPoint(trial(g,p).sizes(2,:),pms.xCenter,pms.yCenter);
+                        [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                        allCircles          = circle(idx',:)';
+                        colorInt            = (trial(g,p).colors((idx+2)',:))';
+                    case 3                 % setsize 3
+                        circle(1,:)         = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                        circle(2,:)         = CenterRectOnPoint(trial(g,p).sizes(2,:),pms.xCenter,pms.yCenter);
+                        circle(3,:)         = CenterRectOnPoint(trial(g,p).sizes(3,:),pms.xCenter,pms.yCenter);
+                        [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                        allCircles          = circle(idx',:)';
+                        colorInt            = (trial(g,p).colors((idx+3)',:))';
+                    case 4                 % setsize 4
+                        circle(1,:)         = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                        circle(2,:)         = CenterRectOnPoint(trial(g,p).sizes(2,:),pms.xCenter,pms.yCenter);
+                        circle(3,:)         = CenterRectOnPoint(trial(g,p).sizes(3,:),pms.xCenter,pms.yCenter);
+                        circle(4,:)         = CenterRectOnPoint(trial(g,p).sizes(4,:),pms.xCenter,pms.yCenter);
+                        [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                        allCircles          = circle(idx',:)';
+                        colorInt            = (trial(g,p).colors((idx+4)',:))';
+                end
+                switch trial(g,p).type
+                    case 0 %interference Ignore                      
+                        Screen('FillOval',wPtr,colorInt,allCircles);
+                        Screen('FrameOval',wPtr,M_color,allCircles);
+                        DrawFormattedText(wPtr, IgnSymbol, 'center', pms.yCenter-35, I_color);
+                        T.interference_on(g,p) = Screen('Flip',wPtr); 
 %                             if practice == 0
 %                                 [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration);                        
 %                             else
-                                WaitSecs(pms.interfDuration);
+                            WaitSecs(pms.interfDuration);
 %                             end 
-                            T.interference_off(g,p) = GetSecs;
-                        
-                        case 2 %Interference Update
-                        
-                            switch trial(g,p).setSize
-                                case 1
-                                    allCircles  = [first'];
-                                    allRects    = rectOne;
-                                case 2
-                                    allCircles  = [second', first'];
-                                    colorInt    = (trial(g,p).colors((4,3),:))';
-                                case 3
-                                    allCircles  = [third',second', first'];
-                                    colorInt    = (trial(g,p).colors((6,5,4),:))'; 
-                                case 4
-                                    allCircles  = [fourth', third',second', first'];
-                                    colorInt    = (trial(g,p).colors((8,7,6,5),:))';
-                            end
-                            trial(g,p).colorInt = colorInt;
-                                                                
-                            Screen('FillOval',wPtr,colorInt,allCircles);
-                            DrawFormattedText(wPtr, UpdSymbol, 'center', 'center', U_color);
-                            T.interference_on(g,p) = Screen('Flip',wPtr);                     
+                        T.interference_off(g,p) = GetSecs;
+
+                    case 2 %Interference Update                                                              
+                        Screen('FillOval',wPtr,colorInt,allCircles);
+                        Screen('FrameOval',wPtr,M_color,allCircles);
+                        DrawFormattedText(wPtr, UpdSymbol, 'center', pms.yCenter-35, U_color);
+                        T.interference_on(g,p) = Screen('Flip',wPtr);                     
 %                             if practice == 0
 %                                 [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration);                        
 %                             else
-                                WaitSecs(pms.interfDuration);
+                            WaitSecs(pms.interfDuration);
 %                             end 
-                            T.interference_off(g,p) = GetSecs;       
-                    end % trial.type
+                        T.interference_off(g,p) = GetSecs;       
+                end % trial.type
 %                  if practice == 0 && (sum(itrack_interference.X < 0.4*rect(3)-100 | itrack_interference.X > 0.6*rect(3)+100 | itrack_interference.Y < 0.4*rect(4)-100 | itrack_interference.Y > 0.6*rect(4)+100) > 80) % if eyes were closed for too long (negative x and y values) or gaze was not directed at the squares or the center of the screen during approx 40% of encoding, trial will be marked as invalid.
 %                      respX = [];
 %                      respY = [];
@@ -430,41 +435,27 @@ for p=1:numBlocks
 %                     WaitSecs(pms.maxRT + pms.median_rtMovement);
 %                     continue; 
 %                 end 
-                if practice~=0 
-                    locationsrect=trial(g,p).locations;
-                    %for practice we randomly select a square for probe. Index2 
-                    %selects randomly 1 of the encoding phase squares.
-                    index2=randi(trial(g,p).setSize,1);
-                    %index for same square during interference phase
-                    index3=index2+trial(g,p).setSize;
-                    probeRectXY=locationsrect(index2,:);
-                    probeRectX=probeRectXY(1,1);
-                    probeRectY=probeRectXY(1,2);
-   
+
+                    probeCircle=trial(g,p).sizes(1,:);   
                     switch trial(g,p).type
                         case {0}   %for Ignore
                             %correct is the color during encoding 
-                            trial(g,p).probeColorCorrect=trial(g,p).colors(index2,:);
+                            trial(g,p).probeColorCorrect=trial(g,p).colors(1,:);
                             %lure is the color in the same location during Interference
-                            trial(g,p).lureColor=trial(g,p).colors(index3,:);                          
+                            trial(g,p).lureColor=trial(g,p).colors(1+trial(g,p).setSize,:);                          
                         case {2}      
                             %reverse for Update
-                            trial(g,p).probeColorCorrect=trial(g,p).colors(index3,:);
-                            trial(g,p).lureColor=trial(g,p).colors(index2,:);
+                            trial(g,p).probeColorCorrect=trial(g,p).colors(1+trial(g,p).setSize,:);
+                            trial(g,p).lureColor=trial(g,p).colors(1,:);
                     end
                     
-                elseif practice==0
-                    %for the defined stimuli probe is always the first
-                    %location/circle
-                    probeRectX=trial(g,p).locations(1,1);
-                    probeRectY=trial(g,p).locations(1,2);                 
-                end %if practice==0
+
                 
                 T.probe_on(g,p) = GetSecs;
 %                 if practice == 0
 %                      [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct,itrack_probe]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,driftShift, trial);
 %                 else 
-                     [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel_circles(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial(g,p).type, trial);
+                     [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel_circles(pms,allCircles,probeCircle,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial(g,p).type, trial);
 %                 end
                 T.probe_off(g,p) = GetSecs;
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
@@ -508,7 +499,7 @@ for p=1:numBlocks
                 elseif ~exist('rtSpace', 'var')
                     data(g,p).rtSpace=NaN;
                 end
-                data(g,p).probeLocation=[trial(g,p).locations(1,1) trial(g,p).locations(1,2)];
+                data(g,p).probeSize=trial(g,p).sizes(1,:);
                 data(g,p).probeColorCorrect=trial(g,p).probeColorCorrect;
                 data(g,p).lureColor=trial(g,p).lureColor;
                 data(g,p).respDif=respDif;
@@ -519,7 +510,7 @@ for p=1:numBlocks
                 data(g,p).rect=rect;
                 data(g,p).setsize = trial(g,p).setSize;
                 data(g,p).type=trial(g,p).type;
-                data(g,p).location =trial(g,p).locations;
+                data(g,p).sizes =trial(g,p).sizes;
                 data(g,p).colors = trial(g,p).colors;
                 if practice~=1
                     data(g,p).offer=trial(g,p).offer;
@@ -541,13 +532,19 @@ for p=1:numBlocks
                     data(g,p).bonus = bonus;
                     money = bonus / 2500;
                     data(g,p).encColLoc1=trial(g,p).encColLoc1;
-                    data(g,p).encColLoc2=trial(g,p).encColLoc2;
-                    data(g,p).encColLoc3=trial(g,p).encColLoc3;
-                    data(g,p).encColLoc4=trial(g,p).encColLoc4;
                     data(g,p).interColLoc1=trial(g,p).interColLoc1;
-                    data(g,p).interColLoc2=trial(g,p).interColLoc2;
-                    data(g,p).interColLoc3=trial(g,p).interColLoc3;
-                    data(g,p).interColLoc4=trial(g,p).interColLoc4;
+                    if trial(g,p).setSize>1
+                        data(g,p).encColLoc2=trial(g,p).encColLoc2;
+                        data(g,p).interColLoc2=trial(g,p).interColLoc2;
+                        if trial(g,p).setSize>2
+                            data(g,p).encColLoc3=trial(g,p).encColLoc3;
+                            data(g,p).interColLoc3=trial(g,p).interColLoc3;
+                            if trial(g,p).setSize>3
+                                data(g,p).encColLoc4=trial(g,p).encColLoc4;
+                                data(g,p).interColLoc4=trial(g,p).interColLoc4;
+                            end
+                        end
+                    end
 %                     gazedata(g,p).encoding = itrack_encoding; % save all eyetracker data here
 %                     gazedata(g,p).interference = itrack_interference; % save all eyetracker data here
 %                     gazedata(g,p).probe = itrack_probe; % save all eyetracker data here
@@ -568,7 +565,7 @@ for p=1:numBlocks
         if practice==0           
             if GetSecs-blockOnset > pms.blockDuration
                 if p==1
-                    getInstructions(5,pms,wPtr);
+                    getInstructions(5,pms,rect,wPtr);
 %                   Eyelink('Stoprecording')
 %                   pms.el = EyelinkSetup(0,pms);
                     break; %end numTrials loop and go to next block
