@@ -1,4 +1,4 @@
-function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allCircles,probeCircle,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,condition, varargin)
+function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allCircles,probeCircle,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,trial)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
@@ -68,7 +68,6 @@ colorangle      = 360/length(colors);
 %it same for every participant we have saved the offset (using formula starts = randi(360,pms.numTrials,pms.numBlocks) 
 %and we load it.
 if practice==0
-    trial       = varargin{1};
     wheelStart  = trial(g,p).wheelValues;
 else 
     load starts;
@@ -184,10 +183,14 @@ if response==1
     %during practice a second line appears indicating the correct response. The line is
     %drawn as a small arc of 0.4 degrees
     if practice==0 && pms.cutoff==1
-        if condition==0 && abs(respDif) <=pms.minAcc_I
+        if trial(g,p).type==0 && trial(g,p).setSize==pms.maxSetsize(1) && abs(respDif) <=pms.minAcc_I_easy
             correct = 1;
-        elseif condition==2 && abs(respDif) <=pms.minAcc_U
+        elseif trial(g,p).type==0 && trial(g,p).setSize==pms.maxSetsize(2) && abs(respDif) <=pms.minAcc_I_hard
             correct = 1;
+        elseif trial(g,p).type==2 && trial(g,p).setSize==pms.maxSetsize(1) && abs(respDif) <=pms.minAcc_U_easy
+            correct = 1;
+        elseif trial(g,p).type==2 && trial(g,p).setSize==pms.maxSetsize(2) && abs(respDif) <=pms.minAcc_U_hard
+            correct = 1; 
         end
     else
         if abs(respDif) <=pms.minAcc
@@ -222,12 +225,18 @@ elseif movement==1 && mod(g,10)==0 %on the faster trials, participants response 
     rtMovement  = NaN;
     rtTotal     = NaN;
     [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 
-    if pms.cutoff==1 && condition==0 && abs(respDif) <=pms.minAcc_I
-        correct = 1;
-    elseif pms.cutoff==1 && condition==2 && abs(respDif) <=pms.minAcc_U
-        correct = 1;
-    elseif abs(respDif) <=pms.minAcc
+    if practice==1 && abs(respDif) <=pms.minAcc
         correct = 1; 
+    elseif practice==1 && abs(respDif)>pms.minAcc
+        correct = 0; 
+    elseif pms.cutoff==1 && trial(g,p).type==0 && trial(g,p).setSize==pms.maxSetsize(1) && abs(respDif) <=pms.minAcc_I_easy
+        correct = 1;
+    elseif pms.cutoff==1 && trial(g,p).type==0 && trial(g,p).setSize==pms.maxSetsize(2) && abs(respDif) <=pms.minAcc_I_hard
+        correct = 1;        
+    elseif pms.cutoff==1 && trial(g,p).type==2 && trial(g,p).setSize==pms.maxSetsize(1) && abs(respDif) <=pms.minAcc_U_easy
+        correct = 1;
+    elseif pms.cutoff==1 && trial(g,p).type==2 && trial(g,p).setSize==pms.maxSetsize(2) && abs(respDif) <=pms.minAcc_U_hard
+        correct = 1;
     end 
     % draw the color wheel + response 
     for ind=1:length(colors)

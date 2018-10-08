@@ -18,30 +18,36 @@ function [trial]=defstruct(pms,rect)
 % matrix created in [Stimuli]=sampleStimuli and saved so that all participants
 % see same stimuli
  
-%loop over block and counterbalance block order. 50/50 block always first
-if pms.blockCB == 0
-    blockOrder = [1 2 3]; %50 50, Ignore, Update
-elseif pms.blockCB == 2
-    blockOrder = [1 3 2]; %50 50, Update, Ignore
-end
+% add path to load stimuli structs
+addpath(fullfile(pms.inccwdir,'Stimuli_structs'));
 
+
+
+trials = [];
+trialsPerSetsize = round(pms.numTrials/length(pms.maxSetsize));
 if pms.shape==0 %squares
-    filename = sprintf('trialsPerBlock_%d.mat', pms.maxSetsize);        
-    load(filename); 
-    trial = [];                                                                              %  4  3
+    for ss = pms.maxSetsize
+        filename = sprintf('Stimuli_%d.mat', ss);        
+        load(filename);
+        trials = [trials;Stimuli(1:trialsPerSetsize,:)];
+    end
+    trial = [];                                                                              
 
     % locationmatrix
     % the square locations are created as fraction of rect (screen size), 
     % so that screen size differences are irrelevant. 
-    xyindex=[0.4 0.6 0.6 0.4;0.37 0.37 0.6 0.6]'; %the locations go clockwise L->R       1  2
+    xyindex=[0.4 0.6 0.6 0.4;0.37 0.37 0.6 0.6]'; %the locations go clockwise, Left to Right       
     locationmatrix=zeros(size(xyindex,1),size(xyindex,2)); 
     for r=1:length(locationmatrix)
         locationmatrix(r,1)=(rect(3)*xyindex(r,1));
         locationmatrix(r,2)=(rect(4)*xyindex(r,2));
     end
 elseif pms.shape==1 %circles
-    filename = sprintf('trialsPerBlock_circles_%d.mat', pms.maxSetsize);        
-    load(filename); 
+    for ss = pms.maxSetsize
+        filename = sprintf('Stimuli_circles_%d.mat', ss);        
+        load(filename);
+        trials = [trials;Stimuli(1:trialsPerSetsize,:)];
+    end
     trial = [];
     
     locationmatrix = [0 0 rect(3)*0.04 rect(3)*0.04; 0 0 rect(3)*0.08 rect(3)*0.08; 0 0 rect(3)*0.12 rect(3)*0.12; 0 0 rect(3)*0.16 rect(3)*0.16]; % circles will be centered in middle of screen
@@ -49,16 +55,12 @@ end
 
 [~,pie]=sampledColorMatrix(pms);
 
-block = 1;
-for b = blockOrder
-    field = sprintf('block%d', b);
-    trials = blocks.(field);
-
+for b = 1:pms.numBlocks
     for j=1:pms.numTrials %create new fields in trial-struct
         trials(j,1).colors=[];
         trials(j,1).locations=[];
         trials(j,1).probeColorCorrect=[];
-        trials(j,1).block=block;
+        trials(j,1).block=b;
     end
 
 %% sample colors
@@ -125,48 +127,107 @@ for b = blockOrder
                     trials(x,1).lureColor=trials(x,1).colors(1,:);
               end
 
+
+    %% assign rewards on offer
+        if b==1 && pms.blockCB==0 || b==2 && pms.blockCB==1
+            trials(x,1).offer = 0;
+        elseif b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1
+            trials(x,1).offer = 50;
+            %in 25% of the cases, no points are offered
+            if (mod(x,4)==1 || mod(x,4)==0) && mod(x,trialsPerSetsize)<= trialsPerSetsize/length(pms.maxSetsize) && mod(x,trialsPerSetsize)~= 0 
+               trials(x,1).offer = 0; 
+            end
+        end 
     end %for x=1:size(trials,1)
+
     
     %% randomize trials in this block
     trialRandomizing = trials;
     rows = size(trials,1); 
-    r = 1;
-    for i = randperm(rows)
-        trials(r,1) = trialRandomizing(i,1);
-        r = r+1;
+    first8rewarded = 0;
+    % In the rewarded context, I want to make the first 8 trials rewarded,
+    % such that people really have the notion of being rewarded.
+    while first8rewarded==0
+        r = 1; 
+        for i = randperm(rows)
+            trials(r,1) = trialRandomizing(i,1);
+            r = r+1;
+        end
+        for r = 1:rows 
+            rewardOnOffer(r) = trials(r,1).offer;
+        end
+
+        if (b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1) && (sum(rewardOnOffer(1:8)==0)>0) 
+            first8rewarded = 0;
+        elseif (b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1) && (sum(rewardOnOffer(1:8)==0)==0) 
+            first8rewarded = 1;
+        elseif b==1 && pms.blockCB==0 || b==2 && pms.blockCB==1
+            first8rewarded = 1;
+        end
     end
     
-    %% assign reward on offer (gaussian random walk)
-    offers = calculateRewardOnOffer(pms);
-    for x = 1:length(offers)
-        trials(x,1).offer = offers(x);
-    end 
-      
-    %% quick fix to have first 8 trials of majority update update and first 8 trials of majority ignore ignore
-    for x = 1:8
-        if b==2
-           trials(x,1).type = 0; 
-        elseif b==3
-           trials(x,1).type = 2; 
-        end
-        
-        if trials(x,1).type==trials(x,1).cue
-           trials(x,1).valid = 1;
-        elseif trials(x,1).type~=trials(x,1).cue
-           trials(x,1).valid = 0;
-        end 
-       
-        if trials(x,1).type==0
-            trials(x,1).probecolor = trials(x,1).cols(1);
-        elseif trials(x,1).type==2
-            trials(x,1).probecolor = trials(x,1).cols(pms.maxSetsize+1);
-        end 
-    end 
+%% randomize trials in this block
+
+% % put all offers in one vector (instead of in struct)
+% for r = 1:size(trials,1) 
+%     rewardOnOffer(r) = trials(r,1).offer;
+% end
+% % divide into rewarded and unrewarded trialnumbers
+% unrewardedTrials = find(rewardOnOffer==0); 
+% rewardedTrials = find(rewardOnOffer==50);  
+% 
+% % combine trials, where first 8 need to be rewarded and no 2 unrewarded
+% % trials can follow each other.
+% % In case all the rewarded trials are "used" and we are still
+% % randomizing, we need to start over. 
+% enoughRewardedLeft = 0;
+% hoi = 0;
+% while enoughRewardedLeft==0
+%     randomizedtrials = [];
+%     for r = 1:size(trials,1)
+%         if length(unrewardedTrials) - length(rewardedTrials) > 1 
+%            hoi = hoi + 1 
+%            break; % start over with the for loop, not enough rewardedTrials left.
+%         end
+%         if r<=8
+%             randomizedtrials(r) = datasample(rewardedTrials,1);
+%             % remove chosen trial from list, so it cannot be picked twice
+%             rewardedTrials = rewardedTrials(rewardedTrials~=randomizedtrials(r));
+%         elseif r>8
+%            if sum(rewardOnOffer(randomizedtrials(r-5:r-1))==50) == 5 % I want no more than 8 consecutive rewarded trials
+%                randomizedtrials(r) = datasample(unrewardedTrials,1);
+%                unrewardedTrials = unrewardedTrials(unrewardedTrials~=randomizedtrials(r));
+%            elseif rewardOnOffer(randomizedtrials(r-1))==50 %if last trial was rewarded, this trial can be either rewarded or unrewarded
+%                allTrials = [rewardedTrials, unrewardedTrials];
+%                randomizedtrials(r) = datasample(allTrials,1);
+%                if sum(randomizedtrials(r)==rewardedTrials)==1 %if the new pick is from the rewarded trials, remove it from the rewardedTrials vector
+%                    rewardedTrials = rewardedTrials(rewardedTrials~=randomizedtrials(r));
+%                elseif sum(randomizedtrials(r)==unrewardedTrials)==1 %if the new pick is from the unrewarded trials, remove it from the unrewardedTrials vector
+%                    unrewardedTrials = unrewardedTrials(unrewardedTrials~=randomizedtrials(r));
+%                end
+%            elseif rewardOnOffer(randomizedtrials(r-1))==0 %if last trial was unrewarded, this trial has to be rewarded
+%                randomizedtrials(r) = datasample(rewardedTrials,1);
+%                rewardedTrials = rewardedTrials(rewardedTrials~=randomizedtrials(r));
+%            end
+%         end
+%         if r==size(trials,1) % last trial, so break out of while loop
+%             enoughRewardedLeft = 1;
+%         end
+%     end
+% end 
+% 
+% % use the randomizedTrials vector to shuffle trials
+% trials = trials(randomizedtrials, :);    
+
+% r = 1:size(trials,1); 
+% r = datasample(r,size(trials,1),'Replace',false);
+% trials = trials(r, :);
+
+
+
     
-       
     %% combine blocks  
     trial = [trial, trials];
-    block = block+1;
 end %for block = 1:pms.numBlocks
 end %function
 

@@ -1,4 +1,4 @@
-function [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect)
+function [pms,data,T,money] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect)
 %this function shows the stimuli and collects the responses for the  INCENTIVIZED colorwheel
 %memory task.
 % data:     struct with fields:respCoord (where the ppt clicked), rt, probeLocation (square that was probed)
@@ -14,7 +14,6 @@ function [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilename
 data    = [];
 T       = [];
 money   = [];
-gazedata= [];
 
 % make sure there is a maximum time for moving the mouse
 if ~isfield(pms,'median_rtMovement')
@@ -44,7 +43,6 @@ IgnSymbol       = 'I';
 M_color         = [0 0 0];
 U_color         = [0 0 0];
 I_color         = [0 0 0];
-cue_color       = [0 0 0]; %black
 %rect size
 rectOne         = [0 0 100 100];
 data            = struct();
@@ -53,53 +51,10 @@ data            = struct();
 
 bonus       = 0; %start value of reward/bonus is 0.00
 for p=1:numBlocks
-    %set up eyetracking
-%     pms.driftShift = [0,0]; % how much to adjust [x,y] for pupil drift, updated every trial
     if practice==0
-%         EyelinkInitDefaults(wPtr);
-%         pms.el = EyelinkSetup(1,wPtr);
-%         Eyelink('StartRecording')
-%         Screen('FillRect', wPtr, pms.background, rect);
-        if pms.spaceBar==1
-            DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n Please keep your hands on the mouse and the space bar.'), 'center', 'center',[0 0 0]);
-        elseif pms.spaceBar==0
-            DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n Please keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
-        end 
+        DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n\nPlease keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
         Screen('Flip',wPtr);
-        WaitSecs(2); 
-        if p==2
-            if pms.blockCB==0
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE\n\n\n\n'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                WaitSecs(3);
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE\n\n\n\nPress space to start'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                KbWait();
-            elseif pms.blockCB==2
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE\n\n\n\n'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                WaitSecs(3);
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE\n\n\n\nPress space to start'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                KbWait();
-            end 
-        elseif p==3
-           if pms.blockCB==0
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE\n\n\n\n'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                WaitSecs(3);
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nUPDATE\n\n\n\nPress space to start'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                KbWait();
-           elseif pms.blockCB==2
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE\n\n\n\n'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                WaitSecs(3);
-                DrawFormattedText(wPtr,sprintf('You will get mostly\n\nIGNORE\n\n\n\nPress space to start'),'center','center',[0 0 0]);
-                Screen('Flip',wPtr);
-                KbWait();
-           end  
-        end
+        WaitSecs(2);
     end 
     
     Screen('Flip',wPtr);
@@ -107,116 +62,30 @@ for p=1:numBlocks
     
     blockOnset  = GetSecs; %onset time of block. Block lasts x min. After x min, block ends automatically.
     for g=1:numTrials
-        for phase = 1:9
-            if phase==1 && pms.points==1 % reward on offer
-%                 valid = 1;
-                if practice~=1
+        for phase = 1:7
+            if phase==1 % reward on offer              
+                if practice==0 && trial(g,p).offer > 0      
                     offer = sprintf('%d', trial(g,p).offer);
                     Screen('Textsize', wPtr, 34);
                     Screen('Textfont', wPtr, 'Times New Roman');
                     DrawFormattedText(wPtr, offer, 'center', 'center');  
                     T.offer_on(g,p) = Screen('Flip',wPtr);
                     WaitSecs(pms.offerDuration);      
-                    
-                    % During my task, participants must look at a central offer for 1
-                    % sec for the trial to proceed. Since the calibration for gaze location
-                    % might drift over time, I've built in a drift calibration routine using
-                    % while loops to ask whether Participants are looking at a specified
-                    % location. They can press the left control key (coded in pms.allowedResps.drift)
-                    % if they think they are and the trial isn't starting. That toggles into a
-                    % second "drift correction" while loop that allows the experimenter to
-                    % press 'd' for "drift correction" (pms.allowedResos.driftOK) when they
-                    % are satisfied that the participant is looking at the center of the
-                    % screen, and this sets a value pair called "driftShift" which subsequently
-                    % adjusts all future X,Y value pairs collected from the Eyelink. note that
-                    % wRect is just the monitor window rectangle, wptr, is the window ID
-                    % pointer, pms.bkgd is a rectangle in which I want stimuli to be
-                    % displayed.
-
-%                     % Ensure central fixation before showing trial
-%                     driftShift = pms.driftShift;
-%                     fixOn = 0; % continuous amount of time spent fixating on cross
-%                     doDrift = 0; % to break out of both loops
-% 
-%                     while fixOn < pms.fixDuration
-%                         sample = getEyelinkData();
-%                         while doDrift % drift correction
-%                             [~, ~, keyCode] = KbCheck();
-%                             if strcmp(pms.allowedResps.driftOK,KbName(keyCode));
-%                                 sample = getEyelinkData();
-%                                 driftShift = [(rect(3)/2)-sample(1),(rect(4)/2)-sample(2)]; %[x,y]
-%                                 %report = '***** Drift adjusted! *****';
-%                                 %report = sprintf('x = %0.2f, y = %0.2f',driftShift(1),driftShift(2));
-%                                 doDrift = 0;
-%                                 DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);   % change its color back to background text color
-%                                 Screen('Flip',wPtr);
-%                             end
-%                         end
-% 
-%                         time1 = GetSecs();
-%                         while ((sample(1)+driftShift(1))-rect(3)/2)^2+((sample(2)+driftShift(2))-rect(4)/2)^2 < pms.diagTol^2 && fixOn < pms.fixDuration %euclidean norm to calculate radius of gaze
-%                             sample = getEyelinkData();
-%                             time2 = GetSecs();
-%                             fixOn = time2 - time1;
-%                         end
-% 
-%                         % if not yet met the timelimit and gaze outside target circle
-%                         [~, ~, keyCode] = KbCheck();
-%                         if strcmp(pms.allowedResps.drift,KbName(keyCode));
-%                             %report = '***** The participant indicates drift! *****'
-%                             doDrift = 1;
-%                             DrawFormattedText(wPtr, offer, 'center', 'center', pms.driftCueCol); % change its color
-%                             DrawFormattedText(wPtr, 'Please look at the center of the screen.', 'center', 'center', pms.driftCueCol);
-%                             Screen('Flip',wPtr);
-%                         end
-%                     end 
-                    if pms.spaceBar==1
-                        %let them press space to continue (as manipulation check to hopefully see effect of average reward on vigor)
-                        WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
-                        Screen('Textsize', wPtr, 34);
-                        Screen('Textfont', wPtr, 'Times New Roman');
-                        DrawFormattedText(wPtr, offer, 'center', 'center', cue_color);
-                        DrawFormattedText(wPtr, '[Press Space]', 'center', pms.yCenter+100, cue_color);
-                        T.space_on(g,p) = Screen('Flip',wPtr);
-                        T.space_off(g,p) = KbWait();
-                        T.offer_off(g,p) = Screen('Flip',wPtr);
-                        rtSpace = T.space_off(g,p) - T.space_on(g,p); 
-                        WaitSecs(pms.offerdelay); 
-                    elseif pms.spaceBar==0
-                        WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
-                        T.space_on(g,p) = NaN;
-                        T.space_off(g,p) = NaN;
-                        T.offer_off(g,p) = Screen('Flip',wPtr);
-                        rtSpace = NaN; 
-                        WaitSecs(pms.offerdelay); 
-                    end 
+                    WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
+                    T.offer_off(g,p) = Screen('Flip',wPtr);
+                    WaitSecs(pms.offerdelay); 
+                    pms.points=1; % used later on in this function. If points is 1, then ppn gets feedback about how many points he wins.
+                else
+                    drawFixationCross(wPtr,rect);
+                    T.offer_on(g,p) = Screen('Flip',wPtr);
+                    WaitSecs(pms.offerDuration);      
+                    WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
+                    T.offer_off(g,p) = Screen('Flip',wPtr);
+                    WaitSecs(pms.offerdelay); 
+                    pms.points=0;
                 end 
-%                 valid = valid +1;
-            elseif phase==1 && pms.points==0
-                if practice~=1
-                    T.offer_on(g,p) = NaN;
-                    T.space_on(g,p) = NaN;
-                    T.space_off(g,p) = NaN;
-                    T.offer_off(g,p) = NaN;
-                    rtSpace = NaN; 
-                end
-            elseif phase==2 %cue update or ignore
-%                 if practice~=1
-%                    Screen('Textsize', wPtr, 34);
-%                    Screen('Textfont', wPtr, 'Times New Roman');
-%                    if trial(g,p).cue==0
-%                        cueText     = 'ignore';
-%                    elseif trial(g,p).cue==2
-%                        cueText     = 'update';
-%                    end 
-%                    DrawFormattedText(wPtr, cueText, 'center', 'center', cue_color);  
-%                    T.cue_on(g,p) = Screen('Flip',wPtr);               
-%                    WaitSecs(pms.cueduration);
-%                    T.cue_off(g,p) = Screen('Flip',wPtr);
-%                    WaitSecs(pms.cuedelay);
-%                 end
-%                 valid = valid +1;
-            elseif phase==3    % encoding phase
+         
+            elseif phase==2    % encoding phase
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
                 switch pms.shape
@@ -252,11 +121,11 @@ for p=1:numBlocks
                     case 1 %circles
                                                 switch trial(g,p).setSize  %switch between set sizes
                             case 1                 % setsize 1
-                                circle(1,:)     = CenterRectOnPoint(trial(g,p).sizes(1,:),pms.xCenter,pms.yCenter);
+                                circle(1,:)     = CenterRectOnPoint(trial(g,p).locations(1,:),pms.xCenter,pms.yCenter);
                                 % make sure that you start drawing the
                                 % largest circle, otherwise the smallest
                                 % won't be visible anymore
-                                [~,idx]             = sort(trial(g,p).sizes(:,3), 'descend');
+                                [~,idx]             = sort(trial(g,p).locations(:,3), 'descend');
                                 allCircles          = circle(idx',:)';
                                 colorEnc            = trial(g,p).colors(idx',:);
                             case 2                 % setsize 2
@@ -290,35 +159,11 @@ for p=1:numBlocks
 
 %                         imageArray=Screen('GetImage',wPtr);                     
 %                         imwrite(imageArray,sprintf('encoding2%d%d.png',g,p),'png');  
-%                         if practice == 0
-% %                             [itrack_encoding] = sampleGaze(driftShift,T.encoding_on(g,p),pms.encDuration); 
-%                         else
-                            WaitSecs(pms.encDuration);
-%                         end 
+
+                        WaitSecs(pms.encDuration);
                         T.encoding_off(g,p) = GetSecs;
-%                  if practice==0 && (sum(itrack_encoding.X < 0.4*rect(3)-100 | itrack_encoding.X > 0.6*rect(3)+100 | itrack_encoding.Y < 0.4*rect(4)-100 | itrack_encoding.Y > 0.6*rect(4)+100) > 80) % if eyes were closed for too long (negative x and y values) or gaze was not directed at the squares or the center of the screen during approx 40% of encoding, trial will be marked as invalid.
-%                      respX = [];
-%                      respY = [];
-%                      rtDecision = [];
-%                      rtMovement = [];
-%                      rtTotal = [];
-%                      respDif = [];
-%                      lureDif = [];
-%                      radius = [];
-%                      tau = [];
-%                      thetaCorrect = []; 
-%                      itrack_interference = [];
-%                      itrack_probe = [];
-%                      continue;
-%                  end 
-%                  valid = valid +1;
-            elseif phase==4      %delay 1 phase
-%                 if valid ~= phase
-%                     DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
-%                     Screen('Flip',wPtr);
-%                     WaitSecs(pms.delay1Duration);
-%                     continue; 
-%                 end 
+            
+            elseif phase==3      %delay 1 phase
                 drawFixationCross(wPtr,rect);
                 T.delay1_on(g,p) = Screen('Flip',wPtr);
                 
@@ -335,14 +180,8 @@ for p=1:numBlocks
                     end
                 end
                 T.delay1_off(g,p) = GetSecs;
-%                 valid = valid +1;
-            elseif phase==5 %interference phase
-%                 if valid ~= phase
-%                     DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
-%                     Screen('Flip',wPtr);
-%                     WaitSecs(pms.interfDuration);
-%                     continue; 
-%                 end 
+                
+            elseif phase==4 %interference phase
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');              
                     switch pms.shape
@@ -380,11 +219,7 @@ for p=1:numBlocks
                                 DrawFormattedText(wPtr, UpdSymbol, 'center', 'center', U_color);
                             end 
                             T.interference_on(g,p) = Screen('Flip',wPtr); 
-%                             if practice == 0
-%                                 [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration);                        
-%                             else
-                                WaitSecs(pms.interfDuration);
-%                             end 
+                            WaitSecs(pms.interfDuration); 
                             T.interference_off(g,p) = GetSecs;
                         
                         case 1 %concentric circles
@@ -430,42 +265,12 @@ for p=1:numBlocks
                             DrawFormattedText(wPtr, UpdSymbol, 'center', pms.yCenter-35, U_color);
                         end 
                         T.interference_on(g,p) = Screen('Flip',wPtr); 
-%                             if practice == 0
-%                                 [itrack_interference] = sampleGaze(driftShift,T.interference_on(g,p),pms.interfDuration);                        
-%                             else
-                            WaitSecs(pms.interfDuration);
-%                             end 
+                        WaitSecs(pms.interfDuration);
                         T.interference_off(g,p) = GetSecs;
                               
                     end % switch shape
-%                  if practice == 0 && (sum(itrack_interference.X < 0.4*rect(3)-100 | itrack_interference.X > 0.6*rect(3)+100 | itrack_interference.Y < 0.4*rect(4)-100 | itrack_interference.Y > 0.6*rect(4)+100) > 80) % if eyes were closed for too long (negative x and y values) or gaze was not directed at the squares or the center of the screen during approx 40% of encoding, trial will be marked as invalid.
-%                      respX = [];
-%                      respY = [];
-%                      rtDecision = [];
-%                      rtMovement = [];
-%                      rtTotal = [];
-%                      respDif = [];
-%                      lureDif = [];
-%                      radius = [];
-%                      tau = [];
-%                      thetaCorrect = []; 
-%                      itrack_interference = [];
-%                      itrack_probe = [];
-%                      continue;
-%                  end 
-%                  valid = valid +1;
-            elseif phase==6 %phase delay 2
-%                 if valid ~= phase
-%                     DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
-%                     Screen('Flip',wPtr);    
-%                     switch trial(g,p).type
-%                         case 0
-%                             WaitSecs(pms.delay2DurationIgn);
-%                         case 2
-%                             WaitSecs(pms.delay2DurationUpd);
-%                     end
-%                     continue; 
-%                 end 
+
+            elseif phase==5 %phase delay 2
                 drawFixationCross(wPtr,rect);
                 T.delay2_on(g,p) = Screen('Flip',wPtr);
                 
@@ -494,16 +299,8 @@ for p=1:numBlocks
                 end
                 
                 T.delay2_off(g,p) = GetSecs;
-%                 valid = valid +1;
-                
-            elseif phase==7  %probe phase
-%                 if valid ~= phase
-%                     DrawFormattedText(wPtr, 'Please try to look at the screen while doing the task.\nThe next trial will start shortly.', 'center', 'center', U_color);
-%                     Screen('Flip',wPtr);
-%                     correct = 0;
-%                     WaitSecs(pms.maxRT + pms.median_rtMovement);
-%                     continue; 
-%                 end 
+   
+            elseif phase==6  %probe phase
                 if pms.shape==0
                     probeRectX=trial(g,p).locations(1,1);
                     probeRectY=trial(g,p).locations(1,2); 
@@ -524,19 +321,15 @@ for p=1:numBlocks
 
                 
                 T.probe_on(g,p) = GetSecs;
-%                 if practice == 0
-%                      [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct,itrack_probe]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,driftShift, trial);
-%                 else 
-                     if pms.shape==0   
-                        [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial(g,p).type, trial);
-                     elseif pms.shape==1
-                        [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel_circles(pms,allCircles,probeCircle,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p,trial(g,p).type, trial); 
-                     end
-%                 end
+                 if pms.shape==0   
+                    [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p, trial);
+                 elseif pms.shape==1
+                    [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel_circles(pms,allCircles,probeCircle,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p, trial); 
+                 end
                 T.probe_off(g,p) = GetSecs;
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
-            elseif phase==8 % feedback about their reward
+            elseif phase==7 % feedback about their reward
                Screen('Flip',wPtr);  
                if practice~=1 && pms.points==1 
                    Screen('Textsize', wPtr, 28);
@@ -552,7 +345,6 @@ for p=1:numBlocks
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
                    end
-                   drawFixationCross(wPtr,rect);
                    Screen('Flip',wPtr); 
                    T.feedback_off(g,p) = GetSecs;
                elseif practice~=1 && pms.points==0
@@ -570,11 +362,6 @@ for p=1:numBlocks
                 data(g,p).rtDecision=rtDecision;
                 data(g,p).rtMovement=rtMovement;
                 data(g,p).rt=rtTotal;
-                if exist('rtSpace', 'var')
-                    data(g,p).rtSpace=rtSpace;
-                elseif ~exist('rtSpace', 'var')
-                    data(g,p).rtSpace=NaN;
-                end
                 if pms.shape==0
                     data(g,p).probeLocation=[trial(g,p).locations(1,1) trial(g,p).locations(1,2)];
                 elseif pms.shape==1
@@ -592,25 +379,17 @@ for p=1:numBlocks
                 data(g,p).type=trial(g,p).type;
                 data(g,p).location =trial(g,p).locations;
                 data(g,p).colors = trial(g,p).colors;
-                if practice~=1
-                    data(g,p).offer=trial(g,p).offer;
-                elseif practice==1
-                    data(g,p).offer= NaN;
-                end 
-                if practice~=1
-%                     data(g,p).cue = trial(g,p).cue;
-%                     data(g,p).valid = trial(g,p).valid;
-                end
                 save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T');
                 if practice==0
-                    if correct==1 %if they did better than a maximum deviance
+                    data(g,p).offer=trial(g,p).offer;
+                    if correct==1 && pms.points==1 %if they did better than a maximum deviance
                         data(g,p).reward=trial(g,p).offer;
                     else                                      
                         data(g,p).reward=0;
-                    end
+                    end   
                     bonus = bonus + data(g,p).reward;
                     data(g,p).bonus = bonus;
-                    money = bonus / 2500;
+                    money = bonus / pms.bonusCalculation;
                     if pms.shape==0                       
                         data(g,p).encColLoc1=trial(g,p).encColLoc1;
                         data(g,p).encColLoc2=trial(g,p).encColLoc2;
@@ -636,41 +415,24 @@ for p=1:numBlocks
                             end
                         end 
                     end
-%                     gazedata(g,p).encoding = itrack_encoding; % save all eyetracker data here
-%                     gazedata(g,p).interference = itrack_interference; % save all eyetracker data here
-%                     gazedata(g,p).probe = itrack_probe; % save all eyetracker data here
-%                     pms.driftShift = driftShift; % update for next trial
                     save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T');
                 elseif practice~=0
                     save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T');
-                end
-                
-            elseif phase==9 % extra time for I trials
-                if trial(g,p).type == 0                    
-                    WaitSecs(pms.makeUpDurationI);
-                end 
-                
-            end %if phase ==1
-        end % for phase 1:9
-        % break after each block (after 20 min)
+                end                               
+            end %if phase ==1:7
+        end % for phase 1:7
+        
+        % break after each block 
         if practice==0           
-            if GetSecs-blockOnset > pms.blockDuration
-                if p==1
-                    getInstructions(5,pms, rect, wPtr);
-%                   Eyelink('Stoprecording')
-%                   pms.el = EyelinkSetup(0,pms);
-                    break; %end numTrials loop and go to next block
-                elseif p==numBlocks
+            if g==pms.numTrials % last trial of block
+                if p==numBlocks
                     DrawFormattedText(wPtr,sprintf('End of the experiment. Please press space.'),'center','center',[0 0 0]);
                 else 
-                    DrawFormattedText(wPtr,sprintf('End of this block. You can now have a break.\nPress space when you are ready to start the new block.'),'center','center',[0 0 0]);
+                    getInstructions(4,pms,rect,wPtr);
                 end
                 Screen('Flip',wPtr);
-                RestrictKeysForKbCheck(32);
-                KbWait();
                 RestrictKeysForKbCheck([])
-%                 Eyelink('Stoprecording')
-%                 pms.el = EyelinkSetup(0,pms);
+                WaitSecs(1);
                 break; %end numTrials loop and go to next block
             end 
         end          

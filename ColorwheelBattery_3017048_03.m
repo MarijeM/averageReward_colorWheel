@@ -13,13 +13,13 @@ rng('shuffle');
 subNo= input('Subject ID: '); %request user input: subject ID
 checked=input(sprintf('participant number is %d',subNo)); %returns answer
 
-% ask for counterbalancing: 0 is neutral, ignore, update; 2 is neutral,
-% update, ignore
-pms.blockCB = input('\n\nWhich block first?\n\nPress 0 for Ignore\nPress 2 for Update:   '); %request user input: block order
+% ask for counterbalancing: 0 is no reward, reward context, 1 is reward, no
+% reward context
+pms.blockCB = input('\n\nWhich block first?\n\nPress 0 for No Reward\nPress 1 for Rewards:   '); %request user input: block order
 if pms.blockCB == 0
-    firstBlock = 'Ignore';
-elseif pms.blockCB == 2
-    firstBlock = 'Update';
+    firstBlock = 'No rewards';
+elseif pms.blockCB == 1
+    firstBlock = 'Rewards';
 end 
 checked=input(sprintf('Block order: first %s',firstBlock)); %returns answer
 
@@ -55,15 +55,6 @@ else
     pms.CV = 0;
 end
 
-% ask if with or without reward points
-pms.points = input('\n\nWith points?\n\nPress 0 for without\nPress 1 for with:   '); 
-if pms.points == 0
-    points = 'Without';
-elseif pms.points == 1
-    points = 'With';
-end 
-checked=input(sprintf('%s points',points)); %returns answer
-
 pms.cutoff = 0;
 if pms.instructions==1
     % ask for cut off deviance for reward
@@ -74,18 +65,6 @@ if pms.instructions==1
         cutoff = 'Individual';
     end 
     checked=input(sprintf('Cutoff is %s',cutoff)); %returns answer
-end
-
-pms.spaceBar = 0;
-if pms.points==1    
-    % ask if participants have to hit space bar after seeing the reward
-    pms.spaceBar = input('\n\nSpace bar?\n\nPress 0 for no\nPress 1 for yes:   '); 
-    if pms.spaceBar == 0
-        spaceBar = 'OFF';
-    elseif pms.spaceBar == 1
-        spaceBar = 'ON';
-    end 
-    checked=input(sprintf('spaceBar is %s',spaceBar)); %returns answer
 end
 
 % ask if circles or squares
@@ -127,25 +106,10 @@ disp('TASK: Color Wheel');          % display which task starts.
 WaitSecs(2); %show message for 2 sec
 if pms.instructions==1
     [dataPractice,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
-    if pms.spaceBar==1
-        [dataPracticeRewards,~,~,~,~] = BeautifulColorwheel(subNo,2,pms); %practice=2: instructions reward and eyetracking + practice
-        dataPr = [dataPractice; dataPracticeRewards];
-    elseif pms.spaceBar==0
-        dataPr = [dataPractice];
-    end
-    BeautifulColorwheel(subNo,0,pms,dataPr); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
+    BeautifulColorwheel(subNo,0,pms,dataPractice); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
 else
     BeautifulColorwheel(subNo,0,pms); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
 end
 
 
 cd(pms.rootdir)
-
-
-%% debugging: either practice phase 1, 2 or 0, without needing the previous ones; just comment out the phase you want to debug
-% cd(pms.inccwdir);
-% [~,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms,[], 1); %practice=1 
-% BeautifulColorwheel(subNo,2,pms, [],1); %practice=2: practice with rewards
-% BeautifulColorwheel(subNo,0,pms,[], 1); %practice=0
-% 
-% cd(pms.rootdir)

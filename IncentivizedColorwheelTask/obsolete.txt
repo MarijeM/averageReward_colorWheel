@@ -1,1 +1,0 @@
-all excel files, predefined stimuli.m, readingstimuli.m, samplestimuli.m, statmatrixrandom, stimuli.mat have become obsolete

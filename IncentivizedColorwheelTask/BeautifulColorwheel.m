@@ -46,18 +46,15 @@ try
     bonus   = []; 
 
     %% set experiment parameters
-    pms.numTrials           = 120; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
-    pms.numBlocks           = 3;  
+    pms.numTrials           = 16; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
+    pms.numBlocks           = 2;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
-    if pms.spaceBar==1
-        pms.numTrialsPr         = 8;  
-    elseif pms.spaceBar==0
-        pms.numTrialsPr         = 16;  
-    end 
+    pms.numTrialsPr         = 4;  
+
     pms.numBlocksPr         = 1; 
-    pms.maxSetsize          = 4; %maximum number of squares used
-    pms.colorTrials         = 12;    
+    pms.maxSetsize          = [1,3]; %number of squares/circles used
+    pms.colorTrials         = 12;  % trials for colorvision task  
     %colors
     pms.numWheelColors      = 512;
     
@@ -72,18 +69,9 @@ try
     pms.ovalColor           = [0 0 0];
     pms.subNo               = subNo;
     pms.matlabVersion       = 'R2016a';
-    %eyelink parameters
-%     pms.driftCueCol = [10 150 10, 255]; % cue that central fix changes when drifting is indicated (changes into green)
-%     pms.allowedResps.drift = 'left_control';
-%     pms.allowedResps.drift = 'c';
-%     pms.allowedResps.driftOK = 'd';
-%     pms.fixDuration = 0.75; % required fixation duration in seconds before trials initiate
-    pms.offerDuration = 0.75; % in case of no eyetracking
-%     pms.diagTol = 100; % diagonal pixels of tolerance for fixation
+    pms.offerDuration       = 0.75; % in case of no eyetracking
     % timings
     pms.maxRT               = 4; % max RT
-    pms.cueduration         = 1.0;
-    pms.cuedelay            = 0.75;
     if pms.slow==0
         pms.encDuration         = 0.5;    % encoding
         pms.delay1DurationPr    = 0.5; % delay 1 during practice
@@ -114,19 +102,23 @@ try
     pms.rewardduration      = 0.75; %duration of "you win xx" 
     if practice==0 && pms.cutoff==1
         dataTable = struct2table(dataPr);
-        dataMatrix = dataTable(:,[10,17]);
-        dataMatrix = [dataMatrix.respDif,dataMatrix.type];
+        dataMatrix = dataTable(:,[9,15,16]);
+        dataMatrix = [dataMatrix.respDif,dataMatrix.type,dataMatrix.setsize];
         pms.dataMatrix = dataMatrix;
-        pms.minAcc_I              = prctile(abs(dataMatrix(dataMatrix(:,2)==0,1)),85); % maximum deviance to win reward, 85 percentile of practice trials
-        pms.minAcc_U              = prctile(abs(dataMatrix(dataMatrix(:,2)==2,1)),85);
+        pms.minAcc_I_easy         = prctile(abs(dataMatrix(dataMatrix(:,2)==0 & dataMatrix(:,3)==pms.maxSetsize(1),1)),75); % maximum deviance to win reward, 75 percentile of practice trials
+        pms.minAcc_U_easy         = prctile(abs(dataMatrix(dataMatrix(:,2)==2 & dataMatrix(:,3)==pms.maxSetsize(1),1)),75);
+        pms.minAcc_I_hard         = prctile(abs(dataMatrix(dataMatrix(:,2)==0 & dataMatrix(:,3)==pms.maxSetsize(2),1)),75); % maximum deviance to win reward, 75 percentile of practice trials
+        pms.minAcc_U_hard         = prctile(abs(dataMatrix(dataMatrix(:,2)==2 & dataMatrix(:,3)==pms.maxSetsize(2),1)),75);
         if isfield(pms,'minAcc_I') == 0 %if debugging, possible that minacc cannot be calculated, since prior data does not exist
-             pms.minAcc_I            = 100; % maximum deviance to win reward
-             pms.minAcc_U            = 60; 
+             pms.minAcc_I_easy    = 15; % maximum deviance to win reward
+             pms.minAcc_U_easy    = 10; 
+             pms.minAcc_I_hard    = 50; % maximum deviance to win reward
+             pms.minAcc_U_hard    = 30; 
         end 
     end
 
-    pms.minAcc              = 15;    
-    pms.blockDuration       = 1*60; %duration in seconds of one block
+    pms.minAcc              = 15;   % during practice or when we use a fixed cut off 
+    pms.bonusCalculation    = 2500; % by which number does the bonus amount have to be divided?
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
@@ -157,14 +149,16 @@ try
     
     % open an onscreen window
     if pms.instructions==0 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
-        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;
         pms.rect = rect; 
     elseif practice ~= 1
         wPtr = pms.wPtr;
         rect = pms.rect;
     elseif practice == 1
-        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
         pms.wPtr = wPtr;
         pms.rect = rect;
     end 
@@ -217,26 +211,15 @@ try
        end
        getInstructions(2,pms, rect,wPtr); % instruction regular color wheel
        [trial]= trialstruct(pms,rect,1,0,0);  
-    elseif practice==2
-       getInstructions(3,pms, rect,wPtr);
-       [trial]= trialstruct(pms,rect,rect,1,0,1);  
     elseif practice==0
-        if pms.points==1
-           if pms.spaceBar==0
-               getInstructions(31,pms,rect,wPtr);
-           elseif pms.spaceBar==1
-               getInstructions(4,pms,rect,wPtr);
-           end  
-        elseif pms.points==0
-            getInstructions(32,pms,rect,wPtr);
-        end
+        getInstructions(3,pms, rect,wPtr); % end of practice, instruction points if rewarded block starts
         [trial]=defstruct(pms,rect);
     end
 
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    [pms,data,T,money,gazedata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    [pms,data,T,money] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
 
     
     %% Save the data
@@ -246,7 +229,7 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(6,pms,rect,wPtr,money);  
+       getInstructions(5,pms,rect,wPtr,money);  
        clear Screen
        Screen('CloseAll');
        ShowCursor; % display mouse cursor again
