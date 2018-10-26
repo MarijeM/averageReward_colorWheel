@@ -55,7 +55,10 @@ for p=1:numBlocks
         DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n\nPlease keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
         Screen('Flip',wPtr);
         WaitSecs(2);
-    end 
+    end
+    
+    % M: make parameter with block order in beautiful colorwheel.Done--> blockOrder 
+    % For that pms, add reward slide for every block. See phase 1 reward next part
     
     Screen('Flip',wPtr);
     WaitSecs(1.5);
@@ -63,27 +66,27 @@ for p=1:numBlocks
     blockOnset  = GetSecs; %onset time of block. Block lasts x min. After x min, block ends automatically.
     for g=1:numTrials
         for phase = 1:7
-            if phase==1 % reward on offer              
-                if practice==0 && trial(g,p).offer > 0      
-                    offer = sprintf('%d', trial(g,p).offer);
-                    Screen('Textsize', wPtr, 34);
-                    Screen('Textfont', wPtr, 'Times New Roman');
-                    DrawFormattedText(wPtr, offer, 'center', 'center');  
-                    T.offer_on(g,p) = Screen('Flip',wPtr);
-                    WaitSecs(pms.offerDuration);      
-                    WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
-                    T.offer_off(g,p) = Screen('Flip',wPtr);
-                    WaitSecs(pms.offerdelay); 
-                    pms.points=1; % used later on in this function. If points is 1, then ppn gets feedback about how many points he wins.
-                else
+            if phase==1 % reward on offer or fixationcross              
+                %if practice==0 && trial(g,p).offer > 0      
+                    %offer = sprintf('%d', trial(g,p).offer);
+                    %Screen('Textsize', wPtr, 34);
+                    %Screen('Textfont', wPtr, 'Times New Roman');
+                    %DrawFormattedText(wPtr, offer, 'center', 'center');  
+                    %T.offer_on(g,p) = Screen('Flip',wPtr);
+                    %WaitSecs(pms.offerDuration);      
+                    %WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
+                    %T.offer_off(g,p) = Screen('Flip',wPtr);
+                    %WaitSecs(pms.offerdelay); 
+                    %pms.points=1; % used later on in this function. If points is 1, then ppn gets feedback about how many points he wins.
+                %else
                     drawFixationCross(wPtr,rect);
                     T.offer_on(g,p) = Screen('Flip',wPtr);
                     WaitSecs(pms.offerDuration);      
                     WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
                     T.offer_off(g,p) = Screen('Flip',wPtr);
                     WaitSecs(pms.offerdelay); 
-                    pms.points=0;
-                end 
+                    %pms.points=0;
+                %end 
          
             elseif phase==2    % encoding phase
                 Screen('Textsize', wPtr, 34);
@@ -329,30 +332,30 @@ for p=1:numBlocks
                 T.probe_off(g,p) = GetSecs;
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
-            elseif phase==7 % feedback about their reward
+            elseif phase==7 % feedback about their reward or won reward after trial
                Screen('Flip',wPtr);  
-               if practice~=1 && pms.points==1 
+               if practice~=1 %&& pms.points==1 
                    Screen('Textsize', wPtr, 28);
-                   Screen('Textfont', wPtr, 'Times New Roman');
-                   if correct==1 % if they were accurate enough
+                   Screen('Textfont', wPtr, 'Times New Roman');                  
+                   %if correct==1 % if they were accurate enough
                        DrawFormattedText(wPtr,sprintf('You win %d points',trial(g,p).offer),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
-                   else 
-                       DrawFormattedText(wPtr,'You win 0 points', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
-                       Screen('Flip',wPtr);  
-                       T.feedback_on(g,p) = GetSecs;
-                       WaitSecs(pms.rewardduration);
-                   end
+                   %else 
+                       %DrawFormattedText(wPtr,'You win 0 points', 'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       %Screen('Flip',wPtr);  
+                       %T.feedback_on(g,p) = GetSecs;
+                       %WaitSecs(pms.rewardduration);
+                   %end
                    Screen('Flip',wPtr); 
                    T.feedback_off(g,p) = GetSecs;
-               elseif practice~=1 && pms.points==0
-                   drawFixationCross(wPtr,rect);
-                   Screen('Flip',wPtr); 
-                   T.feedback_on(g,p) = GetSecs;
-                   WaitSecs(pms.rewardduration);
-                   T.feedback_off(g,p) = GetSecs;
+               %elseif practice~=1 && pms.points==0
+                   %drawFixationCross(wPtr,rect);
+                   %Screen('Flip',wPtr); 
+                   %T.feedback_on(g,p) = GetSecs;
+                   %WaitSecs(pms.rewardduration);
+                   %T.feedback_off(g,p) = GetSecs;
                end 
                               
        
@@ -382,11 +385,11 @@ for p=1:numBlocks
                 save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T');
                 if practice==0
                     data(g,p).offer=trial(g,p).offer;
-                    if correct==1 && pms.points==1 %if they did better than a maximum deviance
+                    %if correct==1 && pms.points==1 %if they did better than a maximum deviance
                         data(g,p).reward=trial(g,p).offer;
-                    else                                      
-                        data(g,p).reward=0;
-                    end   
+                    %else                                      
+                        %data(g,p).reward=0;
+                    %end   
                     bonus = bonus + data(g,p).reward;
                     data(g,p).bonus = bonus;
                     money = bonus / pms.bonusCalculation;
@@ -419,7 +422,7 @@ for p=1:numBlocks
                 elseif practice~=0
                     save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T');
                 end                               
-            end %if phase ==1:7
+            end %if phase == 1
         end % for phase 1:7
         
         % break after each block 
