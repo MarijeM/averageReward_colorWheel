@@ -22,6 +22,12 @@ function [trial]=defstruct(pms,rect)
 addpath(fullfile(pms.inccwdir,'Stimuli_structs'));
 
 
+% loop over block and counterbalance block order for 4 blocks.
+if pms.blockCB == 0
+    blockOrder = [1 2 3 4]; % Low1, High2, High3, Low4
+elseif pms.blockCB == 1
+    blockOrder = [2 1 4 3]; % High2, Low1, Low4, High3
+end
 
 trials = [];
 trialsPerSetsize = round(pms.numTrials/length(pms.maxSetsize));
@@ -55,7 +61,7 @@ end
 
 [~,pie]=sampledColorMatrix(pms);
 
-for b = 1:pms.numBlocks
+for b = blockOrder
     for j=1:pms.numTrials %create new fields in trial-struct
         trials(j,1).colors=[];
         trials(j,1).locations=[];
@@ -129,42 +135,49 @@ for b = 1:pms.numBlocks
 
 
     %% assign rewards on offer
-        if b==1 && pms.blockCB==0 || b==2 && pms.blockCB==1
-            trials(x,1).offer = 0;
-        elseif b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1
-            trials(x,1).offer = 50;
-            %in 25% of the cases, no points are offered
-            if (mod(x,4)==1 || mod(x,4)==0) && mod(x,trialsPerSetsize)<= trialsPerSetsize/length(pms.maxSetsize) && mod(x,trialsPerSetsize)~= 0 
-               trials(x,1).offer = 0; 
-            end
-        end 
+        if b==1 || b==4 % low reward context
+            trials(x,1).offer = 10;
+        elseif b==2 || b==3 % high reward context
+            trials(x,1).offer = 40;
+        end
+        
+        %if b==1 && pms.blockCB==0 || b==2 && pms.blockCB==1
+            %trials(x,1).offer = 0;
+        %elseif b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1
+            %trials(x,1).offer = 50;
+                 %in 25% of the cases, no points are offered
+            %if (mod(x,4)==1 || mod(x,4)==0) && mod(x,trialsPerSetsize)<= trialsPerSetsize/length(pms.maxSetsize) && mod(x,trialsPerSetsize)~= 0 
+               %trials(x,1).offer = 0; 
+            %end
+        %end 
     end %for x=1:size(trials,1)
 
     
     %% randomize trials in this block
     trialRandomizing = trials;
     rows = size(trials,1); 
-    first8rewarded = 0;
+    %first8rewarded = 0;
+    
     % In the rewarded context, I want to make the first 8 trials rewarded,
     % such that people really have the notion of being rewarded.
-    while first8rewarded==0
+    %while first8rewarded==0
         r = 1; 
         for i = randperm(rows)
             trials(r,1) = trialRandomizing(i,1);
             r = r+1;
         end
-        for r = 1:rows 
-            rewardOnOffer(r) = trials(r,1).offer;
-        end
+        %for r = 1:rows 
+            %rewardOnOffer(r) = trials(r,1).offer;
+        %end
 
-        if (b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1) && (sum(rewardOnOffer(1:8)==0)>0) 
-            first8rewarded = 0;
-        elseif (b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1) && (sum(rewardOnOffer(1:8)==0)==0) 
-            first8rewarded = 1;
-        elseif b==1 && pms.blockCB==0 || b==2 && pms.blockCB==1
-            first8rewarded = 1;
-        end
-    end
+        %if (b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1) && (sum(rewardOnOffer(1:8)==0)>0) 
+            %first8rewarded = 0;
+        %elseif (b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1) && (sum(rewardOnOffer(1:8)==0)==0) 
+            %first8rewarded = 1;
+        %elseif b==1 && pms.blockCB==0 || b==2 && pms.blockCB==1
+            %first8rewarded = 1;
+        %end
+    %end
     
 %% randomize trials in this block
 
@@ -228,7 +241,7 @@ for b = 1:pms.numBlocks
     
     %% combine blocks  
     trial = [trial, trials];
-end %for block = 1:pms.numBlocks
+end %for b = blockOrder
 end %function
 
                 
