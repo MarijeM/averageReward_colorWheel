@@ -102,42 +102,48 @@ elseif level==2 && pms.shape==1 %concentric circles
     Instruction{22} = 'Please take a moment to tell your experimenter what is going to happen in this task.'; 
     Instruction{23} = 'You will now do some practice trials.\n\nPlease keep your hand on the mouse.'; 
         
-elseif level==3 && pms.blockCB==0
+elseif level==3 %&& pms.blockCB==0
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
     Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
     Instruction{3}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break and continue with the task when you are ready.',pms.numBlocks);
-    Instruction{4} = 'You will now start the task.\n\nPlease look at the screen while doing the task.';    
-    
-elseif level==3 && pms.blockCB==1 
-    Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
-    Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
-    Instruction{3}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break and continue with the task when you are ready.',pms.numBlocks);
-    Instruction{4}='On most trials you can win points.';
-    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many points you can win on that trial.';
+    Instruction{4}='On all trials you can win points.\n\n The number of points you can win on a trial depends on the block of trials.';
+    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new block you will see how many points per trial you can win on that block.';
     imgReward=importdata('Rewardcue.png');
     imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{6}= 'If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';   
-    Instruction{7}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n One some trials you cannot win points.\n\nYou will then see a cross instead of a number';
-    Instruction{8} = 'You will now start the task.\n\nPlease look at the screen while doing the task.';   
+    Instruction{6}= 'At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
+    Instruction{7} = 'You will now start the task.\n\nPlease look at the screen while doing the task.'; 
+    %Instruction{4} = 'You will now start the task.\n\nPlease look at the screen while doing the task.';    
+    
+%elseif level==3 && pms.blockCB==1 
+    %Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
+    %Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
+    %Instruction{3}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break and continue with the task when you are ready.',pms.numBlocks);
+    %Instruction{4}='On most trials you can win points.';
+    %Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many points you can win on that trial.';
+    %imgReward=importdata('Rewardcue.png');
+    %imageReward=Screen('MakeTexture',wPtr,imgReward);
+    %Instruction{6}= 'If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';   
+    %Instruction{7}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n On some trials you cannot win points.\n\nYou will then see a cross instead of a number';
+    %Instruction{8} = 'You will now start the task.\n\nPlease look at the screen while doing the task.';   
     
     
-elseif level==4 && pms.blockCB==0
-    
+elseif level==4 %&& pms.blockCB==0
     Instruction{1} = 'You finished the first block of the task!\n\n Press the right arrow to continue with the next block.';
-    Instruction{2}='On most trials in this block you can win points.';
-    Instruction{3}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many points you can win on that trial.';
-    imgReward=importdata('Rewardcue.png');
-    imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{4}= 'If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';   
-    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n One some trials you cannot win points.\n\nYou will then see a cross instead of a number';
-    Instruction{6}='Everything else is the same as during the first block of the task.';
-    Instruction{7} = 'Good luck!';
+    Instruction{2}= 'Before the start of the next block, you will see how many points you can win per trial.';
+    Instruction{3}= 'Good luck!';
+    %Instruction{2}='On most trials in this block you can win points.';
+    %Instruction{3}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many points you can win on that trial.';
+    %imgReward=importdata('Rewardcue.png');
+    %imageReward=Screen('MakeTexture',wPtr,imgReward);
+    %Instruction{4}= 'If you are close enough to the correct color, you win the points. At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';   
+    %Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n One some trials you cannot win points.\n\nYou will then see a cross instead of a number';
+    %Instruction{6}='Everything else is the same as during the first block of the task.';
+    %Instruction{7} = 'Good luck!';
     
-elseif level==4 && pms.blockCB==1
-    
-    Instruction{1} = 'You finished the first block of the task!\n\n Press the right arrow to continue with the next block.';
-    Instruction{2}='During this block you cannot win points, but everything else is the same as during the first block of the task.';
-    Instruction{3} = 'Good luck!';
+%elseif level==4 && pms.blockCB==1
+    %Instruction{1} = 'You finished the first block of the task!\n\n Press the right arrow to continue with the next block.';
+    %Instruction{2}='During this block you cannot win points, but everything else is the same as during the first block of the task.';
+    %Instruction{3} = 'Good luck!';
    
 elseif level==5 
     Instruction{1}=double(sprintf('This is the end of the color wheel memory task!\n Your total reward is %.2f euro.\n\n Please contact the researcher.', money));
@@ -178,20 +184,25 @@ for i=1:100
         else
             DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
         end
-    else   
-         if level==3 && pms.blockCB==1 && counter==5
-             Screen('Textsize', wPtr, 34);
-             Screen('Textfont', wPtr, 'Times New Roman');
-             DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
-         elseif level==3 && pms.blockCB==1 && counter==7
-             drawFixationCross(wPtr,rect);
-         elseif level==4 && pms.blockCB==0 && counter==3
-             Screen('Textsize', wPtr, 34);
-             Screen('Textfont', wPtr, 'Times New Roman');
-             DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
-         elseif level==4 && pms.blockCB==0 && counter==5
-             drawFixationCross(wPtr,rect);    
-         end 
+    else 
+        if level==3 && counter==5
+            Screen('Textsize', wPtr, 34);
+            Screen('Textfont', wPtr, 'Times New Roman');
+            DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
+        end
+        %if level==3 && pms.blockCB==1 && counter==5 
+             %Screen('Textsize', wPtr, 34);
+             %Screen('Textfont', wPtr, 'Times New Roman');
+             %DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
+         %elseif level==3 && pms.blockCB==1 && counter==7
+             %drawFixationCross(wPtr,rect);
+         %elseif level==4 && pms.blockCB==0 && counter==3
+             %Screen('Textsize', wPtr, 34);
+             %Screen('Textfont', wPtr, 'Times New Roman');
+             %DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
+         %elseif level==4 && pms.blockCB==0 && counter==5
+             %drawFixationCross(wPtr,rect);    
+         %end 
     Screen('TextSize',wPtr,pms.textSize); %change back to normal
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);   
