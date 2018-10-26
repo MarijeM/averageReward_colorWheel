@@ -47,7 +47,7 @@ try
 
     %% set experiment parameters
     pms.numTrials           = 16; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
-    pms.numBlocks           = 2;  
+    pms.numBlocks           = 4;  
 
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
     pms.numTrialsPr         = 4;  
@@ -60,6 +60,7 @@ try
     
     %text
     pms.textColor           = [0 0 0];
+    % M: add background pattern parameters 
     pms.background          = [200,200,200];
     pms.wrapAt              = 65;
     pms.spacing             = 2;
