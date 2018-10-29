@@ -55,10 +55,21 @@ for p=1:numBlocks
         DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n\nPlease keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
         Screen('Flip',wPtr);
         WaitSecs(2);
+     % Show reward cue before block
+        if (pms.blockCB==0 && p==1 | p==4) | (pms.blockCB==1 && p==2 | p==3)
+            blockOffer = '10';
+        elseif (pms.blockCB==0 && p==2 | p==3) | (pms.blockCB==1 && p==1 | p==4)
+            blockOffer = '40';
+        end
+        Screen('Textsize', wPtr, 34);
+        Screen('Textfont', wPtr, 'Times New Roman');
+        DrawFormattedText(wPtr, blockOffer, 'center', 'center');  
+        T.offer_on(p,1) = Screen('Flip',wPtr);
+        WaitSecs(pms.offerDuration);      
+        WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
+        T.offer_off(p,1) = Screen('Flip',wPtr);
+        WaitSecs(pms.offerdelay); 
     end
-    
-    % M: make parameter with block order in beautiful colorwheel.Done--> blockOrder 
-    % For that pms, add reward slide for every block. See phase 1 reward next part
     
     Screen('Flip',wPtr);
     WaitSecs(1.5);
@@ -338,7 +349,7 @@ for p=1:numBlocks
                    Screen('Textsize', wPtr, 28);
                    Screen('Textfont', wPtr, 'Times New Roman');                  
                    %if correct==1 % if they were accurate enough
-                       DrawFormattedText(wPtr,sprintf('You win %d points',trial(g,p).offer),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
+                       DrawFormattedText(wPtr,sprintf('You win %s points',blockOffer),'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
                        Screen('Flip',wPtr);  
                        T.feedback_on(g,p) = GetSecs;
                        WaitSecs(pms.rewardduration);
