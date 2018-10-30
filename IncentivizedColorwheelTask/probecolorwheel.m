@@ -1,4 +1,4 @@
-function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,trial)
+function [respX,respY,rtDecision, rtMovement, rtTotal,colortheta, correct,itrack]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,probeColorCorrect,lureColor,rect,wPtr,g,p,trial, pattern)
 % function that gives the colorwheel for the task and the probe of the colorwheel memory task
 % Takes as inputs the number of colors displayed on the wheel. 
 % respX                         x coordinates of response
@@ -92,8 +92,26 @@ for n=1:length(colors)
    colortheta(n).theta = theta(n)+wheelStart;    %pick angle n from all angles and add initial shift (wheelStart)
 end
 
+% create position matrix for dotted background pattern
+[screenXpixels,screenYpixels]=Screen('WindowSize', wPtr); 
+% create base dot coordinates
+dim = 10;
+[x, y] = meshgrid(-dim:1:dim, -dim:1:dim);
+% scale grid by screen size(into pixel coordinates) 
+pixelScale = screenYpixels / (dim);
+     x = x .* pixelScale;
+     y = y .* pixelScale;
+% calculate the number of dots
+numDots = numel(x);
+% create matrix of positions for dots 
+dotPositionMatrix = [reshape(x, 1, numDots); reshape(y, 1, numDots)];
 
 %Colorwheel 
+
+if practice==0
+Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+end
+
 for ind=1:length(colors)
   Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
 end
@@ -144,6 +162,10 @@ while movement == 0 && GetSecs-probeOnset < pms.maxRT %while they did not start 
                 [respDif,tau,thetaCorrect,radius]=respDev(colortheta,probeColorCorrect,lureColor,respX,respY,rect); %calculate deviance 
 
                 % draw the color wheel + response 
+                if practice==0
+                Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+                end
+                
                 for ind=1:length(colors)
                     Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle); % draw color wheel
                 end
@@ -227,6 +249,9 @@ elseif movement==1 && mod(g,10)==0 %on the faster trials, participants response 
     for ind=1:length(colors)
         Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle); % draw color wheel
     end
+    if practice==0
+       Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+    end
     Screen('FillArc',wPtr,[0 0 0],outsideRect,tau-0.2,0.2); % draw line where they reached the wheel
     Screen('FillOval',wPtr,pms.background,insideRect); % grey middle oval
     Screen('FrameRect',wPtr,probeColor,allRects); % draw squares
@@ -240,6 +265,9 @@ elseif movement==1
     respY       = y; %take last y as response 
     rtMovement  = NaN;
     rtTotal     = NaN;
+    if practice==0
+        Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+    end
     for ind=1:length(colors)
         Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
     end
@@ -256,6 +284,9 @@ elseif movement==0
     rtDecision  = NaN;
     rtMovement  = NaN;
     rtTotal     = NaN;    
+    if practice==0
+        Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+    end
     for ind=1:length(colors)
         Screen('FillArc',wPtr,colors(ind,:),outsideRect,wheelAngles(ind),colorangle);
     end
