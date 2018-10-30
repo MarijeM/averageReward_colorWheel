@@ -47,30 +47,60 @@ I_color         = [0 0 0];
 rectOne         = [0 0 100 100];
 data            = struct();
 
+%% create position matrix for dotted background pattern
+
+% get the size of the on screen window in pixels
+[screenXpixels,screenYpixels]=Screen('WindowSize', wPtr); 
+% create base dot coordinates
+dim = 10;
+[x, y] = meshgrid(-dim:1:dim, -dim:1:dim);
+% scale grid by screen size(into pixel coordinates) 
+pixelScale = screenYpixels / (dim);
+    x = x .* pixelScale;
+    y = y .* pixelScale;
+% calculate the number of dots
+numDots = numel(x);
+% create matrix of positions for dots 
+dotPositionMatrix = [reshape(x, 1, numDots); reshape(y, 1, numDots)];
+
+
 %% loop around trials and blocks for stimulus presentation
 
 bonus       = 0; %start value of reward/bonus is 0.00
 for p=1:numBlocks
+    if (pms.blockCB==0 && p==1 | p==4) | (pms.blockCB==1 && p==2 | p==3)
+        rewardContext = 0; %low
+        pattern = 2; %dots
+    elseif (pms.blockCB==0 && p==2 | p==3) | (pms.blockCB==1 && p==1 | p==4)
+        rewardContext = 1; %high
+        pattern = 0; %squares
+    end
+    
     if practice==0
         DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n\nPlease keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
         Screen('Flip',wPtr);
         WaitSecs(2);
-     % Show reward cue before block
-        if (pms.blockCB==0 && p==1 | p==4) | (pms.blockCB==1 && p==2 | p==3)
+     % determine reward cue
+        if rewardContext == 0
             blockOffer = '10';
-        elseif (pms.blockCB==0 && p==2 | p==3) | (pms.blockCB==1 && p==1 | p==4)
+        elseif rewardContext == 1
             blockOffer = '40';
         end
+        Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern: Screen('DrawDots', windowPtr, xy [,size] [,color] [,center] [,dot_type])
         Screen('Textsize', wPtr, 34);
         Screen('Textfont', wPtr, 'Times New Roman');
-        DrawFormattedText(wPtr, blockOffer, 'center', 'center');  
+        DrawFormattedText(wPtr, blockOffer, 'center', 'center');  %draw reward cue
         T.offer_on(p,1) = Screen('Flip',wPtr);
         WaitSecs(pms.offerDuration);      
         WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
+        Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
         T.offer_off(p,1) = Screen('Flip',wPtr);
         WaitSecs(pms.offerdelay); 
     end
     
+    if practice==0
+        Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+    end
     Screen('Flip',wPtr);
     WaitSecs(1.5);
     
@@ -90,16 +120,25 @@ for p=1:numBlocks
                     %WaitSecs(pms.offerdelay); 
                     %pms.points=1; % used later on in this function. If points is 1, then ppn gets feedback about how many points he wins.
                 %else
+                    if practice==0
+                        Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+                    end
                     drawFixationCross(wPtr,rect);
                     T.offer_on(g,p) = Screen('Flip',wPtr);
                     WaitSecs(pms.offerDuration);      
                     WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
+                    if practice==0
+                        Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+                    end
                     T.offer_off(g,p) = Screen('Flip',wPtr);
                     WaitSecs(pms.offerdelay); 
                     %pms.points=0;
                 %end 
          
             elseif phase==2    % encoding phase
+                if practice==0
+                    Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+                end
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
                 switch pms.shape
@@ -178,6 +217,9 @@ for p=1:numBlocks
                         T.encoding_off(g,p) = GetSecs;
             
             elseif phase==3      %delay 1 phase
+                if practice==0
+                    Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+                end
                 drawFixationCross(wPtr,rect);
                 T.delay1_on(g,p) = Screen('Flip',wPtr);
                 
@@ -196,8 +238,11 @@ for p=1:numBlocks
                 T.delay1_off(g,p) = GetSecs;
                 
             elseif phase==4 %interference phase
+                if practice==0
+                    Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+                end
                 Screen('Textsize', wPtr, 34);
-                Screen('Textfont', wPtr, 'Times New Roman');              
+                Screen('Textfont', wPtr, 'Times New Roman');
                     switch pms.shape
                         case 0 %squares
                             switch trial(g,p).setSize
@@ -285,6 +330,9 @@ for p=1:numBlocks
                     end % switch shape
 
             elseif phase==5 %phase delay 2
+                if practice==0
+                    Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+                end
                 drawFixationCross(wPtr,rect);
                 T.delay2_on(g,p) = Screen('Flip',wPtr);
                 
@@ -336,7 +384,7 @@ for p=1:numBlocks
                 
                 T.probe_on(g,p) = GetSecs;
                  if pms.shape==0   
-                    [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p, trial);
+                    [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel(pms,allRects,probeRectX,probeRectY,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p, trial, pattern);
                  elseif pms.shape==1
                     [respX,respY,rtDecision, rtMovement, rtTotal, colortheta,correct]=probecolorwheel_circles(pms,allCircles,probeCircle,practice,trial(g,p).probeColorCorrect,trial(g,p).lureColor,rect,wPtr,g,p, trial); 
                  end
@@ -344,8 +392,12 @@ for p=1:numBlocks
                 [respDif,tau,thetaCorrect,radius,lureDif]=respDev(colortheta,trial(g,p).probeColorCorrect,trial(g,p).lureColor,respX,respY,rect);
                
             elseif phase==7 % feedback about their reward or won reward after trial
+               if practice==0
+                   Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % draw background pattern
+               end
                Screen('Flip',wPtr);  
                if practice~=1 %&& pms.points==1 
+                   Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % Drawing dotted background pattern
                    Screen('Textsize', wPtr, 28);
                    Screen('Textfont', wPtr, 'Times New Roman');                  
                    %if correct==1 % if they were accurate enough
@@ -359,6 +411,7 @@ for p=1:numBlocks
                        %T.feedback_on(g,p) = GetSecs;
                        %WaitSecs(pms.rewardduration);
                    %end
+                   Screen('Drawdots', wPtr, dotPositionMatrix, 20, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],pattern); % Drawing dotted background pattern
                    Screen('Flip',wPtr); 
                    T.feedback_off(g,p) = GetSecs;
                %elseif practice~=1 && pms.points==0
