@@ -45,60 +45,58 @@ U_color         = [0 0 0];
 I_color         = [0 0 0];
 %rect size
 rectOne         = [0 0 100 100];
-%rect size for grey circle
-centerX         = rect(3)/2; %center coordinate X
-centerY         = rect(4)/2; %center coordinate Y
-insideRect      = [rect(1) rect(2) 0.67*rect(4) 0.67*rect(4)]; %the grey oval coordinates
-insideRect      = CenterRectOnPoint(insideRect,centerX,centerY);
-insideRectColor = pms.background;
+
 data            = struct();
 
-%% create variables for background pattern
 
-% Dotted: create position matrix 
-[screenXpixels,screenYpixels]=Screen('WindowSize', wPtr); 
-% Dotted: create base dot coordinates
-dim = 10;
-[x, y] = meshgrid(-dim:1:dim, -dim:1:dim);
-% Dotted: scale grid by screen size(into pixel coordinates) 
-pixelScale = screenYpixels / (dim);
-     x = x .* pixelScale;
-     y = y .* pixelScale;
-% Dotted: calculate the number of dots
-numDots = numel(x);
-% Dotted: create matrix of positions for dots 
-dotPositionMatrix = [reshape(x, 1, numDots); reshape(y, 1, numDots)];
-patternSize = 40;
+% create parameters dotted background pattern
+     [screenXpixels,screenYpixels]=Screen('WindowSize', wPtr); 
+     %create base dot coordinates
+     dim = 10;
+     [x, y] = meshgrid(-dim:1:dim, -dim:1:dim); 
+     %scale grid by screen size
+     pixelScale = screenYpixels / (dim);
+         x = x .* pixelScale;
+         y = y .* pixelScale; 
+     %create matrix of positions for dots 
+     numDots = numel(x);
+     dotPositionMatrix = [reshape(x, 1, numDots); reshape(y, 1, numDots)];
+     patternSize = 30;
 
-% Checkerboard: getcentre coordinates
-[xCenter, yCenter] = RectCenter(rect);
-% Checkerboard: make a base Rect
-dim = 101;
-baseRect = [0 0 dim dim];
-% Checkerboard: make coordinates for grid of squares
-npatches = 9;
-[xPos, yPos] = meshgrid(-npatches:1:npatches, -npatches:1:npatches);
-% Checkerboard: calculate number of squares and reshape matrices of coordinates
-% into a vector
-[s1, s2] = size(xPos);
-numSquares = s1 * s2;
-xPos = reshape(xPos, 1, numSquares);
-yPos = reshape(yPos, 1, numSquares);
-% Checkerboard: scale grid spacing to size of squares and centre
-xPosCenter = xPos .* dim + xCenter;
-yPosCenter = yPos .* dim + yCenter;
-% Checkerboard: set colors of squares
-squareColors = [255 200; 200 255];
-bwColors = repmat(squareColors, (npatches+1), (npatches+1));
-bwColors = bwColors(1:end-1, 1:end-1);
-bwColors = reshape(bwColors, 1, numSquares);
-bwColors = repmat(bwColors, 3, 1);
-% Checkerboard: make rectangle coordinates
-rectCenter = nan(4, 3);
-for i = 1:numSquares
-    rectCenter(:, i) = CenterRectOnPointd(baseRect,...
-        xPosCenter(i), yPosCenter(i));
-end
+% create parameters checkerboard background pattern
+     [xCenter, yCenter] = RectCenter(rect);
+     %creat base rectangle
+     dim = 101;
+     baseRect = [0 0 dim dim]; 
+     %make coordinates for grid of squares
+     npatches = 9;
+     [xPos, yPos] = meshgrid(-npatches:1:npatches, -npatches:1:npatches); 
+     %reshape matrices of coordinates into vector
+     [s1, s2] = size(xPos);
+     numSquares = s1 * s2;
+       xPos = reshape(xPos, 1, numSquares); 
+       yPos = reshape(yPos, 1, numSquares); 
+     %scale grid spacing to size of squares and centre
+     xPosCenter = xPos .* dim + xCenter;
+     yPosCenter = yPos .* dim + yCenter; 
+     %set colors of squares
+     squareColors = [255 200; 200 255];
+     bwColors = repmat(squareColors, (npatches+1), (npatches+1));
+     bwColors = bwColors(1:end-1, 1:end-1);
+     bwColors = reshape(bwColors, 1, numSquares);
+     bwColors = repmat(bwColors, 3, 1); 
+     %make rectangle coordinates
+     rectCenter = nan(4, 3); 
+     for i = 1:numSquares 
+        rectCenter(:, i) = CenterRectOnPointd(baseRect,...
+            xPosCenter(i), yPosCenter(i));
+     end
+
+% rect size for grey circle
+    outsideRect     = [rect(1) rect(2) 0.9*rect(4) 0.9*rect(4)]; %the grey circle coordinates
+    outsideRect     = CenterRectOnPoint(outsideRect,pms.xCenter, pms.yCenter);
+    insideRectColor = pms.background;
+    
 
 %% loop around trials and blocks for stimulus presentation
 
@@ -113,8 +111,8 @@ for p=1:numBlocks
     if practice==0
         DrawFormattedText(wPtr, sprintf('Good luck with the memory task!\n\nPlease keep your hand on the mouse.'), 'center', 'center',[0 0 0]);
         Screen('Flip',wPtr);
-        WaitSecs(2);
-     % determine reward cue
+        WaitSecs(2);  
+    % determine reward cue
         if rewardContext == 0
             blockOffer = '10';
         elseif rewardContext == 1
@@ -125,19 +123,22 @@ for p=1:numBlocks
         elseif rewardContext==1
             Screen('FillRect', wPtr, bwColors, rectCenter);
         end
-        Screen('FillOval', wPtr,insideRectColor,insideRect); %ring created with grey circle
-        Screen('Textsize', wPtr, 34);
+        Screen('FillOval', wPtr,insideRectColor,outsideRect); %ring created with grey circle
+        Screen('Textsize', wPtr, 80);
         Screen('Textfont', wPtr, 'Times New Roman');
         DrawFormattedText(wPtr, blockOffer, 'center', 'center');  %draw reward cue
+        Screen('Textsize', wPtr, 34);
+        DrawFormattedText(wPtr, sprintf('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Press space to continue'), 'center', 'center',[0 0 0]);
         T.offer_on(p,1) = Screen('Flip',wPtr);
-        WaitSecs(pms.offerDuration);      
+        KbStrokeWait;
+        WaitSecs(pms.offerDuration); 
         WaitSecs(randn(1)*0.1); %extra jittered waiting time during which reward is shown 
         if rewardContext==0
             Screen('Drawdots', wPtr, dotPositionMatrix, patternSize, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],2); % draw background pattern
         elseif rewardContext==1
             Screen('FillRect', wPtr, bwColors, rectCenter);
         end
-        Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+        Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
         T.offer_off(p,1) = Screen('Flip',wPtr);
         WaitSecs(pms.offerdelay); 
     end
@@ -148,7 +149,7 @@ for p=1:numBlocks
         elseif rewardContext==1
             Screen('FillRect', wPtr, bwColors, rectCenter);
         end
-        Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+        Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
     end
     Screen('Flip',wPtr);
     WaitSecs(1.5);
@@ -175,7 +176,7 @@ for p=1:numBlocks
                         elseif rewardContext==1
                             Screen('FillRect', wPtr, bwColors, rectCenter);
                         end
-                        Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                        Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                     end
                     drawFixationCross(wPtr,rect);
                     T.offer_on(g,p) = Screen('Flip',wPtr);
@@ -187,7 +188,7 @@ for p=1:numBlocks
                         elseif rewardContext==1
                             Screen('FillRect', wPtr, bwColors, rectCenter);
                         end
-                        Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                        Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                     end
                     T.offer_off(g,p) = Screen('Flip',wPtr);
                     WaitSecs(pms.offerdelay); 
@@ -201,7 +202,7 @@ for p=1:numBlocks
                     elseif rewardContext==1
                          Screen('FillRect', wPtr, bwColors, rectCenter);
                     end
-                    Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                    Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                 end
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
@@ -287,7 +288,7 @@ for p=1:numBlocks
                     elseif rewardContext==1
                         Screen('FillRect', wPtr, bwColors, rectCenter);
                     end
-                    Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                    Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                 end
                 drawFixationCross(wPtr,rect);
                 T.delay1_on(g,p) = Screen('Flip',wPtr);
@@ -313,7 +314,7 @@ for p=1:numBlocks
                     elseif rewardContext==1
                         Screen('FillRect', wPtr, bwColors, rectCenter);
                     end
-                    Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                    Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                 end
                 Screen('Textsize', wPtr, 34);
                 Screen('Textfont', wPtr, 'Times New Roman');
@@ -410,7 +411,7 @@ for p=1:numBlocks
                     elseif rewardContext==1
                         Screen('FillRect', wPtr, bwColors, rectCenter);
                     end
-                    Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                    Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                 end
                 drawFixationCross(wPtr,rect);
                 T.delay2_on(g,p) = Screen('Flip',wPtr);
@@ -477,7 +478,7 @@ for p=1:numBlocks
                    elseif rewardContext==1
                        Screen('FillRect', wPtr, bwColors, rectCenter);
                    end
-                   Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                   Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                end
                Screen('Flip',wPtr);  
                if practice~=1 %&& pms.points==1 
@@ -486,7 +487,7 @@ for p=1:numBlocks
                    elseif rewardContext==1
                        Screen('FillRect', wPtr, bwColors, rectCenter);
                    end
-                   Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                   Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                    Screen('Textsize', wPtr, 28);
                    Screen('Textfont', wPtr, 'Times New Roman');                  
                    %if correct==1 % if they were accurate enough
@@ -505,7 +506,7 @@ for p=1:numBlocks
                    elseif rewardContext==1
                        Screen('FillRect', wPtr, bwColors, rectCenter);
                    end
-                   Screen('FillOval',wPtr,insideRectColor,insideRect); %ring created with grey circle
+                   Screen('FillOval',wPtr,insideRectColor,outsideRect); %ring created with grey circle
                    Screen('Flip',wPtr); 
                    T.feedback_off(g,p) = GetSecs;
                %elseif practice~=1 && pms.points==0
@@ -542,7 +543,7 @@ for p=1:numBlocks
                 data(g,p).colors = trial(g,p).colors;
                 save(fullfile(pms.subdirICW,dataFilenamePrelim),'data', 'T');
                 if practice==0
-                    data(g,p).offer=trial(g,p).offer;
+                    data(g,p).offer=blockOffer;
                     %if correct==1 && pms.points==1 %if they did better than a maximum deviance
                         data(g,p).reward=trial(g,p).offer;
                     %else                                      
@@ -583,11 +584,16 @@ for p=1:numBlocks
             end %if phase == 1
         end % for phase 1:7
         
+        
         % break after each block 
         if practice==0           
             if g==pms.numTrials % last trial of block
+                WaitSecs(2);
+                [position, RT, answer] = slideScaleQuestion(wPtr, rect, 'device', 'mouse', 'scalaposition', 0.9, 'startposition', 'right', 'displayposition', true); % choice questions
+                WaitSecs(1);
                 if p==numBlocks
                     DrawFormattedText(wPtr,sprintf('End of the experiment. Please press space.'),'center','center',[0 0 0]);
+                    KbStrokeWait;
                 else 
                     getInstructions(4,pms,rect,wPtr);
                 end
