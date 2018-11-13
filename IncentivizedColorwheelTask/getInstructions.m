@@ -106,12 +106,13 @@ elseif level==3 %&& pms.blockCB==0
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
     Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
     Instruction{3}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break and continue with the task when you are ready.',pms.numBlocks);
-    Instruction{4}='On all trials you can win points.\n\n The number of points you can win on a trial depends on the block of trials.';
-    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new block you will see how many points per trial you can win on that block.';
-    imgReward=importdata('Rewardcue.png');
-    imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{6}= 'At the end, you will receive a bonus proportional to the total number of points you won during the experiment.';
-    Instruction{7} = 'You will now start the task.\n\nPlease look at the screen while doing the task.'; 
+    Instruction{4}='For completing each trial you will receive points.\n\n The number of points you receive for completing a trial depends on the block of trials.';
+    Instruction{5}='\n\n\n\n\n\n\n\n\n\n Before every new block you will see how many points per trial you can receive on that block.';
+    Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n\n The background pattern during the block will also show you how many points you can receive per trial.';
+    %imgReward=importdata('Rewardcue.png');
+    %imageReward=Screen('MakeTexture',wPtr,imgReward);
+    Instruction{7}= 'At the end, you will receive a bonus proportional to the total number of points you received during the experiment.';
+    Instruction{8} = 'You will now start the task.\n\nPlease look at the screen while doing the task.'; 
     %Instruction{4} = 'You will now start the task.\n\nPlease look at the screen while doing the task.';    
     
 %elseif level==3 && pms.blockCB==1 
@@ -150,6 +151,44 @@ elseif level==5
 
 end %level
 
+
+
+% create parameters checkerboard background pattern
+     [xCenter, yCenter] = RectCenter(rect);
+     %creat base rectangle
+     dim = 101;
+     baseRect = [0 0 dim dim]; 
+     %make coordinates for grid of squares
+     npatches = 9;
+     [xPos, yPos] = meshgrid(-npatches:1:npatches, -npatches:1:npatches); 
+     %reshape matrices of coordinates into vector
+     [s1, s2] = size(xPos);
+     numSquares = s1 * s2;
+       xPos = reshape(xPos, 1, numSquares); 
+       yPos = reshape(yPos, 1, numSquares); 
+     %scale grid spacing to size of squares and centre
+     xPosCenter = xPos .* dim + xCenter;
+     yPosCenter = yPos .* dim + yCenter; 
+     %set colors of squares
+     squareColors = [255 200; 200 255];
+     bwColors = repmat(squareColors, (npatches+1), (npatches+1));
+     bwColors = bwColors(1:end-1, 1:end-1);
+     bwColors = reshape(bwColors, 1, numSquares);
+     bwColors = repmat(bwColors, 3, 1); 
+     %make rectangle coordinates
+     rectCenter = nan(4, 3); 
+     for i = 1:numSquares 
+        rectCenter(:, i) = CenterRectOnPointd(baseRect,...
+            xPosCenter(i), yPosCenter(i));
+     end
+
+% rect size for grey circle
+    outsideRect     = [rect(1) rect(2) 0.9*rect(4) 0.9*rect(4)]; %the grey circle coordinates
+    outsideRect     = CenterRectOnPoint(outsideRect,pms.xCenter, pms.yCenter);
+    insideRectColor = pms.background;
+
+
+
 counter=1;
 
 for i=1:100 
@@ -161,7 +200,7 @@ for i=1:100
         counter=counter+back;
     end
     
-    if level==2
+   if level==2
         % Exceptions for figures;
         switch counter
             case 5
@@ -178,18 +217,26 @@ for i=1:100
                 Screen('DrawTexture', wPtr, imageUpdate);
             case 19
                 Screen('DrawTexture',wPtr,imageProbe);
-        end
+         end
         if counter==12
             DrawFormattedText(wPtr,Instruction{counter},'center',rect(4)*0.4,pms.textColor,pms.wrapAt,[],[],pms.spacing);
         else
             DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
         end
-    else 
-        if level==3 && counter==5
-            Screen('Textsize', wPtr, 34);
+   else
+       if level==3 && counter==5
+            Screen('FillRect', wPtr, bwColors, rectCenter);
+            Screen('FillOval', wPtr,insideRectColor,outsideRect);
+            Screen('Textsize', wPtr, 80);
             Screen('Textfont', wPtr, 'Times New Roman');
             DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
-        end
+       elseif level==3 && counter==6
+            Screen('FillRect', wPtr, bwColors, rectCenter);
+            Screen('FillOval', wPtr,insideRectColor,outsideRect);
+            Screen('Textsize', wPtr, 80);
+            Screen('Textfont', wPtr, 'Times New Roman');
+            DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
+       end
         %if level==3 && pms.blockCB==1 && counter==5 
              %Screen('Textsize', wPtr, 34);
              %Screen('Textfont', wPtr, 'Times New Roman');
@@ -232,6 +279,7 @@ for i=1:100
         WaitSecs(2);
         break; 
     elseif level==5 && counter==length(Instruction)
+        GetClicks();
         WaitSecs(2);
         break;    
     elseif counter==length(Instruction)
@@ -256,7 +304,7 @@ for i=1:100
             end
         end %level
     end %while responded==0
-end 
+end %for i=1:100
 RestrictKeysForKbCheck([]);
 
 end 
