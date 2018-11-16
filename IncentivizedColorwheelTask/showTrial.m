@@ -589,11 +589,12 @@ for p=1:numBlocks
         if practice==0           
             if g==pms.numTrials % last trial of block
                 WaitSecs(2);
-                [position, RT, answer] = slideScaleQuestion(wPtr, rect, 'device', 'mouse', 'scalaposition', 0.9, 'startposition', 'right', 'displayposition', true); % choice questions
+                [questiondata] = slideScaleQuestion(wPtr, rect, 'device', 'mouse', 'scalaposition', 0.9, 'startposition', 'center', 'displayposition', true); % choice questions
                 WaitSecs(1);
                 if p==numBlocks
                     DrawFormattedText(wPtr,sprintf('End of the experiment. Please press space.'),'center','center',[0 0 0]);
-                    KbStrokeWait;
+                    Screen('Flip',wPtr);
+                    KbWait;
                 else 
                     getInstructions(4,pms,rect,wPtr);
                 end
