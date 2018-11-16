@@ -106,12 +106,12 @@ elseif level==3 %&& pms.blockCB==0
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
     Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
     Instruction{3}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break and continue with the task when you are ready.',pms.numBlocks);
-    Instruction{4}='For completing each trial you will receive points.\n\n The number of points you receive for completing a trial depends on the block of trials.';
-    Instruction{5}='\n\n\n\n\n\n\n\n\n\n Before every new block you will see how many points per trial you can receive on that block.';
-    Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n\n The background pattern during the block will also show you how many points you can receive per trial.';
+    Instruction{4}='On every trial you gain points.\n\n On some blocks you will gain more points and on other blocks less points on a trial. \n\n You can not influence how many points you gain.';
+    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n Before every trial you will see how many points you gain.\n\n If you see a checkerboard background, you will gain ... per trial.';
+    Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n If you see a dotted background, you will gain ... per trial.';
     %imgReward=importdata('Rewardcue.png');
     %imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{7}= 'At the end, you will receive a bonus proportional to the total number of points you received during the experiment.';
+    Instruction{7}= 'At the end of the experiment, your monetary payoff will be increased proportional to the number of points that were accumulated.';
     Instruction{8} = 'You will now start the task.\n\nPlease look at the screen while doing the task.'; 
     %Instruction{4} = 'You will now start the task.\n\nPlease look at the screen while doing the task.';    
     
@@ -129,7 +129,7 @@ elseif level==3 %&& pms.blockCB==0
     
     
 elseif level==4 %&& pms.blockCB==0
-    Instruction{1} = 'You finished the first block of the task!\n\n Press the right arrow to continue with the next block.';
+    Instruction{1} = 'You finished this block of the task!\n\n Press the right arrow to continue with the next block.';
     Instruction{2}= 'Before the start of the next block, you will see how many points you can win per trial.';
     Instruction{3}= 'Good luck!';
     %Instruction{2}='On most trials in this block you can win points.';
@@ -152,6 +152,19 @@ elseif level==5
 end %level
 
 
+% create parameters dotted background pattern
+     [screenXpixels,screenYpixels]=Screen('WindowSize', wPtr); 
+     %create base dot coordinates
+     dim = 10;
+     [x, y] = meshgrid(-dim:1:dim, -dim:1:dim); 
+     %scale grid by screen size
+     pixelScale = screenYpixels / (dim);
+         x = x .* pixelScale;
+         y = y .* pixelScale; 
+     %create matrix of positions for dots 
+     numDots = numel(x);
+     dotPositionMatrix = [reshape(x, 1, numDots); reshape(y, 1, numDots)];
+     patternSize = 30;
 
 % create parameters checkerboard background pattern
      [xCenter, yCenter] = RectCenter(rect);
@@ -181,11 +194,6 @@ end %level
         rectCenter(:, i) = CenterRectOnPointd(baseRect,...
             xPosCenter(i), yPosCenter(i));
      end
-
-% rect size for grey circle
-    outsideRect     = [rect(1) rect(2) 0.9*rect(4) 0.9*rect(4)]; %the grey circle coordinates
-    outsideRect     = CenterRectOnPoint(outsideRect,pms.xCenter, pms.yCenter);
-    insideRectColor = pms.background;
 
 
 
@@ -226,13 +234,11 @@ for i=1:100
    else
        if level==3 && counter==5
             Screen('FillRect', wPtr, bwColors, rectCenter);
-            Screen('FillOval', wPtr,insideRectColor,outsideRect);
             Screen('Textsize', wPtr, 80);
             Screen('Textfont', wPtr, 'Times New Roman');
             DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
        elseif level==3 && counter==6
-            Screen('FillRect', wPtr, bwColors, rectCenter);
-            Screen('FillOval', wPtr,insideRectColor,outsideRect);
+            Screen('Drawdots', wPtr, dotPositionMatrix, patternSize, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],2);
             Screen('Textsize', wPtr, 80);
             Screen('Textfont', wPtr, 'Times New Roman');
             DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue

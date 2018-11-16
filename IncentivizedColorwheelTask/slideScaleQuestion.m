@@ -1,4 +1,4 @@
-function [position, RT, answer] = slideScaleQuestion(screenPointer, rect, varargin)
+function [questiondata] = slideScaleQuestion(screenPointer, rect, varargin)
 %SLIDESCALE This funtion draws a slide scale on a PSYCHTOOLOX 3 screen and returns the
 % position of the slider spaced between -100 and 100 as well as the rection time and if an answer was given.
 %
@@ -41,9 +41,6 @@ function [position, RT, answer] = slideScaleQuestion(screenPointer, rect, vararg
 %   e-mail: alexander.quent@rub.de
 %
 %% Parse input arguments
-question  = 'How much money would you give up to not do \n\n the Update trials with one coloured rectangle again?';
-endPoints = {'0.50 euros', '2.50 euros'}; % left and right endpoints of the scale 
-
 % Default values
 center        = round([rect(3) rect(4)]/2);
 lineLength    = 10;
@@ -51,7 +48,7 @@ width         = 3;
 scalaLength   = 0.9;
 scalaPosition = 0.8;
 newscalaPosition = scalaPosition-0.2;
-sliderColor    = [255 255 255];
+sliderColor   = [255 255 255];
 scaleColor    = [0 0 0];
 device        = 'mouse';
 responseKey   = KbName('return');
@@ -59,6 +56,14 @@ GetMouseIndices;
 startPosition = 'center';
 displayPos    = true;  
 
+question{1} = 'How much money would you pay to avoid doing \n\n the Update trials with one coloured rectangle again?';
+question{2} = 'How much money would you pay to avoid doing \n\n the Update trials with four coloured rectangle again?';
+question{3} = 'How much money would you pay to avoid doing \n\n the Ignore trials with one coloured rectangle again?';
+question{4} = 'How much money would you pay to avoid doing \n\n the Ignore trials with four coloured rectangle again?';
+questionOrder = Shuffle(1:4);
+endPoints = {'0.50 euros', '2.50 euros'}; % left and right endpoints of the scale 
+
+questiondata = struct();
 
 i = 1;
 while(i<=length(varargin))
@@ -142,7 +147,14 @@ textBounds = [Screen('TextBounds', screenPointer, endPoints{1}); Screen('TextBou
 scaleRange        = round(rect(3)*(1-scalaLength)):round(rect(3)*scalaLength); % Calculates the range of the scale
 scaleRangeShifted = round((scaleRange)-mean(scaleRange));                      % Shift the range of scale so it is symmetrical around zero
 
+
+%% Loop over questions
+for i = questionOrder
 %% Loop for scale loop
+
+Screen('Flip',screenPointer);  
+WaitSecs(1);
+
 t0                         = GetSecs;
 answer                     = 0;
 while answer == 0
@@ -156,11 +168,12 @@ while answer == 0
     % Drawing the question as text
     Screen('Textsize', screenPointer, 34);
     Screen('Textfont', screenPointer, 'Times New Roman');
-    DrawFormattedText(screenPointer, question, 'center', rect(4)*0.2); 
-    
+    DrawFormattedText(screenPointer, question{i}, 'center', rect(4)*0.2); 
+
+      
     % Drawing the end points of the scala as text
-    DrawFormattedText(screenPointer, endPoints{1}, leftTick(1, 1) - textBounds(1, 3)/2,  rect(4)*(newscalaPosition-0.1)+40, [],[],[],[],[],[],[]); % Left point
-    DrawFormattedText(screenPointer, endPoints{2}, rightTick(1, 1) - textBounds(2, 3)/2,  rect(4)*(newscalaPosition-0.1)+40, [],[],[],[],[],[],[]); % Right point
+    DrawFormattedText(screenPointer, endPoints{1}, leftTick(1, 1) - textBounds(1, 3)/2,  rect(4)*(newscalaPosition-0.2)+40, [],[],[],[],[],[],[]); % Left point
+    DrawFormattedText(screenPointer, endPoints{2}, rightTick(1, 1) - textBounds(2, 3)/2, rect(4)*(newscalaPosition-0.2)+40, [],[],[],[],[],[],[]); % Right point
     
     % Drawing the scala
     Screen('DrawLine', screenPointer, scaleColor, midTick(1), midTick(2), midTick(3), midTick(4), width);         % Mid tick
@@ -197,11 +210,22 @@ while answer == 0
     else
         error('Unknown device');
     end
-    
+       
 end
 %% Wating that all keys are released and delete texture
 KbReleaseWait; %Keyboard
 KbReleaseWait(1); %Mouse
+
+WaitSecs(0.5);
 %% Calculating the rection time and the position
-RT                = (secs - t0)*1000;                                          % converting RT to millisecond
+RT                = (secs - t0)*1000;   % converting RT to millisecond
+
+questiondata.RT(1,i) = RT;
+questiondata.position(1,i) = position;
+questiondata.answer(1,i) = answer;
+questiondata.questions(1,i) = {question{i}};
+questiondata.questionOrder(1,i) = {questionOrder};
+
+end %for i=1:4
+
 end
