@@ -13,15 +13,24 @@ rng('shuffle');
 subNo= input('Subject ID: '); %request user input: subject ID
 checked=input(sprintf('participant number is %d',subNo)); %returns answer
 
-% ask for counterbalancing: 0 is no reward, reward context, 1 is reward, no
+% ask for counterbalancing reward: 0 is no reward, reward context, 1 is reward, no
 % reward context
-pms.blockCB = input('\n\nWhich block first?\n\nPress 0 for No Reward\nPress 1 for Rewards:   '); %request user input: block order
+pms.blockCB = input('\n\nWhich block first?\n\nPress 0 for Low reward context\nPress 1 for High reward context:   '); %request user input: block order
 if pms.blockCB == 0
-    firstBlock = 'No rewards';
+    firstBlock = 'Low';
 elseif pms.blockCB == 1
-    firstBlock = 'Rewards';
+    firstBlock = 'High';
 end 
 checked=input(sprintf('Block order: first %s',firstBlock)); %returns answer
+
+% ask for counterbalancing pattern: 1 is dotted, 2 is checkerboard
+pms.patternCB = input('\n\nWhich pattern for the Low reward context?\n\nPress 1 for Dotted\nPress 2 for Checkerboard:   '); %request user input: pattern association
+if pms.patternCB == 1
+    patternLow = 'Dotted';
+elseif pms.patternCB == 2
+    patternLow = 'Checkerboard';
+end 
+checked=input(sprintf('Pattern association: Low reward with %s',patternLow)); %returns answer
 
 % ask if fast or slow paradigm
 pms.slow = input('\n\nFast or slow paradigm?\n\nPress 0 for fast\nPress 1 for slow:   '); 
@@ -105,7 +114,8 @@ cd(pms.inccwdir);
 disp('TASK: Color Wheel');          % display which task starts.
 WaitSecs(2); %show message for 2 sec
 if pms.instructions==1
-    [dataPractice,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task
+    [dataPractice,~,~,~,pms] = BeautifulColorwheel(subNo,1,pms); %practice=1: color vision task and practicing task without reward cue and pattern
+    [dataPractice,~,~,~,pms] = BeautifulColorwheel(subNo,2,pms); %practice=2: practicing task with reward cue and pattern
     BeautifulColorwheel(subNo,0,pms,dataPractice); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
 else
     BeautifulColorwheel(subNo,0,pms); %practice=0: 50/50 task + instructions majority update/ignore blocks + task
