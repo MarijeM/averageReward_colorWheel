@@ -24,13 +24,29 @@ addpath(fullfile(pms.inccwdir,'Stimuli_structs'));
 
 % loop over block and counterbalance block order for 4 blocks.
 if pms.blockCB == 0
-    blockOrder = [1 2 3 4]; % Low1, High2, High3, Low4
+        pms.blockOrder = [1 2 3 4 5 6 7 8]; % Low, High, High, Low, High, Low, Low, High; [1 2 2 1 2 1 1 2]; 
+        pms.blockOrder = pms.blockOrder(1:pms.numBlocks); 
 elseif pms.blockCB == 1
-    blockOrder = [2 1 4 3]; % High2, Low1, Low4, High3
+        pms.blockOrder = [2 1 4 3 6 5 8 7]; % High, Low, Low, High, Low, High, High, Low; [2 1 1 2 1 2 2 1]; 
+        pms.blockOrder = pms.blockOrder(1:pms.numBlocks);
 end
 
+if pms.numTrials<16
+    numTrials = 16;
+else
+    numTrials = pms.numTrials;
+end
+
+%if pms.blockCB == 0
+        %pms.blockOrder = [1 2 2 1 1 2 2 1]; % Low=1, High=2
+        %pms.blockOrder = pms.blockOrder(1:pms.numBlocks);
+%elseif pms.blockCB == 1
+        %pms.blockOrder = [2 1 1 2 2 1 1 2]; % High=2, Low=1
+        %pms.blockOrder = pms.blockOrder(1:pms.numBlocks);
+%end
+
 trials = [];
-trialsPerSetsize = round(pms.numTrials/length(pms.maxSetsize));
+trialsPerSetsize = round(numTrials/length(pms.maxSetsize));   %round(pms.numTrials/length(pms.maxSetsize));
 if pms.shape==0 %squares
     for ss = pms.maxSetsize
         filename = sprintf('Stimuli_%d.mat', ss);        
@@ -61,14 +77,16 @@ end
 
 [~,pie]=sampledColorMatrix(pms);
 
-for b = blockOrder
-    for j=1:pms.numTrials %create new fields in trial-struct
+%%
+
+for b = pms.blockOrder
+    for j=1:numTrials            %j=1:pms.numTrials   %create new fields in trial-struct
         trials(j,1).colors=[];
         trials(j,1).locations=[];
         trials(j,1).probeColorCorrect=[];
-        trials(j,1).block=b;
-    end
-
+        trials(j,1).blockcontext=[];
+        trials(j,1).offer=[];
+        
 %% sample colors
     for x=1:size(trials,1) %numtrialss (total)
         for n=1:numel(trials(x,1).cols) %1: max number of colors per Stimuli (colors per Stimuli are setSize*2)
@@ -132,15 +150,23 @@ for b = blockOrder
                     trials(x,1).probeColorCorrect=trials(x,1).colors(trials(x,1).setSize+1,:); 
                     trials(x,1).lureColor=trials(x,1).colors(1,:);
               end
+              
 
-
-    %% assign rewards on offer
-        if b==1 || b==4 % low reward context
-            trials(x,1).offer = 10;
-        elseif b==2 || b==3 % high reward context
-            trials(x,1).offer = 40;
-        end
+    %% sample reward context
+    
+        if b==1 || b==4 || b==6 || b==7
+            trials(x,1).blockcontext= 'Low';
+        elseif b==2 || b==3 || b==5 || b==8
+            trials(x,1).blockcontext= 'High';
+        end 
         
+    %% assign rewards on offer
+        if b==1 || b==4 || b==6 || b==7 % low reward context
+            trials(x,1).offer = 10;
+        elseif b==2 || b==3 || b==5 || b==8 % high reward context
+            trials(x,1).offer = 50;
+        end
+               
         %if b==1 && pms.blockCB==0 || b==2 && pms.blockCB==1
             %trials(x,1).offer = 0;
         %elseif b==2 && pms.blockCB==0 || b==1 && pms.blockCB==1
@@ -150,6 +176,7 @@ for b = blockOrder
                %trials(x,1).offer = 0; 
             %end
         %end 
+
     end %for x=1:size(trials,1)
 
     
@@ -241,6 +268,10 @@ for b = blockOrder
     
     %% combine blocks  
     trial = [trial, trials];
+    
+    if pms.numTrials>16
+          trial = trial(1:pms.numTrials,:);
+    end
 end %for b = blockOrder
 end %function
 

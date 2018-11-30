@@ -1,10 +1,10 @@
-function [questiondata] = slideScaleQuestion(screenPointer, rect, varargin)
+function [questdata] = slideScaleQuestion(wPtr, rect, pms, rewardContext, varargin)
 %SLIDESCALE This funtion draws a slide scale on a PSYCHTOOLOX 3 screen and returns the
-% position of the slider spaced between -100 and 100 as well as the rection time and if an answer was given.
+% position of the slider spaced between 0.50-2.50, the reaction time, the asked questions, and question order.
 %
-%   Usage: [position, secs] = slideScale(ScreenPointer, rect, varargin)
+%   Usage: [questdata] = slideScale(wPtr, rect, varargin)
 %   Mandatory input:
-%    ScreenPointer  -> Pointer to the window.
+%    wPtr           -> Pointer to the window/screen.
 %    rect           -> Double contatining the screen size.
 %                      Obtained with [myScreen, rect] = Screen('OpenWindow', 0);
 %
@@ -47,7 +47,7 @@ lineLength    = 10;
 width         = 3;
 scalaLength   = 0.9;
 scalaPosition = 0.8;
-newscalaPosition = scalaPosition-0.2;
+newscalaPosition = scalaPosition-0.1;
 sliderColor   = [255 255 255];
 scaleColor    = [0 0 0];
 device        = 'mouse';
@@ -63,7 +63,7 @@ question{4} = 'How much money would you pay to avoid doing \n\n the Ignore trial
 questionOrder = Shuffle(1:4);
 endPoints = {'0.50 euros', '2.50 euros'}; % left and right endpoints of the scale 
 
-questiondata = struct();
+questdata = struct();
 
 i = 1;
 while(i<=length(varargin))
@@ -135,54 +135,130 @@ elseif strcmp(startPosition, 'left')
 else
     error('Only right, center and left are possible start positions');
 end
-SetMouse(round(x), round(rect(4)*newscalaPosition), screenPointer, 1);
+SetMouse(round(x), round(rect(4)*newscalaPosition), wPtr, 1);
 midTick    = [center(1) rect(4)*newscalaPosition - lineLength - 5 center(1) rect(4)*newscalaPosition  + lineLength + 5];
 leftTick   = [rect(3)*(1-scalaLength) rect(4)*newscalaPosition - lineLength rect(3)*(1-scalaLength) rect(4)*newscalaPosition  + lineLength];
 rightTick  = [rect(3)*scalaLength rect(4)*newscalaPosition - lineLength rect(3)*scalaLength rect(4)*newscalaPosition  + lineLength];
 horzLine   = [rect(3)*scalaLength rect(4)*newscalaPosition rect(3)*(1-scalaLength) rect(4)*newscalaPosition];
-textBounds = [Screen('TextBounds', screenPointer, endPoints{1}); Screen('TextBounds', screenPointer, endPoints{2})];
+textBounds = [Screen('TextBounds', wPtr, endPoints{1}); Screen('TextBounds', wPtr, endPoints{2})];
 
 % Calculate the range of the scale, which will be need to calculate the
 % position
 scaleRange        = round(rect(3)*(1-scalaLength)):round(rect(3)*scalaLength); % Calculates the range of the scale
 scaleRangeShifted = round((scaleRange)-mean(scaleRange));                      % Shift the range of scale so it is symmetrical around zero
 
+%% Background pattern
 
+% create parameters dotted background pattern
+     [screenXpixels,screenYpixels]=Screen('WindowSize', wPtr); 
+     %create base dot coordinates
+     dim = 10;
+     [x, y] = meshgrid(-dim:1:dim, -dim:1:dim); 
+     %scale grid by screen size
+     pixelScale = screenYpixels / (dim);
+         x = x .* pixelScale;
+         y = y .* pixelScale; 
+     %create matrix of positions for dots 
+     numDots = numel(x);
+     dotPositionMatrix = [reshape(x, 1, numDots); reshape(y, 1, numDots)];
+
+% create parameters checkerboard background pattern
+     [xCenter, yCenter] = RectCenter(rect);
+     %creat base rectangle
+     dim = 101;
+     baseRect = [0 0 dim dim]; 
+     %make coordinates for grid of squares
+     npatches = 9;
+     [xPos, yPos] = meshgrid(-npatches:1:npatches, -npatches:1:npatches); 
+     %reshape matrices of coordinates into vector
+     [s1, s2] = size(xPos);
+     numSquares = s1 * s2;
+       xPos = reshape(xPos, 1, numSquares); 
+       yPos = reshape(yPos, 1, numSquares); 
+     %scale grid spacing to size of squares and centre
+     xPosCenter = xPos .* dim + xCenter;
+     yPosCenter = yPos .* dim + yCenter; 
+     %set colors of squares
+     squareColors = [255 200; 200 255];
+     bwColors = repmat(squareColors, (npatches+1), (npatches+1));
+     bwColors = bwColors(1:end-1, 1:end-1);
+     bwColors = reshape(bwColors, 1, numSquares);
+     bwColors = repmat(bwColors, 3, 1); 
+     %make rectangle coordinates
+     rectCenter = nan(4, 3); 
+     for i = 1:numSquares 
+        rectCenter(:, i) = CenterRectOnPointd(baseRect,...
+            xPosCenter(i), yPosCenter(i));
+     end
+     
+% gray rectangle
+    grayRect     = [rect(1) rect(2) 1.75*rect(4) 0.25*rect(4)]; %the grey circle coordinates
+    grayRect     = CenterRectOnPoint(grayRect, pms.xCenter, 1.3*pms.yCenter); %pms.xCenter, pms.yCenter);
+     
 %% Loop over questions
 for i = questionOrder
 %% Loop for scale loop
 
-Screen('Flip',screenPointer);  
+     if pms.patternCB==1   %counterbalancing pattern
+        if rewardContext==0
+            Screen('Drawdots', wPtr, dotPositionMatrix, pms.patternSize, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],2); 
+        elseif rewardContext==1
+            Screen('FillRect', wPtr, bwColors, rectCenter);
+        end
+     elseif pms.patternCB==2
+        if rewardContext==0
+            Screen('FillRect', wPtr, bwColors, rectCenter);
+        elseif rewardContext==1
+            Screen('Drawdots', wPtr, dotPositionMatrix, pms.patternSize, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],2);
+        end
+     end
+Screen('Flip',wPtr);  
 WaitSecs(1);
 
 t0                         = GetSecs;
 answer                     = 0;
 while answer == 0
-    [x,y,buttons,focus,valuators,valinfo] = GetMouse(screenPointer, 1);
+    [x,y,buttons,focus,valuators,valinfo] = GetMouse(wPtr, 1);
     if x > rect(3)*scalaLength
         x = rect(3)*scalaLength;
     elseif x < rect(3)*(1-scalaLength)
         x = rect(3)*(1-scalaLength);
     end
     
+    % Drawing the background pattern
+     if pms.patternCB==1   %counterbalancing pattern
+        if rewardContext==0
+            Screen('Drawdots', wPtr, dotPositionMatrix, pms.patternSize, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],2); 
+        elseif rewardContext==1
+            Screen('FillRect', wPtr, bwColors, rectCenter);
+        end
+     elseif pms.patternCB==2
+        if rewardContext==0
+            Screen('FillRect', wPtr, bwColors, rectCenter);
+        elseif rewardContext==1
+            Screen('Drawdots', wPtr, dotPositionMatrix, pms.patternSize, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],2);
+        end
+     end
+    Screen('FillRect', wPtr, pms.background, grayRect);
+                    
     % Drawing the question as text
-    Screen('Textsize', screenPointer, 34);
-    Screen('Textfont', screenPointer, 'Times New Roman');
-    DrawFormattedText(screenPointer, question{i}, 'center', rect(4)*0.2); 
-
+    Screen('Textsize', wPtr, 34);
+    Screen('Textfont', wPtr, 'Times New Roman');
+    DrawFormattedText(wPtr, question{i}, 'center', rect(4)*0.2); 
+    DrawFormattedText(wPtr, 'Use the mouse to respond.', 'center', rect(4)*0.4);
       
-    % Drawing the end points of the scala as text
-    DrawFormattedText(screenPointer, endPoints{1}, leftTick(1, 1) - textBounds(1, 3)/2,  rect(4)*(newscalaPosition-0.2)+40, [],[],[],[],[],[],[]); % Left point
-    DrawFormattedText(screenPointer, endPoints{2}, rightTick(1, 1) - textBounds(2, 3)/2, rect(4)*(newscalaPosition-0.2)+40, [],[],[],[],[],[],[]); % Right point
+    % Drawing the end points of the scale as text
+    DrawFormattedText(wPtr, endPoints{1}, leftTick(1, 1) - textBounds(1, 3)/2,  rect(4)*(newscalaPosition-0.15)+40, [],[],[],[],[],[],[]); % Left point
+    DrawFormattedText(wPtr, endPoints{2}, rightTick(1, 1) - textBounds(2, 3)/2, rect(4)*(newscalaPosition-0.15)+40, [],[],[],[],[],[],[]); % Right point
     
-    % Drawing the scala
-    Screen('DrawLine', screenPointer, scaleColor, midTick(1), midTick(2), midTick(3), midTick(4), width);         % Mid tick
-    Screen('DrawLine', screenPointer, scaleColor, leftTick(1), leftTick(2), leftTick(3), leftTick(4), width);     % Left tick
-    Screen('DrawLine', screenPointer, scaleColor, rightTick(1), rightTick(2), rightTick(3), rightTick(4), width); % Right tick
-    Screen('DrawLine', screenPointer, scaleColor, horzLine(1), horzLine(2), horzLine(3), horzLine(4), width);     % Horizontal line
+    % Drawing the scale
+    Screen('DrawLine', wPtr, scaleColor, midTick(1), midTick(2), midTick(3), midTick(4), width);         % Mid tick
+    Screen('DrawLine', wPtr, scaleColor, leftTick(1), leftTick(2), leftTick(3), leftTick(4), width);     % Left tick
+    Screen('DrawLine', wPtr, scaleColor, rightTick(1), rightTick(2), rightTick(3), rightTick(4), width); % Right tick
+    Screen('DrawLine', wPtr, scaleColor, horzLine(1), horzLine(2), horzLine(3), horzLine(4), width);     % Horizontal line
     
     % The slider
-    Screen('DrawLine', screenPointer, sliderColor, x, rect(4)*newscalaPosition - lineLength, x, rect(4)*newscalaPosition  + lineLength, width);
+    Screen('DrawLine', wPtr, sliderColor, x, rect(4)*newscalaPosition - lineLength, x, rect(4)*newscalaPosition  + lineLength, width);
     
     % Caculate position
     position = (x)-min(scaleRange);                       % Calculates the deviation from 0.
@@ -190,11 +266,11 @@ while answer == 0
     
     % Display position
     if displayPos
-        DrawFormattedText(screenPointer, num2str(round(position,2)), 'center', rect(4)*(newscalaPosition+0.05)); 
+        DrawFormattedText(wPtr, num2str(round(position,2)), 'center', rect(4)*(newscalaPosition+0.05)); 
     end
     
     % Flip screen
-    onsetStimulus = Screen('Flip', screenPointer);
+    onsetStimulus = Screen('Flip', wPtr);
     
     % Check if answer has been given
     if strcmp(device, 'mouse')
@@ -220,11 +296,11 @@ WaitSecs(0.5);
 %% Calculating the rection time and the position
 RT                = (secs - t0)*1000;   % converting RT to millisecond
 
-questiondata.RT(1,i) = RT;
-questiondata.position(1,i) = position;
-questiondata.answer(1,i) = answer;
-questiondata.questions(1,i) = {question{i}};
-questiondata.questionOrder(1,i) = {questionOrder};
+% data structure
+questdata(1,i).RT = RT;
+questdata(1,i).cost = position;
+questdata(1,i).questions = {question(questionOrder(i))};
+questdata(1,i).questionOrder = {questionOrder};
 
 end %for i=1:4
 

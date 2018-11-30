@@ -1,4 +1,4 @@
-function getInstructions(level,pms,rect,wPtr,money)
+function getInstructions(level,pms,practice, rect,wPtr,money)
 % % This function provides the instructions for the
 % % color wheel memory task based on which phase of the experiment we are
 % % (practice, begining, end). If level is 1 then it provides the detailed
@@ -29,7 +29,7 @@ if level==1 %intro + instruction color vision
     Instruction{3} = 'Responding works like this:\n\nFirst you determine the correct color on the color wheel.\nOnce you have decided on the color, you move the arrow to that color on the color wheel as fast as possible, but still try to be as accurate as possible. You don''t have to click on the wheel, you only need to move your mouse towards it. Once you reach a particular color on the wheel, that color is taken as your answer.\nPlease note that in order to move the mouse towards the color wheel as quickly as possible, you should first decide on the color before moving the mouse.\n\n A line appears which indicates your response. A second line indicates the correct color.';
     Instruction{4} = 'Press space to start.';
     
-elseif level==2 && pms.shape==0 %squares
+elseif level==2 && practice==1 && pms.shape==0 %squares
     
     Instruction{1} = 'This task consists of multiple trials.';
     Instruction{2} = 'Every trial consists of 3 phases. First, you will have to memorize colors. Then, you see new colors that you might need to memorize. Finally you are tested on our color wheel!';
@@ -66,7 +66,7 @@ elseif level==2 && pms.shape==0 %squares
     Instruction{22} = 'Please take a moment to tell your experimenter what is going to happen in this task.'; 
     Instruction{23} = 'You will now do some practice trials.\n\nPlease keep your hand on the mouse.'; 
 
-elseif level==2 && pms.shape==1 %concentric circles
+elseif level==2 && practice==1 && pms.shape==1 %concentric circles
     Instruction{1} = 'This task consists of multiple trials.';
     Instruction{2} = 'Every trial consists of 3 phases. First, you will have to memorize colors. Then, you see new colors that you might need to memorize. Finally you are tested on our color wheel!';
     Instruction{3} =sprintf('Phase 1: you will see colored circles and the letter "M" (memorize) on the screen.\n The circles will be shown for %.1f seconds.',pms.encDuration);
@@ -101,19 +101,29 @@ elseif level==2 && pms.shape==1 %concentric circles
     Instruction{21} = 'You have 4 seconds to decide on the color, but once you start moving the mouse, you only have a very short time to reach the wheel. So make sure you first decide and only then start moving the mouse.';
     Instruction{22} = 'Please take a moment to tell your experimenter what is going to happen in this task.'; 
     Instruction{23} = 'You will now do some practice trials.\n\nPlease keep your hand on the mouse.'; 
-        
+
+elseif level==2 && practice==2
+    Instruction{1} = 'You finished the first round of practice trials.\n\n Press the right arrow to continue with the instructions.';
+    Instruction{2}= 'In the second round of practice trials, you gain points on every trial.\n\n On some trials you will gain more points and on other trials less points.';
+    Instruction{3}= 'You can not influence how many points you gain on a trial.';
+    if pms.patternCB==1
+     Instruction{4}='\n\n\n\n\n\n\n\n\n\n\n Before every trial you will see how many points you gain.\n\n If you see a checkerboard background, you will gain 50 points per trial.';
+     Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n If you see a dotted background, you will gain 10 points per trial.';
+    elseif pms.patternCB==2
+     Instruction{4}='\n\n\n\n\n\n\n\n\n\n\n Before every trial you will see how many points you gain.\n\n If you see a checkerboard background, you will gain 10 points per trial.';
+     Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n If you see a dotted background, you will gain 50 points per trial.';
+    end
+    Instruction{6} = 'Please take a moment to tell your experimenter what is going to happen in this task.';
+    Instruction{7} = 'You will now do some practice trials.\n\nPlease keep your hand on the mouse.';
+    
 elseif level==3 %&& pms.blockCB==0
     Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
     Instruction{2}='During the actual memory task, you will only see your response on the color wheel, you will not see the correct response anymore.';
     Instruction{3}=sprintf('We will split the task in %d blocks. \n\n After a block you can take a break and continue with the task when you are ready.',pms.numBlocks);
-    Instruction{4}='On every trial you gain points.\n\n On some blocks you will gain more points and on other blocks less points on a trial. \n\n You can not influence how many points you gain.';
-    Instruction{5}='\n\n\n\n\n\n\n\n\n\n\n Before every trial you will see how many points you gain.\n\n If you see a checkerboard background, you will gain ... per trial.';
-    Instruction{6}='\n\n\n\n\n\n\n\n\n\n\n If you see a dotted background, you will gain ... per trial.';
-    %imgReward=importdata('Rewardcue.png');
-    %imageReward=Screen('MakeTexture',wPtr,imgReward);
-    Instruction{7}= 'At the end of the experiment, your monetary payoff will be increased proportional to the number of points that were accumulated.';
-    Instruction{8} = 'You will now start the task.\n\nPlease look at the screen while doing the task.'; 
-    %Instruction{4} = 'You will now start the task.\n\nPlease look at the screen while doing the task.';    
+    Instruction{4}='During the memory task, on every trial you gain points, similar to the practice trials.\n\n However, the amount of points you gain per trial now depends on the block. On some blocks you will gain more points and on other blocks less points on a trial. \n\n You can not influence how many points you gain.';
+    Instruction{5}= 'At the end of the experiment, your monetary payoff will be increased proportional to the number of points that were accumulated.';
+    Instruction{6} = 'You will now start the task.\n\nPlease look at the screen while doing the task.'; 
+        
     
 %elseif level==3 && pms.blockCB==1 
     %Instruction{1} = 'You finished the practice trials.\n\n Press the right arrow to continue with the instructions.';
@@ -129,8 +139,8 @@ elseif level==3 %&& pms.blockCB==0
     
     
 elseif level==4 %&& pms.blockCB==0
-    Instruction{1} = 'You finished this block of the task!\n\n Press the right arrow to continue with the next block.';
-    Instruction{2}= 'Before the start of the next block, you will see how many points you can win per trial.';
+    Instruction{1} = sprintf('You finished this block of the task.\n\n You gained %d points in total! \n\n\n Press the right arrow to continue with the next block.', pms.gainedPoints);
+    Instruction{2}= 'Before every trial of the next block, you will see how many points you gain per trial.';
     Instruction{3}= 'Good luck!';
     %Instruction{2}='On most trials in this block you can win points.';
     %Instruction{3}='\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n Before every new trial you will see how many points you can win on that trial.';
@@ -164,7 +174,6 @@ end %level
      %create matrix of positions for dots 
      numDots = numel(x);
      dotPositionMatrix = [reshape(x, 1, numDots); reshape(y, 1, numDots)];
-     patternSize = 30;
 
 % create parameters checkerboard background pattern
      [xCenter, yCenter] = RectCenter(rect);
@@ -208,7 +217,7 @@ for i=1:100
         counter=counter+back;
     end
     
-   if level==2
+   if level==2 && practice==1
         % Exceptions for figures;
         switch counter
             case 5
@@ -232,16 +241,24 @@ for i=1:100
             DrawFormattedText(wPtr,Instruction{counter},'center','center',pms.textColor,pms.wrapAt,[],[],pms.spacing);
         end
    else
-       if level==3 && counter==5
+       if level==2 && practice==2 && counter==4
             Screen('FillRect', wPtr, bwColors, rectCenter);
             Screen('Textsize', wPtr, 80);
             Screen('Textfont', wPtr, 'Times New Roman');
-            DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
-       elseif level==3 && counter==6
-            Screen('Drawdots', wPtr, dotPositionMatrix, patternSize, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],2);
+            if pms.patternCB==1
+               DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
+            elseif pms.patternCB==2
+               DrawFormattedText(wPtr, '10', 'center', 'center', [0 0 0]); 
+            end
+       elseif level==2 && practice==2 && counter==5
+            Screen('Drawdots', wPtr, dotPositionMatrix, pms.patternSize, WhiteIndex(max(Screen('Screens'))), [pms.xCenter pms.yCenter],2);
             Screen('Textsize', wPtr, 80);
             Screen('Textfont', wPtr, 'Times New Roman');
-            DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); %black reward cue
+            if pms.patternCB==1
+               DrawFormattedText(wPtr, '10', 'center', 'center', [0 0 0]); %black reward cue
+            elseif pms.patternCB==2
+               DrawFormattedText(wPtr, '50', 'center', 'center', [0 0 0]); 
+            end
        end
         %if level==3 && pms.blockCB==1 && counter==5 
              %Screen('Textsize', wPtr, 34);
@@ -270,7 +287,14 @@ for i=1:100
         Screen('flip',wPtr);
         WaitSecs(1);
         break;
-    elseif level==2 && counter==22
+    elseif level==2 && practice==1 && counter==22
+        GetClicks();
+        responded = 1;
+        Screen('flip',wPtr);
+        WaitSecs(2);
+        continue;
+    elseif level==2 && practice==2 && counter==6
+        responded = 0;
         GetClicks();
         responded = 1;
         Screen('flip',wPtr);

@@ -40,18 +40,17 @@ try
     end
     [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);
     
-    data    = []; 
-    trial   = []; 
-    T       = []; 
-    bonus   = []; 
+    data         = []; 
+    trial        = []; 
+    T            = []; 
+    bonus        = []; 
+    questiondata = [];
 
     %% set experiment parameters
-    pms.numTrials           = 16; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
-    pms.numBlocks           = 4;  
-
+    pms.numTrials           = 8; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
+    pms.numBlocks           = 8;  
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
-    pms.numTrialsPr         = 4;  
-
+    pms.numTrialsPr         = 32;  
     pms.numBlocksPr         = 1; 
     pms.maxSetsize          = [1,3]; %number of squares/circles used
     pms.colorTrials         = 12;  % trials for colorvision task  
@@ -68,6 +67,7 @@ try
     pms.textFont            = 'Times New Roman';
     pms.textStyle           = 1; 
     pms.ovalColor           = [0 0 0];
+    pms.patternSize         = 100;
     pms.subNo               = subNo;
     pms.matlabVersion       = 'R2016a';
     pms.offerDuration       = 0.75; % in case of no eyetracking
@@ -100,7 +100,8 @@ try
     pms.feedbackDurationPr  = 1;
     pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 
     pms.offerdelay          = 0.5;
-    pms.rewardduration      = 0.75; %duration of "you win xx" 
+    pms.rewardduration      = 2; %duration of reward cue before every trial
+    %pms.rewardduration      = 0.75; %duration of "you win xx" 
     if practice==0 && pms.cutoff==1
         dataTable = struct2table(dataPr);
         dataMatrix = dataTable(:,[9,15,16]);
@@ -192,6 +193,12 @@ try
     data.respDif               = NaN;
     data.reward                = NaN; 
     
+    % initialize data set choice questions
+    questiondata.RT            = NaN;
+    questiondata.cost          = NaN;
+    questiondata.questions     = NaN;
+    questiondata.questionOrder = NaN;
+    
     % baseline for event onset timestamps
     exptOnset = GetSecs;
     
@@ -203,24 +210,27 @@ try
     Screen('TextFont',wPtr,pms.textFont);
     if practice==1
        if pms.CV==1
-            getInstructions(1,pms, rect,wPtr); %intro + instruction color vision
+            getInstructions(1,pms,1,rect,wPtr); %intro + instruction color vision
            hooray = 0; 
            while hooray==0
             [hooray,median_rtMovement]=colorVision(pms,wPtr,rect);
             pms.median_rtMovement = median_rtMovement;
            end
        end
-       getInstructions(2,pms, rect,wPtr); % instruction regular color wheel
+       getInstructions(2,pms,1,rect,wPtr); % instruction regular color wheel
        [trial]= trialstruct(pms,rect,1,0,0);  
+    elseif practice==2
+        getInstructions(2,pms,2,rect,wPtr); % instructions color wheel with points and pattern
+        [trial]= trialstruct(pms,rect,2,1,0); 
     elseif practice==0
-        getInstructions(3,pms, rect,wPtr); % end of practice, instruction points if rewarded block starts
+        getInstructions(3,pms,0,rect,wPtr); % end of practice, instruction if rewarded blocks start
         [trial]=defstruct(pms,rect);
     end
 
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    [pms,data,T,money] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
+    [pms,data,T,money,questiondata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
 
     
     %% Save the data
@@ -230,7 +240,7 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(5,pms,rect,wPtr,money);  
+       getInstructions(5,pms,0,rect,wPtr,money);  
        clear Screen
        Screen('CloseAll');
        ShowCursor; % display mouse cursor again
@@ -240,7 +250,7 @@ try
     end
     
 catch ME
-    disp(getReport(ME));
+     disp(getReport(ME));
     keyboard
     
     % save data

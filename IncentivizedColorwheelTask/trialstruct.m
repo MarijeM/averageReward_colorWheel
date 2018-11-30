@@ -40,9 +40,9 @@ trialsmatrix=repmat(trialsvector,1,pms.numBlocks);
 trial=struct();
 for i=1:pms.numBlocks
     for t=1:pms.numTrials
-        trial(t,i).number=trialsmatrix(t,i);
-        trial(t,i).type = typematrixFin(t,i);
-        trial(t,i).setSize=setsizevectorFin(t,i); 
+        trial(t,i).number  = trialsmatrix(t,i);
+        trial(t,i).type    = typematrixFin(t,i);
+        trial(t,i).setSize = setsizevectorFin(t,i); 
     end                                  
 end
 
@@ -94,8 +94,17 @@ elseif pms.shape==1 %concentric circles
 
 end
 
+%% 6) add reward cues to trial
+if cues==1  
+    offer = [ones(1,(pms.numTrials/2))*10,ones(1,(pms.numTrials/2))*50];
+   for a=1:pms.numBlocks
+        for b=1:pms.numTrials
+            trial(b,a).offer = offer(b);
+        end
+   end
+end
 
-%% 6) shuffle order
+%% 7) shuffle order
     trialRandomizing = trial;
     rows = size(trial,1); 
     r = 1;
