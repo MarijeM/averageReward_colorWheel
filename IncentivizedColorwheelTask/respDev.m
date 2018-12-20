@@ -58,25 +58,35 @@ sinTau=(respY-centerY)/radius;
 cosTau=(respX-centerX)/radius;
                        
 if cosTau>=0 
-   tau=90-(-asind(sinTau)); 
+   tau=90-(-asind(sinTau)); %degrees measured from top of circle, not from the right side. (ranging from 0-360)
 elseif cosTau<0
    tau=180+90-(asind(sinTau)); 
 end
 
 %% Estimating response deviance from correct color angle(tau from theta).
 %We always want the smaller angle created between response and correct
-%color or response and lure, so we use mod.
+%color or response and lure
 
-respDif=abs(thetaCorrect-tau);
-lureDif=abs(thetaLure-tau);
 
-if respDif>180
-   respDif=mod(360,respDif);
+respDif=tau-thetaCorrect;
+lureDif=tau-thetaLure;
+
+if abs(respDif)>180
+   if respDif==abs(respDif)
+       respDif=respDif-360;
+   else 
+       respDif=respDif+360;
+   end 
 end
 
-if lureDif>180
-   lureDif=mod(360,lureDif);
+if abs(lureDif)>180
+   if lureDif==abs(lureDif)
+       lureDif=lureDif-360;
+   else 
+       lureDif=lureDif+360;
+   end 
 end
 end
- 
+
+
 end %function

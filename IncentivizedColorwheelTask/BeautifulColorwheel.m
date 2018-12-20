@@ -1,5 +1,5 @@
-function [data2, trial, T, bonus] = BeautifulColorwheel(varargin)
-% Colorhwheel
+function [data, trial, T, money, pms] = BeautifulColorwheel(varargin)
+% Colorwheel
 %
 % This function presents the colorwheel task - here: part 1 of the
 % QuantifyingCC study: incentivized version!!!. 
@@ -35,19 +35,25 @@ try
     subNo               = varargin{1};
     practice            = varargin{2};
     pms                 = varargin{3};
-    [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);            
+    if nargin>3
+        dataPr          = varargin{4};
+    end
+    [subNo,dataFilename,dataFilenamePrelim,practice]=getInfo(subNo,practice);
+    
+    data         = []; 
+    trial        = []; 
+    T            = []; 
+    bonus        = []; 
+    questiondata = [];
 
     %% set experiment parameters
-    pms.numTrials           = 64; % adaptable; important to be dividable by 2 (conditions) and multiple of 4 (set size)
-    pms.numBlocks           = 1;  % 1/2 of blocks of incentivized version, because after reshaping you get 2 blocks of 64.
-
+    pms.numTrials           = 8; % adaptable max trials per block; important to be dividable by 2 (conditions) and multiple of 4 (set size)
+    pms.numBlocks           = 8;  
     pms.numCondi            = 2;  % 0 IGNORE, 2 UPDATE
-    pms.numTrialsPr         = 16;  
+    pms.numTrialsPr         = 32;  
     pms.numBlocksPr         = 1; 
-    pms.redoTrials          = 128; %trials for Redo
-    pms.redoBlocks          = 2; %blocks for Redo
-    pms.maxSetsize          = 4; %maximum number of squares used
-    pms.colorTrials         = 12;    
+    pms.maxSetsize          = [1,3]; %number of squares/circles used
+    pms.colorTrials         = 12;  % trials for colorvision task  
     %colors
     pms.numWheelColors      = 512;
     
@@ -60,42 +66,74 @@ try
     pms.textFont            = 'Times New Roman';
     pms.textStyle           = 1; 
     pms.ovalColor           = [0 0 0];
+    pms.patternSize         = 100; %size of dots in dotted background pattern
     pms.subNo               = subNo;
-    pms.matlabVersion       = 'R2013a';
+    pms.matlabVersion       = 'R2016a';
+    pms.offerDuration       = 0.75; % in case of no eyetracking
     % timings
     pms.maxRT               = 4; % max RT
-    pms.encDuration         = 0.5;    %2 seconds of encoding
-    pms.encDurationIgn      = 0.5;
-    pms.encDurationUpd      = 0.5;
-    pms.delay1DurationPr    = 2; %2 seconds of delay 1 during practice
-    pms.delay1DurationUpd   = 2;
-    pms.delay1DurationIgn   = 2;        
-    pms.interfDurationPr    = 0.5; %2 seconds interfering stim during practice
-    pms.interfDurationIgn   = 0.5;
-    pms.interfDurationUpd   = 0.5;
-    pms.delay2DurationIgnPr = 2; %2 seconds of delay 2 during practice
-    pms.delay2DurationUpdPr = 4.5;
-    pms.delay2DurationIgn   = 2;
-    pms.delay2DurationUpd   = 4.5;
+    if pms.slow==0
+        pms.encDuration         = 0.5;    % encoding
+        pms.delay1DurationPr    = 0.5; % delay 1 during practice
+        pms.delay1Duration      = 0.5;      
+        pms.interfDurationPr    = 0.5; % interfering stim during practice
+        pms.interfDuration      = 0.5;
+        pms.delay2DurationIgnPr = 0.5; %delay 2 during practice
+        pms.delay2DurationUpdPr = 1.5;
+        pms.delay2DurationIgn   = 0.5;
+        pms.delay2DurationUpd   = 1.5;
+        pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial     
+    elseif pms.slow==1
+        pms.encDuration         = 2;    % encoding
+        pms.delay1DurationPr    = 0.5; % delay 1 during practice
+        pms.delay1Duration      = 0.5;      
+        pms.interfDurationPr    = 2; % interfering stim during practice
+        pms.interfDuration      = 2;
+        pms.delay2DurationIgnPr = 0.5; %delay 2 during practice
+        pms.delay2DurationUpdPr = 4.5;
+        pms.delay2DurationIgn   = 0.5;
+        pms.delay2DurationUpd   = 3;
+        pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial         
+    end   
     pms.feedbackDuration    = 0.5; %feedback during colorwheel
-    pms.feedbackDurationPr  = 0.7;
-    pms.responseDuration    = 0.4; 
-    pms.jitter              = 0;
-    pms.iti                 = 0.1;
-    pms.rewardduration      = 1.0;
-    pms.rewarddelay         = 0.8;
-    pms.bonusduration       = 1.5; %duration that the total reward up to that point is shown
-    pms.minAcc              = 10; % maximum deviance to win reward
+    pms.feedbackDurationPr  = 1;
+    pms.makeUpDurationI     = pms.delay1Duration + pms.interfDuration - pms.delay2DurationIgn; % because I trials are shorter, I need to add some extra time at the end of the trial 
+    pms.offerdelay          = 0.5;
+    pms.rewardduration      = 2; %duration of reward cue before every trial
+    %pms.rewardduration      = 0.75; %duration of "you win xx" 
+    if practice==0 && pms.cutoff==1
+        dataTable = struct2table(dataPr);
+        dataMatrix = dataTable(:,[9,15,16]);
+        dataMatrix = [dataMatrix.respDif,dataMatrix.type,dataMatrix.setsize];
+        pms.dataMatrix = dataMatrix;
+        pms.minAcc_I_easy         = prctile(abs(dataMatrix(dataMatrix(:,2)==0 & dataMatrix(:,3)==pms.maxSetsize(1),1)),75); % maximum deviance to win reward, 75 percentile of practice trials
+        pms.minAcc_U_easy         = prctile(abs(dataMatrix(dataMatrix(:,2)==2 & dataMatrix(:,3)==pms.maxSetsize(1),1)),75);
+        pms.minAcc_I_hard         = prctile(abs(dataMatrix(dataMatrix(:,2)==0 & dataMatrix(:,3)==pms.maxSetsize(2),1)),75); % maximum deviance to win reward, 75 percentile of practice trials
+        pms.minAcc_U_hard         = prctile(abs(dataMatrix(dataMatrix(:,2)==2 & dataMatrix(:,3)==pms.maxSetsize(2),1)),75);
+        if isfield(pms,'minAcc_I') == 0 %if debugging, possible that minacc cannot be calculated, since prior data does not exist
+             pms.minAcc_I_easy    = 15; % maximum deviance to win reward
+             pms.minAcc_U_easy    = 10; 
+             pms.minAcc_I_hard    = 50; % maximum deviance to win reward
+             pms.minAcc_U_hard    = 30; 
+        end 
+    end
+
+    pms.minAcc              = 15;   % during practice or when we use a fixed cut off 
+    pms.bonusCalculation    = 2500; % by which number does the bonus amount have to be divided?
     if exist('pms.incColordir','var')
         pms.incColordir     = pms.incColordir;
     else
         pms.incColordir     = pwd;
     end
+    
+    % initialize the random number generator
+    randSeed = sum(100*clock);
+    
+    
     %% display and screen
    
     % bit Added to address problem with high precision timestamping related
     % to graphics card problems
-    
     % Screen settings
     Screen('Preference','SkipSyncTests', 1);
     Screen('Preference', 'VBLTimestampingMode', -1);
@@ -111,23 +149,24 @@ try
     Priority(1);  % level 0, 1, 2: 1 means high priority of this matlab thread
     
     % open an onscreen window
-    [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
-    
+    if pms.instructions==0 %when debugging and skipping practice 1(color sensitivity test) there is no open screen, so we open a screen here.
+%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
+        pms.wPtr = wPtr;
+        pms.rect = rect; 
+    elseif practice ~= 1
+        wPtr = pms.wPtr;
+        rect = pms.rect;
+    elseif practice == 1
+%         [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background);
+        [wPtr,rect]=Screen('Openwindow',max(Screen('Screens')),pms.background, [0 0 1920 1080]);
+        pms.wPtr = wPtr;
+        pms.rect = rect;
+    end 
     pms.xCenter=rect(3)/2;
     pms.yCenter=rect(4)/2;     
     Screen('BlendFunction',wPtr,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    %% get trialstrcutre depending on pms
-    %%%%%% prepare trials
-    % function to get trialstructure using pms (parameters) as input
-    if practice==0
-         [trial]=defstruct(pms,rect);
- %if we have already created a trial structure for all participants (like we did for the real task?)
- %then we can instead load trialFin instead and comment out the above line (MF: which line? still true?)
-    elseif practice==1
-         [trial]= trialstruct(pms,rect,1);   
-    elseif practice==2
-        [trial]=trialstruct(pms,rect,2);
-    end
+
     %% prepare data for easy export later
     
     % log general subject and session info
@@ -139,50 +178,59 @@ try
     dataHeader.logdir           = cd; %adapt logdir (MF: e.g.: fullfile(cd, 'log'))
     
     % initialize data set
-    data2.setsize               = []; %trial(:,:).setSize;
-    data2.trialNum              = []; %trial(:,:).number;
-    data2.trialtype             = []; %trial(:,:).trialType;
-    data2.location              = []; %trial(:,:).locations;
-    data2.colors                = []; %trial(:,:).colors;
-    data2.respCoord             = [];
-    data2.onset                 = [];
-    data2.rt                    = [];
-    data2.probeLocation         = [];
-    data2.stdev                 = [];
-    data2.thetaCorrect          = [];
-    data2.respDif               = [];
-    data2.reward                = []; 
+    data.setsize               = NaN; %trial(:,:).setSize;
+    data.trialNum              = NaN; %trial(:,:).number;
+    data.trialtype             = NaN; %trial(:,:).trialType;
+    data.location              = NaN; %trial(:,:).locations;
+    data.colors                = NaN; %trial(:,:).colors;
+    data.respCoord             = NaN;
+    data.onset                 = NaN;
+    data.rt                    = NaN;
+    data.probeLocation         = NaN;
+    data.stdev                 = NaN;
+    data.thetaCorrect          = NaN;
+    data.respDif               = NaN;
+    data.reward                = NaN; 
+    
+    % initialize data set choice questions
+    questiondata.RT            = NaN;
+    questiondata.cost          = NaN;
+    questiondata.questions     = NaN;
+    questiondata.questionOrder = NaN;
     
     % baseline for event onset timestamps
     exptOnset = GetSecs;
     
-    %% Define Text
-    Screen('TextSize',wPtr,pms.textSize);
-    Screen('TextStyle',wPtr,pms.textStyle);
-    Screen('TextFont',wPtr,pms.textFont);
-  %% Color vision task
-%   if practice==1
-%   colorTestData = colorVision(pms,wPtr,rect); % colorTestData = output colorVisiontest
-%   end
     %% Experiment starts with instructions
     %%%%%%% get instructions
     % show instructions
-    if     practice==1
-           getInstructions(1,pms,wPtr);
+    Screen('TextSize',wPtr,pms.textSize);
+    Screen('TextStyle',wPtr,pms.textStyle);
+    Screen('TextFont',wPtr,pms.textFont);
+    if practice==1
+       if pms.CV==1
+            getInstructions(1,pms,1,rect,wPtr); %intro + instruction color vision
+           hooray = 0; 
+           while hooray==0
+            [hooray,median_rtMovement]=colorVision(pms,wPtr,rect);
+            pms.median_rtMovement = median_rtMovement;
+           end
+       end
+       getInstructions(2,pms,1,rect,wPtr); % instruction regular color wheel
+       [trial]= trialstruct(pms,rect,1,0,0);  
+    elseif practice==2
+        getInstructions(2,pms,2,rect,wPtr); % instructions color wheel with points and pattern
+        [trial]= trialstruct(pms,rect,2,1,0); 
+    elseif practice==0
+        getInstructions(3,pms,0,rect,wPtr); % end of practice, instruction if rewarded blocks start
+        [trial]=defstruct(pms,rect);
     end
 
-    %% Experiment starts with trials
-    % stimOnset = Screen(wPtr,'Flip'); CHECK onsets
-    % onset = stimOnset-exptOnset;
-    % run begins
-    
     WaitSecs(1); % initial interval (blank screen)
     %%%%%%
     % showTrial: in this function, the trials are defined and looped
-    [data2, T,bonus] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
-        % showTrial opens colorwheel2 and stdev function
+    [pms,data,T,money,questiondata] = showTrial(trial,pms,practice,dataFilenamePrelim,wPtr,rect); 
     
-        
     %% Save the data
     save(fullfile(pms.subdirICW,dataFilename));
     %% Close-out tasks
@@ -190,16 +238,17 @@ try
     Screen('TextStyle',wPtr,pms.textStyle);
     Screen('TextFont',wPtr,pms.textFont);
     if practice==0
-       getInstructions(3,pms,wPtr,bonus)   
-    elseif practice==1
-       getInstructions(2,pms,wPtr)   
+       getInstructions(5,pms,0,rect,wPtr,money); 
+        if pms.battery==0
+            clear Screen
+            Screen('CloseAll');
+            ShowCursor; % display mouse cursor again
+            ListenChar(0); % allow keystrokes to Matlab
+            Priority(0); % return Matlab's priority level to normal
+            Screen('Preference','TextAlphaBlending',0);
+        end
     end
-    clear Screen
-    Screen('CloseAll');
-    ShowCursor; % display mouse cursor again
-    ListenChar(0); % allow keystrokes to Matlab
-    Priority(0); % return Matlab's priority level to normal
-    Screen('Preference','TextAlphaBlending',0);
+    
 catch ME
     disp(getReport(ME));
     keyboard
@@ -207,8 +256,15 @@ catch ME
     % save data
     save(fullfile(pms.subdirICW,dataFilename));
     
+    % close-out tasks
+    Screen('CloseAll'); % close screen
+    ShowCursor; % display mouse cursor again
+    ListenChar(0); % allow keystrokes to Matlab
+    Priority(0); % return Matlab's priority level to normal
+    Screen('Preference','TextAlphaBlending',0);
+    
 end %try-catch loop
 end % main function
 
-
+    
 
